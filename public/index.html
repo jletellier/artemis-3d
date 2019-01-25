@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, 
+            minimum-scale=1.0, maximum-scale=1.0">
+        
+        <title>SMAAT</title>
+
+        <style>
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            #render-canvas {
+                width: 100%;
+                height: 100%;
+                touch-action: none;
+            }
+
+            #debug {
+                width: 100%;
+                height: 10%;
+                top: 30px;
+                left: 10px;
+                position: absolute;
+                color: gray;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="render-canvas"></canvas>
+        <div id="debug">Debug area</div>
+
+        <!-- Dependencies -->
+        
+
+        <!-- Main -->
+        <script src="./bundle.js"></script>
+    </body>
+</html>
