@@ -1,0 +1,6 @@
+node_modules/
+dist/
+dev-cert/
+
+.vscode/
+.DS_Store
