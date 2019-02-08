@@ -23,6 +23,8 @@
     "dependencies": {
         "babylonjs": "4.0.0-alpha.25",
         "babylonjs-loaders": "4.0.0-alpha.25",
-        "lit-element": "^2.0.1"
+        "lit-element": "^2.0.1",
+        "@material/mwc-icon": "^0.3.6",
+        "@material/mwc-button": "^0.3.6"
     }
 }
