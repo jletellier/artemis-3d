@@ -1,10 +1,15 @@
-import { LitElement, html, css, customElement } from 'lit-element';
+import { LitElement, html, css, customElement, property } from 'lit-element';
 import '@material/mwc-icon';
 import '@material/mwc-button';
 import './BabylonRenderer';
+import { v4 as uuid } from 'uuid';
+import page from 'page';
 
 @customElement('smaat-app')
 export default class App extends LitElement {
+
+    @property()
+    projectId: string = null;
 
     static styles = css`
         :host {
@@ -35,30 +40,50 @@ export default class App extends LitElement {
         }
     `;
 
+    constructor() {
+        super();
+        page('/', () => {
+            console.log('page loaded');
+            this.projectId = null;
+        });
+        page('/p/:id', (ctx) => {
+            console.log('page loaded with id: ', ctx.params.id);
+            this.projectId = ctx.params.id;
+        });
+        page();
+    }
+
     render() {
+        const showProject = (this.projectId != null);
+
         return html`
             <div class="navbar">
                 <mwc-button icon="create_new_folder" label="New project" raised dense
                     @click="${this.handleNewProject}">
                 </mwc-button>
-                
-                <mwc-button icon="share" label="Share project" raised dense
-                    @click="${this.handleShareProject}">
-                </mwc-button>
+                ${showProject ? html`
+                    <mwc-button icon="share" label="Share project" raised dense
+                            @click="${this.handleShareProject}">
+                    </mwc-button>
+                ` : html``}
             </div>
             <div class="view">
                 <smaat-babylon-renderer></smaat-babylon-renderer>
             </div>
-            <div class="sidebar">
-                <mwc-button icon="add" label="Add marker" raised dense
-                    @click="${this.handleAddMarker}">
-                </mwc-button>
-            </div>
+            ${showProject ? html`
+                <div class="sidebar">
+                    <mwc-button icon="add" label="Add marker" raised dense
+                        @click="${this.handleAddMarker}">
+                    </mwc-button>
+                </div>
+            ` : html``}
         `;
     }
 
     handleNewProject() {
-        console.log('new project');
+        const pageId = uuid();
+
+        page(`/p/${pageId}`);
     }
 
     handleAddMarker() {

@@ -1,4 +1,5 @@
 const fs = require('fs');
+const serverMiddleware = require('./src/server/middleware');
 
 module.exports = {
     mode: 'development',
@@ -24,6 +25,8 @@ module.exports = {
         port: 8443,
         host: '0.0.0.0',
         disableHostCheck: true,
+        historyApiFallback: true,
+        before: serverMiddleware,
     },
 
     resolve: {

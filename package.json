@@ -18,13 +18,17 @@
         "typescript": "^3.3.3",
         "webpack": "^4.29.3",
         "webpack-cli": "^3.2.3",
-        "webpack-dev-server": "^3.1.14"
+        "webpack-dev-server": "^3.1.14",
+        "@types/uuid": "^3.4.4",
+        "@types/page": "^1.8.0"
     },
     "dependencies": {
         "babylonjs": "4.0.0-alpha.25",
         "babylonjs-loaders": "4.0.0-alpha.25",
         "lit-element": "^2.0.1",
         "@material/mwc-icon": "^0.3.6",
-        "@material/mwc-button": "^0.3.6"
+        "@material/mwc-button": "^0.3.6",
+        "uuid": "^3.3.2",
+        "page": "^1.11.4"
     }
 }
