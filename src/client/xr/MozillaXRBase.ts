@@ -1,4 +1,4 @@
-import { Color4, Engine, Scene, Matrix } from 'babylonjs';
+import { Color4, Engine, Scene, Matrix, ArcRotateCamera, Vector3, HemisphericLight, Color3 } from 'babylonjs';
 import { MozillaXRCamera } from './babylon.mozillaXRCamera';
 
 export default class MozillaXRBase {
@@ -25,6 +25,13 @@ export default class MozillaXRBase {
 		this._boundHandleFrame = this._handleFrame.bind(this);
 
 		this.scene = new Scene(this.engine);
+		let camera = new ArcRotateCamera(
+			'Camera', 3 * Math.PI / 2, Math.PI / 4, 50, Vector3.Zero(), this.scene
+		);
+		camera.attachControl(this.canvas, true);
+
+		let light = new HemisphericLight('hemiLight', new Vector3(-1, 1, 0), this.scene);
+		light.diffuse = new Color3(1, 1, 1);
 
 		// The canvas/window resize event handler.
         window.addEventListener('resize', () => {

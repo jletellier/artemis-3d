@@ -1,5 +1,6 @@
 import { LitElement, html, css, customElement, property } from 'lit-element';
 import MozillaXRBase from '../xr/MozillaXRBase';
+import projectData from '../data/project';
 
 @customElement('smaat-babylon-renderer')
 export default class BabylonRenderer extends LitElement {
@@ -21,7 +22,9 @@ export default class BabylonRenderer extends LitElement {
         const canvas = this.shadowRoot.querySelector('canvas');
         const mozillaXR = new MozillaXRBase(canvas);
 
-        //mozillaXR.startRendering();
+        projectData.scene = mozillaXR.scene;
+        
+        mozillaXR.startRendering();
     }
 
 }

@@ -1,6 +1,10 @@
+import { Scene } from 'babylonjs';
+
 class Project {
     
     _id: string = null;
+
+    scene: Scene;
 
     set id(newID: string) {
         if (this._id !== newID) {
