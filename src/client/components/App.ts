@@ -1,15 +1,17 @@
 import { LitElement, html, css, customElement, property } from 'lit-element';
+import { v4 as uuid } from 'uuid';
+import page from 'page';
+import projectData from '../data/project';
 import '@material/mwc-icon';
 import '@material/mwc-button';
 import './BabylonRenderer';
-import { v4 as uuid } from 'uuid';
-import page from 'page';
+import './Sidebar';
 
 @customElement('smaat-app')
 export default class App extends LitElement {
 
     @property()
-    projectId: string = null;
+    hasProject: boolean = false;
 
     static styles = css`
         :host {
@@ -42,26 +44,25 @@ export default class App extends LitElement {
 
     constructor() {
         super();
+
         page('/', () => {
-            console.log('page loaded');
-            this.projectId = null;
+            this.hasProject = false;
+            projectData.id = null;
         });
         page('/p/:id', (ctx) => {
-            console.log('page loaded with id: ', ctx.params.id);
-            this.projectId = ctx.params.id;
+            this.hasProject = true;
+            projectData.id = ctx.params.id;
         });
         page();
     }
 
     render() {
-        const showProject = (this.projectId != null);
-
         return html`
             <div class="navbar">
                 <mwc-button icon="create_new_folder" label="New project" raised dense
                     @click="${this.handleNewProject}">
                 </mwc-button>
-                ${showProject ? html`
+                ${this.hasProject ? html`
                     <mwc-button icon="share" label="Share project" raised dense
                             @click="${this.handleShareProject}">
                     </mwc-button>
@@ -70,24 +71,15 @@ export default class App extends LitElement {
             <div class="view">
                 <smaat-babylon-renderer></smaat-babylon-renderer>
             </div>
-            ${showProject ? html`
-                <div class="sidebar">
-                    <mwc-button icon="add" label="Add marker" raised dense
-                        @click="${this.handleAddMarker}">
-                    </mwc-button>
-                </div>
-            ` : html``}
+            <div class="sidebar">
+                ${this.hasProject ? html`<smaat-sidebar></smaat-sidebar>` : html``}
+            </div>
         `;
     }
 
     handleNewProject() {
         const pageId = uuid();
-
         page(`/p/${pageId}`);
-    }
-
-    handleAddMarker() {
-        console.log('add marker');
     }
 
     handleShareProject() {
