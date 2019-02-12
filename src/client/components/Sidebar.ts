@@ -1,5 +1,4 @@
 import { LitElement, html, css, customElement, property } from 'lit-element';
-import { Mesh, StandardMaterial, Texture } from 'babylonjs';
 import '@material/mwc-icon';
 import '@material/mwc-button';
 import projectData from '../data/project';
@@ -22,6 +21,11 @@ export default class Sidebar extends LitElement {
             <mwc-button icon="add" label="Add marker" raised dense
                 @click="${this.handleAddMarker}">
             </mwc-button>
+            <ul>
+                ${projectData.getMarkerNames().map((value) => 
+                    html`<li>${value}</li>`
+                )}
+            </ul>
         `;
     }
 
@@ -42,17 +46,11 @@ export default class Sidebar extends LitElement {
             if (!file.type.startsWith('image/')) { 
                 continue;
             }
-            
-            let plane = Mesh.CreatePlane('plane', 20.0, projectData.scene);
-            let material = new StandardMaterial('marker', projectData.scene);
-            let texture = new Texture(window.URL.createObjectURL(file), projectData.scene);
-            material.diffuseTexture = texture;
-            material.diffuseTexture.hasAlpha = true;
-            material.backFaceCulling = false;
-            plane.material = material;
 
-            console.log(file.name);
+            projectData.addMarker(file);
         }
+
+        this.requestUpdate();
     }
 
 }
