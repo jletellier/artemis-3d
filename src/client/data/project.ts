@@ -20,9 +20,9 @@ class Project {
     addMarker(file: File) {
         this._markers.add(file.name);
 
-        let plane = Mesh.CreatePlane('plane', 20.0, this.scene);
-        let material = new StandardMaterial('marker', this.scene);
-        let texture = new Texture(window.URL.createObjectURL(file), this.scene);
+        const plane = Mesh.CreatePlane('plane', 20.0, this.scene);
+        const material = new StandardMaterial('marker', this.scene);
+        const texture = new Texture(window.URL.createObjectURL(file), this.scene);
         material.diffuseTexture = texture;
         material.diffuseTexture.hasAlpha = true;
         material.backFaceCulling = false;

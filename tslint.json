@@ -1,0 +1,17 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint-config-airbnb"
+    ],
+    "jsRules": {},
+    "rules": {
+        "indent": [true, "spaces", 4],
+        "ter-indent": [true, 4, { "SwitchCase": 2 }],
+        "increment-decrement": [true, "allow-post"],
+        "no-increment-decrement": false,
+        "no-trailing-whitespace": [true, "ignore-blank-lines"],
+        "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+        "function-name": [false]
+    },
+    "rulesDirectory": []
+}

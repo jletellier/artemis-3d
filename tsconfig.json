@@ -5,9 +5,12 @@
         "noImplicitAny": true,
         "experimentalDecorators": true,
         "module": "commonjs",
-        "target": "es2017"
+        "target": "es2018"
     },
     "include": [
         "./src/client/**/*"
-    ]
+    ],
+    "exclude": [
+        "node_modules"
+    ],
 }

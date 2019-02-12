@@ -15,6 +15,7 @@
         "express": "^4.16.4",
         "source-map-loader": "^0.2.4",
         "tslint": "^5.12.1",
+        "tslint-config-airbnb": "^5.11.1",
         "typescript": "^3.3.3",
         "webpack": "^4.29.3",
         "webpack-cli": "^3.2.3",

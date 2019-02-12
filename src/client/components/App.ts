@@ -1,7 +1,7 @@
 import { LitElement, html, css, customElement, property } from 'lit-element';
 import { v4 as uuid } from 'uuid';
 import page from 'page';
-import projectData from '../data/project';
+import project from '../data/project';
 import '@material/mwc-icon';
 import '@material/mwc-button';
 import './BabylonRenderer';
@@ -16,7 +16,7 @@ export default class App extends LitElement {
     static styles = css`
         :host {
             display: grid;
-            grid-template-areas: 
+            grid-template-areas:
                 "navbar navbar"
                 "view sidebar";
             grid-template-rows: min-content 1fr;
@@ -47,11 +47,11 @@ export default class App extends LitElement {
 
         page('/', () => {
             this.hasProject = false;
-            projectData.id = null;
+            project.id = null;
         });
         page('/p/:id', (ctx) => {
             this.hasProject = true;
-            projectData.id = ctx.params.id;
+            project.id = ctx.params.id;
         });
         page();
     }

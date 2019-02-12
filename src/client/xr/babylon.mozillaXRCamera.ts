@@ -14,7 +14,7 @@ export class MozillaXRCamera extends FreeCamera {
         this.updateUpVectorFromRotation = true;
         
         // Update camera rig
-        var newCamera = new TargetCamera("targetCameraView", Vector3.Zero(), this.getScene());
+        const newCamera = new TargetCamera('targetCameraView', Vector3.Zero(), this.getScene());
         newCamera.minZ = 0;
         newCamera.parent = this;
         newCamera.rotationQuaternion = new Quaternion();
@@ -26,7 +26,9 @@ export class MozillaXRCamera extends FreeCamera {
         const headPose = frame.getDisplayPose(frame.getCoordinateSystem('headModel'));
 
         // Update the parent cameras matrix
-        Matrix.FromFloat32ArrayToRefScaled(headPose.poseModelMatrix, 0, 1, MozillaXRCamera._TmpMatrix);
+        Matrix.FromFloat32ArrayToRefScaled(
+            headPose.poseModelMatrix, 0, 1, MozillaXRCamera._TmpMatrix,
+        );
         if (!this._scene.useRightHandedSystem) {
             MozillaXRCamera._TmpMatrix.toggleModelMatrixHandInPlace();
         }
