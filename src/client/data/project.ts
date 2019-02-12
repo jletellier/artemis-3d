@@ -1,9 +1,8 @@
-import { Scene, Mesh, StandardMaterial, Texture } from 'babylonjs';
+import { Scene, Mesh, StandardMaterial, Texture, TransformNode } from 'babylonjs';
 
 class Project {
     
     _id: string = null;
-    _markers: Set<string> = new Set();
 
     scene: Scene;
 
@@ -18,10 +17,14 @@ class Project {
     }
 
     addMarker(file: File) {
-        this._markers.add(file.name);
+        let markerContainer = this.scene.getTransformNodeByName('MarkerContainer');
+        if (!markerContainer) {
+            markerContainer = new TransformNode('MarkerContainer', this.scene);
+        }
 
-        const plane = Mesh.CreatePlane('plane', 20.0, this.scene);
-        const material = new StandardMaterial('marker', this.scene);
+        const plane = Mesh.CreatePlane(file.name, 20.0, this.scene);
+        plane.setParent(markerContainer);
+        const material = new StandardMaterial('MarkerMaterial', this.scene);
         const texture = new Texture(window.URL.createObjectURL(file), this.scene);
         material.diffuseTexture = texture;
         material.diffuseTexture.hasAlpha = true;
@@ -30,7 +33,12 @@ class Project {
     }
 
     getMarkerNames() {
-        return Array.from(this._markers.values());
+        const markerContainer = this.scene.getTransformNodeByName('MarkerContainer');
+        if (markerContainer) {
+            const nodes = markerContainer.getChildTransformNodes(true);
+            return nodes.map(value => value.name);
+        }
+        return [];
     }
 
     _loadFromServer() {
