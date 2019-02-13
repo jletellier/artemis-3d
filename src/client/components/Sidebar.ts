@@ -1,6 +1,7 @@
 import { LitElement, html, css, customElement, property } from 'lit-element';
 import '@material/mwc-icon';
 import '@material/mwc-button';
+import './MarkerNodes';
 import project from '../data/project';
 
 @customElement('smaat-sidebar')
@@ -9,7 +10,7 @@ export default class Sidebar extends LitElement {
     _markerFileInput: HTMLInputElement;
 
     static styles = css`
-        input#marker-file {
+        input {
             display: none;
         }
     `;
@@ -23,7 +24,10 @@ export default class Sidebar extends LitElement {
             </mwc-button>
             <ul>
                 ${project.getMarkerNames().map(value =>
-                    html`<li>${value}</li>`,
+                    html`<li>
+                        <div>${value}</div>
+                        <smaat-marker-nodes markerid="${value}"></smaat-marker-nodes>
+                    </li>`,
                 )}
             </ul>
         `;
