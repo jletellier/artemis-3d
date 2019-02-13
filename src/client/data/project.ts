@@ -1,6 +1,8 @@
 import { Scene, Mesh, StandardMaterial, Texture, TransformNode, SceneSerializer, SceneLoader,
-    AssetsManager, Observable, AbstractMesh } from 'babylonjs';
+    AssetsManager, Observable, AbstractMesh, TextFileAssetTask, Vector3,
+    Quaternion } from 'babylonjs';
 import 'babylonjs-loaders';
+import ImageMarkerScript from '../ImageMarkerScript';
 
 class Project {
 
@@ -9,6 +11,7 @@ class Project {
     _hasXR: boolean = false;
     _markerContainer: TransformNode;
     _uploadPath: string;
+    _assetsManager: AssetsManager = null;
 
     onMarkerChangedObservable = new Observable<void>();
     onHasXRChangedObservable = new Observable<void>();
@@ -19,7 +22,7 @@ class Project {
             this._uploadPath = `upload/${this._id}/`;
 
             if (this._scene) {
-                this._loadScene();
+                this._initScene();
             }
         }
     }
@@ -48,8 +51,20 @@ class Project {
         }
 
         if (this._id) {
-            this._loadScene();
+            this._initScene();
         }
+    }
+
+    get assetsManager() {
+        if (!this._assetsManager) {
+            this._assetsManager = new AssetsManager(this._scene);
+        }
+        return this._assetsManager;
+    }
+
+    _initScene() {
+        this._clearScene();
+        this._loadSceneAsync().catch(() => {});
     }
 
     addMarker(file: File) {
@@ -97,38 +112,79 @@ class Project {
         });
     }
 
-    _loadScene() {
-        // const assetsManager = new AssetsManager(this._scene);
-
+    _clearScene() {
         this._markerContainer.getChildren().forEach((child) => {
             child.dispose(false, true);
         });
+    }
+
+    async _loadSceneAsync() {
+        this._scene.getEngine().displayLoadingUI();
 
         const sceneUrl = `${this._uploadPath}scene.babylon`;
+        console.log(sceneUrl);
 
-        SceneLoader.LoadAssetContainer('../', sceneUrl, this._scene, (container) => {
-            container.addAllToScene();
-            container.meshes.forEach((mesh) => {
-                if (mesh.name.endsWith('.glb') || mesh.name.endsWith('.gltf')) {
-                    const uploadUrl = this._uploadPath + mesh.name;
-                    SceneLoader.LoadAssetContainer('../', uploadUrl, this._scene, (container) => {
-                        const rootMesh = container.createRootMesh();
-                        rootMesh.setParent(mesh);
-                        container.addAllToScene();
+        const sceneTask = this.assetsManager.addMeshTask('', '', '../', sceneUrl);
 
-                        this.onMarkerChangedObservable.notifyObservers();
-                    });
-                }
-            });
-            
-            this.onMarkerChangedObservable.notifyObservers();
+        await new Promise((resolve, reject) => {
+            sceneTask.run(
+                this._scene,
+                () => {
+                    resolve();
+                },
+                (err) => {
+                    console.log(err);
+                    // TODO: FIXME
+                    this._scene.getEngine().hideLoadingUI();
+                    this.onMarkerChangedObservable.notifyObservers();
+                    reject();
+                },
+            );
         });
 
-        // const task = assetsManager.addMeshTask('marker-container-task', '', '../', sceneUrl);
-        // assetsManager.onTasksDoneObservable.add((tasks) => {
-        //     this.onMarkerChangedObservable.notifyObservers();
-        // });
-        // assetsManager.load();
+        const promises = sceneTask.loadedMeshes.map((mesh) => {
+            if (mesh.name.endsWith('.glb') || mesh.name.endsWith('.gltf')) {
+                if (mesh.getChildMeshes(true, n => n.name === '__root__').length) {
+                    return;
+                }
+
+                const uploadUrl = this._uploadPath + mesh.name;
+                console.log(uploadUrl);
+
+                const task = this.assetsManager.addMeshTask('', '', '../', uploadUrl);
+                return new Promise((resolve, reject) => {
+                    task.run(
+                        this._scene,
+                        () => {
+                            console.log('gltf success');
+                            const glTFMesh = task.loadedMeshes.find(o => o.name === '__root__');
+                            glTFMesh.scaling = new Vector3(1, 1, 1);
+                            glTFMesh.rotationQuaternion = new Quaternion();
+                            glTFMesh.setParent(mesh);
+
+                            const targetMesh = <Mesh>mesh.parent;
+                            const material = <StandardMaterial>targetMesh.material;
+                            const texture = <Texture>material.diffuseTexture;
+                            texture.onLoadObservable.add(() => {
+                                const behavior = new ImageMarkerScript();
+                                behavior.enabled = true;
+                                mesh.addBehavior(behavior);
+                                resolve();
+                            });
+                        },
+                        (err) => {
+                            console.log(err);
+                            reject();
+                        },
+                    );
+                });
+            }
+        });
+
+        await Promise.all(promises);
+
+        this._scene.getEngine().hideLoadingUI();
+        this.onMarkerChangedObservable.notifyObservers();
     }
 
     _saveScene() {
