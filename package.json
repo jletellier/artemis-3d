@@ -10,9 +10,11 @@
     },
     "author": "Julien Letellier",
     "license": "MIT",
-    "devDependencies": {
+    "dependencies": {
         "awesome-typescript-loader": "^5.2.1",
         "express": "^4.16.4",
+        "express-fileupload": "^1.1.1-alpha.2",
+        "mkdirp": "^0.5.1",
         "source-map-loader": "^0.2.4",
         "tslint": "^5.12.1",
         "tslint-config-airbnb": "^5.11.1",
@@ -21,9 +23,7 @@
         "webpack-cli": "^3.2.3",
         "webpack-dev-server": "^3.1.14",
         "@types/uuid": "^3.4.4",
-        "@types/page": "^1.8.0"
-    },
-    "dependencies": {
+        "@types/page": "^1.8.0",
         "babylonjs": "4.0.0-alpha.25",
         "babylonjs-loaders": "4.0.0-alpha.25",
         "lit-element": "^2.0.1",

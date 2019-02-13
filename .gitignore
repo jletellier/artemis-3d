@@ -1,6 +1,7 @@
 node_modules/
 dist/
 dev-cert/
+upload/
 
 .vscode/
 .DS_Store

@@ -1,6 +1,8 @@
 const fs = require('fs');
 const serverMiddleware = require('./src/server/middleware');
 
+const uploadFolder = __dirname + '/upload';
+
 module.exports = {
     mode: 'development',
 
@@ -26,7 +28,9 @@ module.exports = {
         host: '0.0.0.0',
         disableHostCheck: true,
         historyApiFallback: true,
-        before: serverMiddleware,
+        before: (app, server) => {
+            serverMiddleware(app, server, uploadFolder);
+        },
     },
 
     resolve: {

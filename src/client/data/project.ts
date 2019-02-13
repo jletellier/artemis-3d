@@ -8,7 +8,8 @@ class Project {
 
     set id(newID: string) {
         if (this._id !== newID) {
-            this._loadFromServer();
+            this._id = newID;
+            this._loadScene();
         }
     }
 
@@ -29,6 +30,8 @@ class Project {
             return;
         }
 
+        this._saveFile(file);
+
         const plane = Mesh.CreatePlane(file.name, 20.0, this._scene);
         plane.setParent(this._markerContainer);
         const material = new StandardMaterial('MarkerMaterial', this._scene);
@@ -38,7 +41,7 @@ class Project {
         material.backFaceCulling = false;
         plane.material = material;
 
-        this._saveToServer();
+        this._saveScene();
     }
 
     getMarkerNames() {
@@ -49,13 +52,23 @@ class Project {
         return [];
     }
 
-    _loadFromServer() {
+    _loadScene() {
         console.log('load new content');
     }
 
-    _saveToServer() {
+    _saveScene() {
         const serializedScene = SceneSerializer.Serialize(this._scene);
-        console.log(JSON.stringify(serializedScene));
+        // console.log(JSON.stringify(serializedScene));
+    }
+
+    _saveFile(file: File) {
+        const formData = new FormData();
+        formData.append('content', file);
+
+        fetch(`/api/p/${this._id}/upload`, {
+            method: 'POST',
+            body: formData,
+        });
     }
 
 }
