@@ -29,6 +29,12 @@ export default class Sidebar extends LitElement {
         `;
     }
 
+    firstUpdated() {
+        project.onMarkerChangedObservable.add(() => {
+            this.requestUpdate();
+        });
+    }
+
     updated() {
         this._markerFileInput = this.shadowRoot.querySelector('input#marker-file');
     }
@@ -49,8 +55,6 @@ export default class Sidebar extends LitElement {
 
             project.addMarker(file);
         }
-
-        this.requestUpdate();
     }
 
 }

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const serverMiddleware = require('./src/server/middleware');
 
-const uploadFolder = __dirname + '/upload';
+const uploadFolder = __dirname + '/public/upload';
 
 module.exports = {
     mode: 'development',

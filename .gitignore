@@ -1,7 +1,7 @@
-node_modules/
-dist/
-dev-cert/
-upload/
+/node_modules/
+/dist/
+/dev-cert/
+/public/upload/
 
-.vscode/
+/.vscode/
 .DS_Store
