@@ -5,9 +5,11 @@ class Project {
 
     _id: string = null;
     _scene: Scene;
+    _hasXR: boolean = false;
     _markerContainer: TransformNode;
 
     onMarkerChangedObservable = new Observable<void>();
+    onHasXRChangedObservable = new Observable<void>();
 
     set id(newID: string) {
         if (this._id !== newID) {
@@ -20,6 +22,17 @@ class Project {
 
     get id() {
         return this._id;
+    }
+
+    set hasXR(value: boolean) {
+        if (this._hasXR !== value) {
+            this._hasXR = value;
+            this.onHasXRChangedObservable.notifyObservers();
+        }
+    }
+
+    get hasXR() {
+        return this._hasXR;
     }
 
     set scene(newScene: Scene) {

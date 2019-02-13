@@ -17,6 +17,10 @@ export default class MozillaXRBase {
     private _xrSupported: boolean;
     private _xrCurrentFrame: XRFrame;
 
+    get xrSupported() {
+        return this._xrSupported;
+    }
+
     constructor(canvasElement: HTMLCanvasElement) {
         this._xrSupported = true;
 

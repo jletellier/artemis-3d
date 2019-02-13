@@ -22,7 +22,11 @@ export default class BabylonRenderer extends LitElement {
         const canvas = this.shadowRoot.querySelector('canvas');
         const mozillaXR = new MozillaXRBase(canvas);
         
+        if (mozillaXR.xrSupported) {
+            project.hasXR = true;
+        }
         project.scene = mozillaXR.scene;
+        
         mozillaXR.startRendering();
     }
 

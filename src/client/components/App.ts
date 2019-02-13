@@ -30,7 +30,7 @@ export default class App extends LitElement {
         }
         .view {
             grid-area: view;
-            background-color: black;
+            background-color: none;
         }
         .sidebar {
             grid-area: sidebar;
@@ -54,26 +54,34 @@ export default class App extends LitElement {
             project.id = ctx.params.id;
         });
         page();
+
+        project.onHasXRChangedObservable.add(() => {
+            this.requestUpdate();
+        });
     }
 
     render() {
         return html`
-            <div class="navbar">
-                <mwc-button icon="create_new_folder" label="New project" raised dense
-                    @click="${this.handleNewProject}">
-                </mwc-button>
-                ${this.hasProject ? html`
-                    <mwc-button icon="share" label="Share project" raised dense
-                            @click="${this.handleShareProject}">
+            ${!project.hasXR ? html`
+                <div class="navbar">
+                    <mwc-button icon="create_new_folder" label="New project" raised dense
+                        @click="${this.handleNewProject}">
                     </mwc-button>
-                ` : html``}
-            </div>
+                    ${this.hasProject ? html`
+                        <mwc-button icon="share" label="Share project" raised dense
+                                @click="${this.handleShareProject}">
+                        </mwc-button>
+                    ` : html``}
+                </div>
+            ` : html``}
             <div class="view">
                 <smaat-babylon-renderer></smaat-babylon-renderer>
             </div>
-            <div class="sidebar">
-                ${this.hasProject ? html`<smaat-sidebar></smaat-sidebar>` : html``}
-            </div>
+            ${!project.hasXR ? html`
+                <div class="sidebar">
+                    ${this.hasProject ? html`<smaat-sidebar></smaat-sidebar>` : html``}
+                </div>
+            ` : html``}
         `;
     }
 
