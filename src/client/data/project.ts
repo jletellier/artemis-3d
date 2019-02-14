@@ -84,18 +84,26 @@ class Project {
     }
 
     addGlTFNode(file: File, markerID: string) {
-        this._saveFileAsync(file);
+        this._saveGlTFNodeAsync(file, markerID);
+    }
+
+    async _saveGlTFNodeAsync(file: File, markerID: string) {
+        await this._saveFileAsync(file);
         const uploadUrl = this._uploadPath + file.name;
 
-        SceneLoader.LoadAssetContainer('../', uploadUrl, this._scene, (container) => {
-            const markerMesh = this._scene.getMeshByName(markerID);
-            const rootMesh = container.createRootMesh();
-            rootMesh.name = file.name;
-            rootMesh.setParent(markerMesh);
-            container.addAllToScene();
-
-            this._saveSceneAsync();
+        await new Promise((resolve) => {
+            SceneLoader.LoadAssetContainer('../', uploadUrl, this._scene, (container) => {
+                const markerMesh = this._scene.getMeshByName(markerID);
+                const rootMesh = container.createRootMesh();
+                rootMesh.name = file.name;
+                rootMesh.setParent(markerMesh);
+                rootMesh.scaling.set(0.1, 0.1, 0.1);
+                container.addAllToScene();
+                resolve();
+            });
         });
+
+        this._saveSceneAsync();
     }
 
     async _saveMarkerAsync(file: File) {
@@ -125,9 +133,11 @@ class Project {
         }
 
         // TODO: Determine PPI
-        const ppi = 212.5;
+        // const ppi = 212.5;
+        const ppi = 192;
+
         const ppm = ppi / 0.0254; // Pixel per meter
-        plane.scaling.set(tmpImage.width / ppm, tmpImage.height / ppm, 1);
+        plane.scaling.set(tmpImage.width / ppm, tmpImage.height / ppm, tmpImage.width / ppm);
         plane.refreshBoundingInfo();
 
         await this._saveSceneAsync();
@@ -187,9 +197,9 @@ class Project {
                         this._scene,
                         () => {
                             const glTFMesh = task.loadedMeshes.find(o => o.name === '__root__');
-                            glTFMesh.scaling = new Vector3(1, 1, 1);
-                            glTFMesh.rotationQuaternion = new Quaternion();
                             glTFMesh.setParent(mesh);
+                            glTFMesh.scaling.set(1, 1, 1);
+                            glTFMesh.rotationQuaternion = new Quaternion();
                             resolve();
                         },
                         (err) => {

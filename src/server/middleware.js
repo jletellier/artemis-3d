@@ -45,11 +45,13 @@ module.exports = function(app, server, uploadFolder) {
 
         mkdirp(projectFolder, function(err) {
             if (err) {
-                return console.error(err);
+                console.error(err);
+                return res.status(500).send(err);
             }
 
             file.mv(path.resolve(projectFolder, file.name), function(err) {
                 if (err) {
+                    console.error(err);
                     return res.status(500).send(err);
                 }
 

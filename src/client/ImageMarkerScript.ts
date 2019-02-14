@@ -23,8 +23,6 @@ export default class ImageMarkerScript extends ScriptBehavior {
         this.markerMesh = <Mesh>this.target;
         this.markerMesh.visibility = 0;
 
-        console.log(`Real world size ${this.markerMesh.scaling.x}`);
-
         this.boundRegisterImageDetection = this.registerImageDetection.bind(this);
         this.scene.registerBeforeRender(this.boundRegisterImageDetection);
     }
@@ -33,7 +31,6 @@ export default class ImageMarkerScript extends ScriptBehavior {
         this.scene.unregisterBeforeRender(this.boundRegisterImageDetection);
 
         this.xrSession = this.scene.xrSession;
-
         if (this.xrSession) {
             // this.xrSession.addEventListener(
             //     'remove-world-anchor',
@@ -63,8 +60,8 @@ export default class ImageMarkerScript extends ScriptBehavior {
             child.setEnabled(value);
             if (updateBehaviors) {
                 // TODO: This should be done automatically
-                const behavior = <ScriptBehavior>child.getBehaviorByName('SingleMarkerContent');
-                behavior.enabled = value;
+                // const behavior = <ScriptBehavior>child.getBehaviorByName('SingleMarkerContent');
+                // behavior.enabled = value;
             }
         });
     }
@@ -85,6 +82,8 @@ export default class ImageMarkerScript extends ScriptBehavior {
     // }
 
     private handleImageDetection(imageAnchorTransform: Float32Array): void {
+        document.getElementById('debug-log').textContent = 'handle image: ' + this.target.name;
+
         const transformMatrix = new Matrix();
         Matrix.FromFloat32ArrayToRefScaled(imageAnchorTransform, 0, 1, transformMatrix);
 
@@ -93,7 +92,7 @@ export default class ImageMarkerScript extends ScriptBehavior {
         }
 
         this.updateRootTransform(transformMatrix);
-        this.setContentEnabled(true, true);
+        this.setContentEnabled(true);
 
         this.activateImageDetection();
     }
