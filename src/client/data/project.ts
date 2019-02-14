@@ -72,21 +72,7 @@ class Project {
             return;
         }
 
-        this._saveFile(file);
-        const uploadUrl = this._uploadPath + file.name;
-
-        const plane = Mesh.CreatePlane(file.name, 20.0, this._scene);
-        plane.setParent(this._markerContainer);
-        const material = new StandardMaterial('MarkerMaterial', this._scene);
-        const texture = new Texture(uploadUrl, this._scene);
-        // texture.url = window.URL.createObjectURL(file);
-        material.diffuseTexture = texture;
-        material.diffuseTexture.hasAlpha = true;
-        material.backFaceCulling = false;
-        plane.material = material;
-
-        this._saveScene();
-        this.onMarkerChangedObservable.notifyObservers();
+        this._saveMarkerAsync(file);
     }
 
     getMarkerNames() {
@@ -98,7 +84,7 @@ class Project {
     }
 
     addGlTFNode(file: File, markerID: string) {
-        this._saveFile(file);
+        this._saveFileAsync(file);
         const uploadUrl = this._uploadPath + file.name;
 
         SceneLoader.LoadAssetContainer('../', uploadUrl, this._scene, (container) => {
@@ -108,8 +94,46 @@ class Project {
             rootMesh.setParent(markerMesh);
             container.addAllToScene();
 
-            this._saveScene();
+            this._saveSceneAsync();
         });
+    }
+
+    async _saveMarkerAsync(file: File) {
+        this._scene.getEngine().displayLoadingUI();
+
+        await this._saveFileAsync(file);
+        const uploadUrl = this._uploadPath + file.name;
+        const objectUrl = window.URL.createObjectURL(file);
+
+        const plane = Mesh.CreatePlane(file.name, 1.0, this._scene);
+        plane.setParent(this._markerContainer);
+        const material = new StandardMaterial('MarkerMaterial', this._scene);
+        const texture = new Texture(objectUrl, this._scene);
+        texture.name = uploadUrl;
+        texture.url = uploadUrl;
+        material.diffuseTexture = texture;
+        material.diffuseTexture.hasAlpha = true;
+        material.backFaceCulling = false;
+        plane.material = material;
+
+        const tmpImage = new Image();
+        tmpImage.src = objectUrl;
+        if (!tmpImage.width) {
+            await new Promise((resolve) => {
+                tmpImage.onload = resolve;
+            });
+        }
+
+        // TODO: Determine PPI
+        const ppi = 212.5;
+        const ppm = ppi / 0.0254; // Pixel per meter
+        plane.scaling.set(tmpImage.width / ppm, tmpImage.height / ppm, 1);
+        plane.refreshBoundingInfo();
+
+        await this._saveSceneAsync();
+
+        this._scene.getEngine().hideLoadingUI();
+        this.onMarkerChangedObservable.notifyObservers();
     }
 
     _clearScene() {
@@ -131,7 +155,7 @@ class Project {
                     resolve();
                 },
                 (err) => {
-                    console.log(err);
+                    console.log('Scene does not exist');
                     // TODO: FIXME
                     this._scene.getEngine().hideLoadingUI();
                     this.onMarkerChangedObservable.notifyObservers();
@@ -157,7 +181,7 @@ class Project {
 
                 const uploadUrl = this._uploadPath + mesh.name;
                 const task = this.assetsManager.addMeshTask('', '', '../', uploadUrl);
-                
+
                 return new Promise((resolve, reject) => {
                     task.run(
                         this._scene,
@@ -189,7 +213,7 @@ class Project {
         this.onMarkerChangedObservable.notifyObservers();
     }
 
-    _saveScene() {
+    async _saveSceneAsync() {
         const meshes: AbstractMesh[] = [];
         this._markerContainer.getChildMeshes(true).forEach((child) => {
             meshes.push(child);
@@ -198,7 +222,7 @@ class Project {
         
         const serializedMeshes = SceneSerializer.SerializeMesh(meshes, false, false);
         
-        fetch(`/api/p/${this._id}/save`, {
+        return fetch(`/api/p/${this._id}/save`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -207,11 +231,11 @@ class Project {
         });
     }
 
-    _saveFile(file: File) {
+    async _saveFileAsync(file: File) {
         const formData = new FormData();
         formData.append('content', file);
 
-        fetch(`/api/p/${this._id}/upload`, {
+        return fetch(`/api/p/${this._id}/upload`, {
             method: 'PUT',
             body: formData,
         });

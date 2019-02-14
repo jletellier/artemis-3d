@@ -17,15 +17,21 @@ module.exports = function(app, server, uploadFolder) {
 
         mkdirp(projectFolder, function(err) {
             if (err) {
-                return console.error(err);
+                console.error(err);
+                return res.status(500).send(err);
             }
 
-            fs.writeFile(path.resolve(projectFolder, 'scene.babylon'), 
-                JSON.stringify(req.body), function(err) {
-                if (err) {
-                    return console.error(err);
-                }
-            });
+            fs.writeFile(
+                path.resolve(projectFolder, 'scene.babylon'), 
+                JSON.stringify(req.body),
+                function(err) {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).send(err);
+                    }
+                    res.send('File saved!');
+                },
+            );
         });
     });
 

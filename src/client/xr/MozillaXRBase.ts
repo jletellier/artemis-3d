@@ -32,8 +32,10 @@ export default class MozillaXRBase {
 
         this.scene = new Scene(this.engine);
         const camera = new ArcRotateCamera(
-            'Camera', 3 * Math.PI / 2, Math.PI / 4, 50, Vector3.Zero(), this.scene,
+            'Camera', 3 * Math.PI / 2, Math.PI / 4, 0.5, Vector3.Zero(), this.scene,
         );
+        camera.maxZ = 10;
+        camera.minZ = 0.01;
         camera.attachControl(this.canvas, true);
 
         const light = new HemisphericLight('hemiLight', new Vector3(-1, 1, 0), this.scene);

@@ -23,7 +23,7 @@ export default class ImageMarkerScript extends ScriptBehavior {
         this.markerMesh = <Mesh>this.target;
         this.markerMesh.visibility = 0;
 
-        console.log(`Real world size ${ this.markerMesh.getBoundingInfo().maximum.x * 2 }`);
+        console.log(`Real world size ${this.markerMesh.scaling.x}`);
 
         this.boundRegisterImageDetection = this.registerImageDetection.bind(this);
         this.scene.registerBeforeRender(this.boundRegisterImageDetection);
@@ -47,7 +47,7 @@ export default class ImageMarkerScript extends ScriptBehavior {
             const imgData = new Uint8ClampedArray(buffer);
 
             // TODO: Find better solution to figure out real-world size of marker plane
-            const realWorldWidth = this.markerMesh.getBoundingInfo().maximum.x * 2;
+            const realWorldWidth = this.markerMesh.scaling.x;
 
             this.xrSession.createImageAnchor(
                 this.target.name, imgData, size.width, size.height, realWorldWidth,
