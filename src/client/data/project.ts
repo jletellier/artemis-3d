@@ -122,8 +122,6 @@ class Project {
         this._scene.getEngine().displayLoadingUI();
 
         const sceneUrl = `${this._uploadPath}scene.babylon`;
-        console.log(sceneUrl);
-
         const sceneTask = this.assetsManager.addMeshTask('', '', '../', sceneUrl);
 
         await new Promise((resolve, reject) => {
@@ -143,34 +141,32 @@ class Project {
         });
 
         const promises = sceneTask.loadedMeshes.map((mesh) => {
+            if (mesh.parent === this._markerContainer) {
+                const material = <StandardMaterial>mesh.material;
+                const texture = <Texture>material.diffuseTexture;
+
+                return new Promise((resolve) => {
+                    texture.onLoadObservable.add(resolve);
+                });
+            }
+
             if (mesh.name.endsWith('.glb') || mesh.name.endsWith('.gltf')) {
                 if (mesh.getChildMeshes(true, n => n.name === '__root__').length) {
                     return;
                 }
 
                 const uploadUrl = this._uploadPath + mesh.name;
-                console.log(uploadUrl);
-
                 const task = this.assetsManager.addMeshTask('', '', '../', uploadUrl);
+                
                 return new Promise((resolve, reject) => {
                     task.run(
                         this._scene,
                         () => {
-                            console.log('gltf success');
                             const glTFMesh = task.loadedMeshes.find(o => o.name === '__root__');
                             glTFMesh.scaling = new Vector3(1, 1, 1);
                             glTFMesh.rotationQuaternion = new Quaternion();
                             glTFMesh.setParent(mesh);
-
-                            const targetMesh = <Mesh>mesh.parent;
-                            const material = <StandardMaterial>targetMesh.material;
-                            const texture = <Texture>material.diffuseTexture;
-                            texture.onLoadObservable.add(() => {
-                                const behavior = new ImageMarkerScript();
-                                behavior.enabled = true;
-                                mesh.addBehavior(behavior);
-                                resolve();
-                            });
+                            resolve();
                         },
                         (err) => {
                             console.log(err);
@@ -182,6 +178,12 @@ class Project {
         });
 
         await Promise.all(promises);
+
+        this._markerContainer.getChildren().forEach((child) => {
+            const behavior = new ImageMarkerScript();
+            behavior.enabled = true;
+            child.addBehavior(behavior);
+        });
 
         this._scene.getEngine().hideLoadingUI();
         this.onMarkerChangedObservable.notifyObservers();
