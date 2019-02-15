@@ -1,5 +1,4 @@
 import { LitElement, html, css, customElement, property } from 'lit-element';
-import { v4 as uuid } from 'uuid';
 import page from 'page';
 import project from '../data/project';
 import '@material/mwc-icon';
@@ -86,7 +85,7 @@ export default class App extends LitElement {
     }
 
     handleNewProject() {
-        const pageId = uuid();
+        const pageId = project.generateID();
         page(`/p/${pageId}`);
     }
 
