@@ -1,40 +1,47 @@
 const path = require('path');
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
-const babel = require('rollup-plugin-babel');
+const typescript = require('rollup-plugin-typescript2');
+const wasm = require('rollup-plugin-wasm');
 
 const rootPath = path.resolve(__dirname, '../../');
 
-const babelPresets = [
-    ['@babel/preset-env', {
-        'targets': {
-            'esmodules': true,
-        },
-    }],
-    '@babel/preset-typescript',
-];
-
-const babelPlugins = [
-    ['@babel/plugin-proposal-decorators', { decoratorsBeforeExport: true }],
-    '@babel/plugin-proposal-class-properties',
-];
+const memoBuild = {
+    input: path.resolve(rootPath, './node_modules/@atom/memo/src/index.ts'),
+    output: {
+        dir: path.resolve(rootPath, './public/dist/memo/'),
+        format: 'es',
+        sourcemap: false,
+    },
+    plugins: [
+        resolve({
+            extensions: ['.ts', '.js', '.wasm'],
+        }),
+        wasm(),
+        typescript(),
+    ],
+};
 
 const clientBuild = {
     input: path.resolve(rootPath, './src/client/index.ts'),
     output: {
-        file: path.resolve(rootPath, './public/dist/bundle.js'),
-        format: 'iife',
+        dir: path.resolve(rootPath, './public/dist/'),
+        format: 'es',
         sourcemap: true,
+        paths: {
+            '@atom/memo': './memo/index.js',
+        },
     },
+    external: ['@atom/memo'],
     plugins: [
         resolve({
             extensions: ['.ts', '.js'],
+            browser: true,
         }),
         commonjs({
             include: path.resolve(rootPath, './node_modules/**'),
             sourceMap: false,
             namedExports: {
-                'node_modules/uuid/index.js': ['v4'],
                 'node_modules/babylonjs/babylon.js': [
                     'Scene', 'Mesh', 'StandardMaterial', 'Texture', 'TransformNode', 
                     'SceneSerializer', 'SceneLoader', 'AssetsManager', 'Observable', 'AbstractMesh', 
@@ -44,16 +51,11 @@ const clientBuild = {
                 ],
             },
         }),
-        babel({
-            presets: babelPresets,
-            plugins: babelPlugins,
-            exclude: path.resolve(rootPath, './node_modules/**'),
-            extensions: ['.js', '.ts'],
-        }),
+        typescript(),
     ],
-    external: [],
 };
 
 module.exports = [
+    memoBuild,
     clientBuild,
 ];

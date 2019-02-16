@@ -1,16 +1,15 @@
 {
     "compilerOptions": {
+        "moduleResolution": "node",
         "outDir": "./dist/",
         "sourceMap": true,
         "noImplicitAny": true,
         "experimentalDecorators": true,
-        "module": "commonjs",
+        "module": "esnext",
+        "lib": ["es2015", "es2016", "es2017", "dom"],
         "target": "es2018"
     },
     "include": [
         "./src/client/**/*"
-    ],
-    "exclude": [
-        "node_modules"
-    ],
+    ]
 }

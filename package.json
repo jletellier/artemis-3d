@@ -26,11 +26,9 @@
         "rollup": "^1.1.2",
         "rollup-plugin-commonjs": "^9.2.0",
         "rollup-plugin-node-resolve": "^4.0.0",
-        "rollup-plugin-babel": "^4.3.2",
-        "@babel/core": "^7.2.2",
-        "@babel/preset-typescript": "^7.1.0",
-        "@babel/plugin-proposal-decorators": "^7.3.0",
-        "@babel/plugin-proposal-class-properties": "^7.3.0",
-        "@babel/preset-env": "^7.3.1"
+        "rollup-plugin-copy-glob": "^0.3.0",
+        "rollup-plugin-typescript2": "^0.19.2",
+        "rollup-plugin-wasm": "^3.0.0",
+        "@atom/memo": "^0.20.0"
     }
 }

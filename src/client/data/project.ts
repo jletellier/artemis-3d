@@ -3,6 +3,20 @@ import { Scene, Mesh, StandardMaterial, Texture, TransformNode, SceneSerializer,
     Quaternion } from 'babylonjs';
 import 'babylonjs-loaders';
 import ImageMarkerScript from '../ImageMarkerScript';
+import { WorkTree, GitProvider, Oid, BaseEntry, Path } from '@atom/memo';
+
+class IndexedDBProvider implements GitProvider {
+
+    async *baseEntries(oid: Oid): AsyncIterable<BaseEntry> {
+        console.log('get entries:', oid);
+        return;
+    }
+   
+    async baseText(oid: Oid, path: Path): Promise<string> {
+        return '';
+    }
+
+}
 
 class Project {
 
@@ -15,6 +29,18 @@ class Project {
 
     onMarkerChangedObservable = new Observable<void>();
     onHasXRChangedObservable = new Observable<void>();
+
+    async initMemo() {
+        const replicaId = this.generateID();
+        const gitProvider = new IndexedDBProvider();
+
+        const [tree, ops] = await WorkTree.create(
+            replicaId,
+            null,
+            [],
+            gitProvider,
+        );
+    }
 
     set id(newID: string) {
         if (this._id !== newID) {
