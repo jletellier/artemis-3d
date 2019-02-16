@@ -2,25 +2,8 @@ const path = require('path');
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const typescript = require('rollup-plugin-typescript2');
-const wasm = require('rollup-plugin-wasm');
 
 const rootPath = path.resolve(__dirname, '../../');
-
-const memoBuild = {
-    input: path.resolve(rootPath, './node_modules/@atom/memo/src/index.ts'),
-    output: {
-        dir: path.resolve(rootPath, './public/dist/memo/'),
-        format: 'es',
-        sourcemap: false,
-    },
-    plugins: [
-        resolve({
-            extensions: ['.ts', '.js', '.wasm'],
-        }),
-        wasm(),
-        typescript(),
-    ],
-};
 
 const clientBuild = {
     input: path.resolve(rootPath, './src/client/index.ts'),
@@ -28,11 +11,7 @@ const clientBuild = {
         dir: path.resolve(rootPath, './public/dist/'),
         format: 'es',
         sourcemap: true,
-        paths: {
-            '@atom/memo': './memo/index.js',
-        },
     },
-    external: ['@atom/memo'],
     plugins: [
         resolve({
             extensions: ['.ts', '.js'],
@@ -56,6 +35,5 @@ const clientBuild = {
 };
 
 module.exports = [
-    memoBuild,
     clientBuild,
 ];
