@@ -36,11 +36,20 @@ const watcher = rollup.watch(rollupConfig);
 
 watcher.on('event', (event) => {
     if (event.error) {
-        console.error(event.error);
+        console.error(`'${event.input}' | Error: '${event.error}'`);
         return;
     }
 
+    if (event.code === 'BUNDLE_START') {
+        console.info(`'${event.input}' | Bundling started...`);
+    }
+
     if (event.code === 'BUNDLE_END') {
-        console.log('sucessfull');
+        console.info(`'${event.input}' | Bundling finished in ${event.duration} ms`);
+        if (event.result.watchFiles) {
+            console.info(`'${event.input}' | Watching ${event.result.watchFiles.length} files`);
+            // console.log(event.result.watchFiles);
+        }
+        
     }
 });

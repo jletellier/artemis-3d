@@ -3,6 +3,7 @@ import { Scene, Mesh, StandardMaterial, Texture, TransformNode, SceneSerializer,
     Quaternion } from 'babylonjs';
 import 'babylonjs-loaders';
 import ImageMarkerScript from '../ImageMarkerScript';
+import 'pouchdb';
 
 class Project {
 
@@ -15,10 +16,13 @@ class Project {
 
     onMarkerChangedObservable = new Observable<void>();
     onHasXRChangedObservable = new Observable<void>();
+    db: PouchDB.Database;
 
     set id(newID: string) {
         if (this._id !== newID) {
             this._id = newID;
+
+            this.db = new PouchDB(this._id);
             this._uploadPath = `upload/${this._id}/`;
 
             if (this._scene) {
@@ -99,37 +103,37 @@ class Project {
     }
 
     async _saveGlTFNodeAsync(file: File, markerID: string) {
+        this._scene.getEngine().displayLoadingUI();
+
         await this._saveFileAsync(file);
-        const uploadUrl = this._uploadPath + file.name;
+        const objectUrl = window.URL.createObjectURL(file);
 
-        await new Promise((resolve) => {
-            SceneLoader.LoadAssetContainer('../', uploadUrl, this._scene, (container) => {
-                const markerMesh = this._scene.getMeshByName(markerID);
-                const rootMesh = container.createRootMesh();
-                rootMesh.name = file.name;
-                rootMesh.setParent(markerMesh);
-                rootMesh.scaling.set(0.1, 0.1, 0.1);
-                container.addAllToScene();
-                resolve();
-            });
-        });
+        const container = await SceneLoader.LoadAssetContainerAsync(
+            '', objectUrl, this._scene, null, '.glb',
+        );
+        const markerMesh = this._scene.getMeshByName(markerID);
+        const rootMesh = container.createRootMesh();
+        rootMesh.name = file.name;
+        rootMesh.setParent(markerMesh);
+        rootMesh.scaling.set(0.1, 0.1, 0.1);
+        container.addAllToScene();
 
-        this._saveSceneAsync();
+        await this._saveSceneAsync();
+
+        this._scene.getEngine().hideLoadingUI();
     }
 
     async _saveMarkerAsync(file: File) {
         this._scene.getEngine().displayLoadingUI();
 
         await this._saveFileAsync(file);
-        const uploadUrl = this._uploadPath + file.name;
         const objectUrl = window.URL.createObjectURL(file);
 
         const plane = Mesh.CreatePlane(file.name, 1.0, this._scene);
         plane.setParent(this._markerContainer);
         const material = new StandardMaterial('MarkerMaterial', this._scene);
         const texture = new Texture(objectUrl, this._scene);
-        texture.name = uploadUrl;
-        texture.url = uploadUrl;
+        texture.name = file.name;
         material.diffuseTexture = texture;
         material.diffuseTexture.hasAlpha = true;
         material.backFaceCulling = false;
@@ -166,69 +170,66 @@ class Project {
     async _loadSceneAsync() {
         this._scene.getEngine().displayLoadingUI();
 
-        const sceneUrl = `${this._uploadPath}scene.babylon`;
-        const sceneTask = this.assetsManager.addMeshTask('', '', '../', sceneUrl);
-
-        await new Promise((resolve, reject) => {
-            sceneTask.run(
-                this._scene,
-                () => {
-                    resolve();
-                },
-                (err) => {
-                    console.log('Scene does not exist');
-                    // TODO: FIXME
-                    this._scene.getEngine().hideLoadingUI();
-                    this.onMarkerChangedObservable.notifyObservers();
-                    reject();
-                },
-            );
+        const doc = await this.db.get('scene').catch((err) => {
+            if (err.name === 'not_found') {
+                return null;
+            }
+            throw err;
         });
 
-        const promises = sceneTask.loadedMeshes.map((mesh) => {
-            if (mesh.parent === this._markerContainer) {
-                const material = <StandardMaterial>mesh.material;
-                const texture = <Texture>material.diffuseTexture;
+        if (doc) {
+            this._scene.useDelayedTextureLoading = true;
 
-                return new Promise((resolve) => {
-                    texture.onLoadObservable.add(resolve);
-                });
-            }
+            const assetContainer = await SceneLoader.LoadAssetContainerAsync(
+                '', `data:${JSON.stringify(doc)}`, this._scene,
+            );
 
-            if (mesh.name.endsWith('.glb') || mesh.name.endsWith('.gltf')) {
-                if (mesh.getChildMeshes(true, n => n.name === '__root__').length) {
-                    return;
+            const promises = assetContainer.meshes.map((mesh) => {
+                if (mesh.parent === this._markerContainer) {
+                    const material = <StandardMaterial>mesh.material;
+                    const texture = <Texture>material.diffuseTexture;
+
+                    return new Promise((resolve) => {
+                        texture.onLoadObservable.add(resolve);
+                        this._loadFileAsync(texture.name).then((file) => {
+                            const objectUrl = window.URL.createObjectURL(file);
+                            texture.updateURL(objectUrl);
+                        });
+                    });
                 }
 
-                const uploadUrl = this._uploadPath + mesh.name;
-                const task = this.assetsManager.addMeshTask('', '', '../', uploadUrl);
+                if (mesh.name.endsWith('.glb')) {
+                    if (mesh.getChildMeshes(true, n => n.name === '__root__').length) {
+                        return;
+                    }
 
-                return new Promise((resolve, reject) => {
-                    task.run(
-                        this._scene,
-                        () => {
-                            const glTFMesh = task.loadedMeshes.find(o => o.name === '__root__');
+                    return new Promise((resolve) => {
+                        this._loadFileAsync(mesh.name).then((file) => {
+                            const objectUrl = window.URL.createObjectURL(file);
+                            return SceneLoader.LoadAssetContainerAsync(
+                                '', objectUrl, this._scene, null, '.glb',
+                            );
+                        }).then((container) => {
+                            const glTFMesh = container.meshes.find(o => o.name === '__root__');
                             glTFMesh.setParent(mesh);
                             glTFMesh.scaling.set(1, 1, 1);
                             glTFMesh.rotationQuaternion = new Quaternion();
+                            container.addAllToScene();
                             resolve();
-                        },
-                        (err) => {
-                            console.log(err);
-                            reject();
-                        },
-                    );
-                });
-            }
-        });
+                        });
+                    });
+                }
+            });
 
-        await Promise.all(promises);
+            await Promise.all(promises);
+            assetContainer.addAllToScene();
 
-        this._markerContainer.getChildren().forEach((child) => {
-            const behavior = new ImageMarkerScript();
-            behavior.enabled = true;
-            child.addBehavior(behavior);
-        });
+            // this._markerContainer.getChildren().forEach((child) => {
+            //     const behavior = new ImageMarkerScript();
+            //     behavior.enabled = true;
+            //     child.addBehavior(behavior);
+            // });
+        }
 
         this._scene.getEngine().hideLoadingUI();
         this.onMarkerChangedObservable.notifyObservers();
@@ -243,22 +244,33 @@ class Project {
         
         const serializedMeshes = SceneSerializer.SerializeMesh(meshes, false, false);
         
-        return fetch(`/api/p/${this._id}/save`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(serializedMeshes),
+        await this.db.get('scene').catch((err) => {
+            if (err.name === 'not_found') {
+                return {
+                    _id: 'scene',
+                    _rev: null,
+                };
+            }
+            throw err;
+        }).then((doc) => {
+            serializedMeshes._id = doc._id;
+            serializedMeshes._rev = doc._rev;
+            return this.db.put(serializedMeshes);
+        }).catch((err) => {
+            throw err;
         });
     }
 
     async _saveFileAsync(file: File) {
-        const formData = new FormData();
-        formData.append('content', file);
+        const mimeType = file.type || 'application/octet-stream';
+        return this.db.putAttachment(file.name, 'file', file, mimeType).catch((err) => {
+            throw err;
+        });
+    }
 
-        return fetch(`/api/p/${this._id}/upload`, {
-            method: 'PUT',
-            body: formData,
+    async _loadFileAsync(name: string) {
+        return this.db.getAttachment(name, 'file').catch((err) => {
+            throw err;
         });
     }
 
