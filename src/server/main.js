@@ -5,6 +5,7 @@ const express = require('express');
 const rollup = require('rollup');
 const rollupConfig = require('./rollup.config.js');
 const middleware = require('./middleware.js');
+const WebSocket = require('ws');
 
 const rootPath = path.resolve(__dirname, '../../');
 const port = 8443;
@@ -21,6 +22,19 @@ const credentials = {
 
 const app = express();
 const httpsServer = https.createServer(credentials, app);
+const wss = new WebSocket.Server({ server: httpsServer });
+
+wss.on('connection', (connection) => {
+    connection.on('message', (message) => {
+        console.log('received: %s', message);
+    });
+
+    connection.on('close', () => {
+        console.log('client disconnected...');
+    });
+   
+    console.log('client connected...');
+});
 
 app.use('/', express.static(path.resolve(rootPath, './public')));
 middleware(app, httpsServer, path.resolve(rootPath, './public/upload'));
@@ -51,5 +65,15 @@ watcher.on('event', (event) => {
             // console.log(event.result.watchFiles);
         }
         
+        const data = {
+            type: event.code,
+            file: event.input,
+        };
+
+        wss.clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify(data));
+            }
+        });
     }
 });

@@ -29,6 +29,7 @@
         "rollup-plugin-typescript2": "^0.19.2",
         "rollup-plugin-copy-glob": "^0.3.0",
         "pouchdb": "^7.0.0",
-        "@types/pouchdb": "^6.3.3"
+        "@types/pouchdb": "^6.3.3",
+        "ws": "^6.1.4"
     }
 }

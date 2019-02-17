@@ -13,10 +13,33 @@ class Project {
     _markerContainer: TransformNode;
     _uploadPath: string;
     _assetsManager: AssetsManager = null;
+    _socket: WebSocket;
 
     onMarkerChangedObservable = new Observable<void>();
     onHasXRChangedObservable = new Observable<void>();
     db: PouchDB.Database;
+
+    constructor() {
+        let socketUrl = `${(location.protocol === 'https:') ? 'wss' : 'ws'}://`;
+        socketUrl += location.hostname;
+        socketUrl += (location.port) ? `:${location.port}` : '';
+
+        this._socket = new WebSocket(socketUrl);
+        this._socket.addEventListener('open', (event) => {
+            // this._socket.send('Hello Server!');
+            // console.log('connected!');
+        });
+        this._socket.addEventListener('message', (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === 'BUNDLE_END') {
+                this._onBundleReady();
+            }
+        });
+    }
+
+    _onBundleReady() {
+        location.reload();
+    }
 
     set id(newID: string) {
         if (this._id !== newID) {
