@@ -4,18 +4,19 @@ const https = require('https');
 const express = require('express');
 const rollup = require('rollup');
 const rollupConfig = require('./rollup.config.js');
-const middleware = require('./middleware.js');
 const WebSocket = require('ws');
+const PouchDB = require('pouchdb');
+const expressPouchDB = require('express-pouchdb');
 
-const rootPath = path.resolve(__dirname, '../../');
+const rootPath = path.resolve(__dirname, '..', '..');
 const port = 8443;
 const credentials = {
     key: fs.readFileSync(
-        path.resolve(rootPath, './dev-cert/jl-l-01.local+4-key.pem'), 
+        path.resolve(rootPath, 'dev-cert', 'jl-l-01.local+4-key.pem'), 
         'utf8',
     ),
     cert: fs.readFileSync(
-        path.resolve(rootPath, './dev-cert/jl-l-01.local+4.pem'), 
+        path.resolve(rootPath, 'dev-cert', 'jl-l-01.local+4.pem'), 
         'utf8',
     ),
 };
@@ -26,7 +27,8 @@ const wss = new WebSocket.Server({ server: httpsServer });
 
 wss.on('connection', (connection) => {
     connection.on('message', (message) => {
-        console.log('received: %s', message);
+        const data = JSON.parse(message);
+        console.log('received: ', data);
     });
 
     connection.on('close', () => {
@@ -36,10 +38,23 @@ wss.on('connection', (connection) => {
     console.log('client connected...');
 });
 
-app.use('/', express.static(path.resolve(rootPath, './public')));
-middleware(app, httpsServer, path.resolve(rootPath, './public/upload'));
+const dataPath = path.resolve(rootPath, 'data');
+if (!fs.existsSync(dataPath)) {
+    fs.mkdirSync(dataPath);
+}
+const LevelPouchDB = PouchDB.defaults({
+    prefix: dataPath + path.sep,
+    adapter: 'leveldb',
+});
+const pouchApp = expressPouchDB({
+    mode: 'minimumForPouchDB',
+});
+pouchApp.setPouchDB(LevelPouchDB);
+
+app.use('/db', pouchApp);
+app.use('/', express.static(path.resolve(rootPath, 'public')));
 app.use('*', function(req, res) {
-    res.sendFile(path.resolve(rootPath, './public/index.html'));
+    res.sendFile(path.resolve(rootPath, 'public', 'index.html'));
 });
 
 httpsServer.listen(port, () => {

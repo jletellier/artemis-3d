@@ -2,6 +2,7 @@
 /dev-cert/
 /public/upload/
 /public/dist/
+/data/
 
 /.rpt2_cache/
 /.vscode/

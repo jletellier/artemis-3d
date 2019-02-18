@@ -18,34 +18,33 @@ class Project {
     onMarkerChangedObservable = new Observable<void>();
     onHasXRChangedObservable = new Observable<void>();
     db: PouchDB.Database;
+    remoteDB: PouchDB.Database;
 
     constructor() {
-        let socketUrl = `${(location.protocol === 'https:') ? 'wss' : 'ws'}://`;
+        let socketUrl = `${(location.protocol === 'https:') ? 'wss:' : 'ws:'}//`;
         socketUrl += location.hostname;
         socketUrl += (location.port) ? `:${location.port}` : '';
 
         this._socket = new WebSocket(socketUrl);
         this._socket.addEventListener('open', (event) => {
-            // this._socket.send('Hello Server!');
-            // console.log('connected!');
+            
         });
         this._socket.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
             if (data.type === 'BUNDLE_END') {
-                this._onBundleReady();
+                this._handleBundleReady();
             }
         });
     }
 
-    _onBundleReady() {
-        location.reload();
+    _handleBundleReady() {
+        location.reload(true);
     }
 
     set id(newID: string) {
         if (this._id !== newID) {
             this._id = newID;
 
-            this.db = new PouchDB(this._id);
             this._uploadPath = `upload/${this._id}/`;
 
             if (this._scene) {
@@ -101,8 +100,30 @@ class Project {
     }
 
     _initScene() {
+        this.db = new PouchDB(this._id);
+        this.db.changes({
+            since: 'now',
+            live: true,
+        }).on('change', (change) => {
+            console.log('change: ', change);
+        }).on('complete', (info) => {
+            console.log('info: ', info);
+        }).on('error', (err) => {
+            console.error(err);
+        });
+
+        const remoteUrl = `${location.protocol}//${location.host}/db/${this._id}`;
+        this.remoteDB = new PouchDB(remoteUrl, {
+            fetch: (url, opts) => {
+                console.log(url, opts);
+                return PouchDB.fetch(url, opts);
+            },
+        });
+
+        PouchDB.sync(this.db, this.remoteDB);
+
         this._clearScene();
-        this._loadSceneAsync().catch(() => {});
+        this._loadSceneAsync();
     }
 
     addMarker(file: File) {
