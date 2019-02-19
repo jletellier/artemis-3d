@@ -28,14 +28,10 @@ const wss = new WebSocket.Server({ server: httpsServer });
 wss.on('connection', (connection) => {
     connection.on('message', (message) => {
         const data = JSON.parse(message);
-        console.log('received: ', data);
+        if (data.type === 'REMOTE_LOG') {
+            console.log(`REMOTE | ${data.msg}`);
+        }
     });
-
-    connection.on('close', () => {
-        console.log('client disconnected...');
-    });
-   
-    console.log('client connected...');
 });
 
 const dataPath = path.resolve(rootPath, 'data');
@@ -64,31 +60,34 @@ httpsServer.listen(port, () => {
 const watcher = rollup.watch(rollupConfig);
 
 watcher.on('event', (event) => {
+    let msg = `'${event.input}' |`;
+
     if (event.error) {
-        console.error(`'${event.input}' | Error: '${event.error}'`);
-        return;
-    }
+        msg = `${msg} Error: '${event.error}'`;
+    } else if (event.code === 'BUNDLE_START') {
+        msg = `${msg} Bundling started...`;
+    } else if (event.code === 'BUNDLE_END') {
+        msg = `${msg} Bundling finished in ${event.duration} ms`;
 
-    if (event.code === 'BUNDLE_START') {
-        console.info(`'${event.input}' | Bundling started...`);
-    }
-
-    if (event.code === 'BUNDLE_END') {
-        console.info(`'${event.input}' | Bundling finished in ${event.duration} ms`);
         if (event.result.watchFiles) {
             console.info(`'${event.input}' | Watching ${event.result.watchFiles.length} files`);
             // console.log(event.result.watchFiles);
         }
-        
-        const data = {
-            type: event.code,
-            file: event.input,
-        };
-
-        wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(data));
-            }
-        });
+    } else {
+        return;
     }
+
+    console.info(msg);
+        
+    const data = {
+        msg,
+        type: event.code,
+        file: event.input,
+    };
+
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(data));
+        }
+    });
 });

@@ -26,15 +26,22 @@ class Project {
         socketUrl += (location.port) ? `:${location.port}` : '';
 
         this._socket = new WebSocket(socketUrl);
-        this._socket.addEventListener('open', (event) => {
-            
-        });
         this._socket.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
+            console.info(data.msg);
+            
             if (data.type === 'BUNDLE_END') {
                 this._handleBundleReady();
             }
         });
+    }
+
+    remoteLog(msg: string) {
+        const data = {
+            msg,
+            type: 'REMOTE_LOG',
+        };
+        this._socket.send(JSON.stringify(data));
     }
 
     _handleBundleReady() {
