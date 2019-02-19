@@ -6,16 +6,19 @@ import project from '../data/project';
 export default class BabylonRenderer extends LitElement {
 
     static styles = css`
+        :host {
+            display: flex;
+            height: 100%;
+        }
         canvas {
+            display: block;
             width: 100%;
             height: 100%;
         }
     `;
 
     render() {
-        return html`
-            <canvas></canvas>
-        `;
+        return html`<canvas></canvas>`;
     }
 
     firstUpdated() {

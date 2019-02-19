@@ -1,6 +1,5 @@
 import { LitElement, html, css, customElement, property } from 'lit-element';
-import '@material/mwc-icon';
-import '@material/mwc-button';
+import './Button';
 import './MarkerNodes';
 import project from '../data/project';
 
@@ -19,9 +18,9 @@ export default class Sidebar extends LitElement {
         return html`
             <input type="file" id="marker-file" multiple accept="image/*"
                 @change="${this.handleMarkerFiles}">
-            <mwc-button icon="add" label="Add marker" raised dense
+            <smaat-button icon="plus" value="Add marker"
                 @click="${this.handleAddMarker}">
-            </mwc-button>
+            </smaat-button>
             <ul>
                 ${project.getMarkerNames().map(value =>
                     html`<li>

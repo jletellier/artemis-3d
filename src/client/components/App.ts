@@ -1,8 +1,9 @@
 import { LitElement, html, css, customElement, property } from 'lit-element';
 import page from 'page';
 import project from '../data/project';
-import '@material/mwc-icon';
-import '@material/mwc-button';
+import './Frame';
+import './FrameBar';
+import './Button';
 import './BabylonRenderer';
 import './Sidebar';
 
@@ -15,29 +16,26 @@ export default class App extends LitElement {
     static styles = css`
         :host {
             display: grid;
-            grid-template-areas:
-                "navbar navbar"
-                "view sidebar";
-            grid-template-rows: min-content 1fr;
-            grid-template-columns: 1fr min-content;
+            grid-template:
+                "renderer scenegraph" 1fr
+                "renderer properties" 1fr
+                / 1fr min-content;
+            column-gap: 5px;
+            row-gap: 5px;
             height: 100%;
+            background-color: #1F1F1F;
         }
-        .navbar {
-            grid-area: navbar;
-            padding: 5px;
-            background-color: lightgray;
-        }
-        .view {
-            grid-area: view;
+        .renderer {
+            grid-area: renderer;
             background-color: none;
         }
-        .sidebar {
-            grid-area: sidebar;
-            padding: 5px;
-            background-color: gray;
-            min-width: min-content;
-            max-width: 50vw;
-            overflow: auto;
+        .scenegraph {
+            grid-area: scenegraph;
+            min-width: 200px;
+        }
+        .properties {
+            grid-area: properties;
+            min-width: 200px;
         }
     `;
 
@@ -61,25 +59,30 @@ export default class App extends LitElement {
 
     render() {
         return html`
-            ${!project.hasXR ? html`
-                <div class="navbar">
-                    <mwc-button icon="create_new_folder" label="New project" raised dense
-                        @click="${this.handleNewProject}">
-                    </mwc-button>
-                    ${this.hasProject ? html`
-                        <mwc-button icon="share" label="Share project" raised dense
+            <smaat-frame class="renderer">
+                ${!project.hasXR ? html`
+                    <smaat-frame-bar>
+                        <smaat-button icon="plus" value="New"
+                            @click="${this.handleNewProject}">
+                        </smaat-button>
+                        ${this.hasProject ? html`
+                            <smaat-button icon="share" value="Share"
                                 @click="${this.handleShareProject}">
-                        </mwc-button>
-                    ` : html``}
-                </div>
-            ` : html``}
-            <div class="view">
+                            </smaat-button>
+                        ` : html``}
+                    </smaat-frame-bar>
+                ` : html``}
                 <smaat-babylon-renderer></smaat-babylon-renderer>
-            </div>
+            </smaat-frame>
+
             ${!project.hasXR ? html`
-                <div class="sidebar">
+                <smaat-frame class="scenegraph">
+                    <smaat-frame-bar></smaat-frame-bar>
                     ${this.hasProject ? html`<smaat-sidebar></smaat-sidebar>` : html``}
-                </div>
+                </smaat-frame>
+                <smaat-frame class="properties">
+                    <smaat-frame-bar></smaat-frame-bar>
+                </smaat-frame>
             ` : html``}
         `;
     }

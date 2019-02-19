@@ -1,6 +1,5 @@
 import { LitElement, html, css, customElement, property } from 'lit-element';
-import '@material/mwc-icon';
-import '@material/mwc-button';
+import './Button';
 import project from '../data/project';
 
 @customElement('smaat-marker-nodes')
@@ -22,8 +21,9 @@ export default class MarkerNodes extends LitElement {
             <div>
                 <input type="file" id="node-file" accept="*"
                     @change="${this.handleNodeFile}">
-                <mwc-button icon="add" label="Add node" raised dense
+                <smaat-button icon="plus" value="Add node"
                     @click="${this.handleAddNode}">
+                </smaat-button>
             </div>
         `;
     }
