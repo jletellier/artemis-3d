@@ -60,10 +60,3 @@ interface XRView {
     viewMatrix: Float32Array;
     getViewport: Function;
 }
-
-declare module 'babylonjs/scene' {
-    interface Scene {
-        xrSession: XRSession;
-        xrCurrentFrame: XRFrame;
-    }
-}

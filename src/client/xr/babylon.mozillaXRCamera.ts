@@ -1,4 +1,5 @@
-import { Camera, FreeCamera, Matrix, Quaternion, Scene, TargetCamera, Vector3 } from 'babylonjs';
+import { Camera, FreeCamera, Matrix, Quaternion, Scene, TargetCamera,
+    Vector3 } from '@babylonjs/core';
 
 export class MozillaXRCamera extends FreeCamera {
 

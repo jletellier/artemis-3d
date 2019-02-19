@@ -1,6 +1,6 @@
 import {
     ArcRotateCamera, Color3, Color4, Engine, HemisphericLight, Matrix, Scene, Vector3,
-} from 'babylonjs';
+} from '@babylonjs/core';
 import { MozillaXRCamera } from './babylon.mozillaXRCamera';
 
 export default class MozillaXRBase {

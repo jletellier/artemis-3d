@@ -1,8 +1,7 @@
 import { Scene, Mesh, StandardMaterial, Texture, TransformNode, SceneSerializer, SceneLoader,
     AssetsManager, Observable, AbstractMesh, TextFileAssetTask, Vector3,
-    Quaternion } from 'babylonjs';
-import 'babylonjs-loaders';
-import ImageMarkerScript from '../ImageMarkerScript';
+    Quaternion } from '@babylonjs/core';
+import '@babylonjs/loaders/glTF/2.0';
 import 'pouchdb';
 
 class Project {
@@ -29,7 +28,7 @@ class Project {
         this._socket.addEventListener('message', (event) => {
             const data = JSON.parse(event.data);
             console.info(data.msg);
-            
+
             if (data.type === 'BUNDLE_END') {
                 this._handleBundleReady();
             }
@@ -108,24 +107,9 @@ class Project {
 
     _initScene() {
         this.db = new PouchDB(this._id);
-        this.db.changes({
-            since: 'now',
-            live: true,
-        }).on('change', (change) => {
-            console.log('change: ', change);
-        }).on('complete', (info) => {
-            console.log('info: ', info);
-        }).on('error', (err) => {
-            console.error(err);
-        });
 
         const remoteUrl = `${location.protocol}//${location.host}/db/${this._id}`;
-        this.remoteDB = new PouchDB(remoteUrl, {
-            fetch: (url, opts) => {
-                console.log(url, opts);
-                return PouchDB.fetch(url, opts);
-            },
-        });
+        this.remoteDB = new PouchDB(remoteUrl);
 
         PouchDB.sync(this.db, this.remoteDB);
 
@@ -274,12 +258,6 @@ class Project {
 
             await Promise.all(promises);
             assetContainer.addAllToScene();
-
-            // this._markerContainer.getChildren().forEach((child) => {
-            //     const behavior = new ImageMarkerScript();
-            //     behavior.enabled = true;
-            //     child.addBehavior(behavior);
-            // });
         }
 
         this._scene.getEngine().hideLoadingUI();
