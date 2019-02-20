@@ -1,14 +1,14 @@
 import { LitElement, customElement, html, css, property } from 'lit-element';
-import './Icon';
+import Icon from './Icon';
 
 @customElement('smaat-button')
 export default class Button extends LitElement {
 
     @property()
-    value: string = '';
+    label: string = '';
 
-    @property()
-    icon: string = '';
+    @property({ type: Number })
+    icon: Icon.Type;
 
     static styles = css`
         button {
@@ -49,10 +49,10 @@ export default class Button extends LitElement {
     `;
 
     render() {
-        const iconPart = (this.icon.length) ? html`<smaat-icon></smaat-icon>` : html``;
+        const iconPart = (this.icon) ? html`<smaat-icon type="${this.icon}"></smaat-icon>` : html``;
 
         return html`
-            <button type="button">${iconPart}<span>${this.value}</span></button>
+            <button type="button">${iconPart}<span>${this.label}</span></button>
         `;
     }
 

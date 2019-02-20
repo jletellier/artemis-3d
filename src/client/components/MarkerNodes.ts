@@ -1,5 +1,6 @@
 import { LitElement, html, css, customElement, property } from 'lit-element';
 import './Button';
+import Icon from './Icon';
 import project from '../data/project';
 
 @customElement('smaat-marker-nodes')
@@ -21,7 +22,7 @@ export default class MarkerNodes extends LitElement {
             <div>
                 <input type="file" id="node-file" accept="*"
                     @change="${this.handleNodeFile}">
-                <smaat-button icon="plus" value="Add node"
+                <smaat-button icon="${Icon.Type.Plus}" label="Add node"
                     @click="${this.handleAddNode}">
                 </smaat-button>
             </div>

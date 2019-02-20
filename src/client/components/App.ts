@@ -6,6 +6,7 @@ import './FrameBar';
 import './Button';
 import './BabylonRenderer';
 import './Sidebar';
+import Icon from './Icon';
 
 @customElement('smaat-app')
 export default class App extends LitElement {
@@ -62,11 +63,11 @@ export default class App extends LitElement {
             <smaat-frame class="renderer">
                 ${!project.hasXR ? html`
                     <smaat-frame-bar>
-                        <smaat-button icon="plus" value="New"
+                        <smaat-button icon="${Icon.Type.NewFile}" label="New"
                             @click="${this.handleNewProject}">
                         </smaat-button>
                         ${this.hasProject ? html`
-                            <smaat-button icon="share" value="Share"
+                            <smaat-button icon="${Icon.Type.Share}" label="Share"
                                 @click="${this.handleShareProject}">
                             </smaat-button>
                         ` : html``}

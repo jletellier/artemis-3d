@@ -1,6 +1,7 @@
 import { LitElement, html, css, customElement, property } from 'lit-element';
 import './Button';
 import './MarkerNodes';
+import Icon from './Icon';
 import project from '../data/project';
 
 @customElement('smaat-sidebar')
@@ -18,7 +19,7 @@ export default class Sidebar extends LitElement {
         return html`
             <input type="file" id="marker-file" multiple accept="image/*"
                 @change="${this.handleMarkerFiles}">
-            <smaat-button icon="plus" value="Add marker"
+            <smaat-button icon="${Icon.Type.Plus}" label="Add marker"
                 @click="${this.handleAddMarker}">
             </smaat-button>
             <ul>
