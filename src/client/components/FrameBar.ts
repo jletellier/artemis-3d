@@ -8,7 +8,7 @@ export default class FrameBar extends LitElement {
             display: flex;
             padding: 3px 5px;
             width: 100%;
-            height: 22px;
+            height: 24px;
             background-color: #383838;
         }
     `;

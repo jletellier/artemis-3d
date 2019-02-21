@@ -12,18 +12,18 @@ export default class Button extends LitElement {
 
     static styles = css`
         button {
-            background-color: #585858;
-            color: #DADADA;
+            display: inline-flex;
+            grid-template-areas: "icon text";
+            grid-template-rows: 16px 1fr;
             border: 1px solid #3B3B3B;
             border-right-width: 0;
             border-radius: 0;
             outline: none;
             margin: 0;
             padding: 3px 5px;
-            display: inline-flex;
-            grid-template-areas: "icon text";
-            grid-template-rows: 16px 1fr;
-            height: 22px;
+            height: 24px;
+            background-color: #585858;
+            color: #DADADA;
         }
         :host(:first-of-type) button {
             border-radius: 4px 0 0 4px;
@@ -31,6 +31,9 @@ export default class Button extends LitElement {
         :host(:last-of-type) button {
             border-radius: 0 4px 4px 0;
             border-right-width: 1px;
+        }
+        :host(:only-of-type) button {
+            border-radius: 4px;
         }
         button:hover {
             background-color: #676767;
