@@ -2,7 +2,8 @@ import { LitElement, html, css, customElement, property } from 'lit-element';
 import page from 'page';
 import project from '../data/project';
 import './Frame';
-import './FrameBar';
+import './FrameTopBar';
+import './FrameContent';
 import './Button';
 import './BabylonRenderer';
 import './Sidebar';
@@ -62,7 +63,7 @@ export default class App extends LitElement {
         return html`
             <smaat-frame class="renderer">
                 ${!project.hasXR ? html`
-                    <smaat-frame-bar>
+                    <smaat-frame-top-bar>
                         <smaat-button icon="${Icon.Type.NewFile}" label="New"
                             @click="${this.handleNewProject}">
                         </smaat-button>
@@ -71,18 +72,23 @@ export default class App extends LitElement {
                                 @click="${this.handleShareProject}">
                             </smaat-button>
                         ` : html``}
-                    </smaat-frame-bar>
+                    </smaat-frame-top-bar>
                 ` : html``}
-                <smaat-babylon-renderer></smaat-babylon-renderer>
+                <smaat-frame-content>
+                    <smaat-babylon-renderer></smaat-babylon-renderer>
+                </smaat-frame-content>
             </smaat-frame>
 
             ${!project.hasXR ? html`
                 <smaat-frame class="scenegraph">
-                    <smaat-frame-bar></smaat-frame-bar>
-                    ${this.hasProject ? html`<smaat-sidebar></smaat-sidebar>` : html``}
+                    <smaat-frame-top-bar></smaat-frame-top-bar>
+                    <smaat-frame-content>
+                        ${this.hasProject ? html`<smaat-sidebar></smaat-sidebar>` : html``}
+                    </smaat-frame-content>
                 </smaat-frame>
                 <smaat-frame class="properties">
-                    <smaat-frame-bar></smaat-frame-bar>
+                    <smaat-frame-top-bar></smaat-frame-top-bar>
+                    <smaat-frame-content></smaat-frame-content>
                 </smaat-frame>
             ` : html``}
         `;
