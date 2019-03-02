@@ -36,6 +36,10 @@ const clientBuild = {
                 files: 'node_modules/pouchdb/dist/pouchdb.min.js', 
                 dest: path.resolve(rootPath, './public/dist/'), 
             },
+            { 
+                files: 'node_modules/feather-icons/dist/icons/{frown,file-plus,share,plus}.svg',
+                dest: path.resolve(rootPath, './public/dist/icons/'), 
+            },
         ]),
     ],
 };

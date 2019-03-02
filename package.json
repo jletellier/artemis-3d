@@ -27,6 +27,7 @@
         "pouchdb": "^7.0.0",
         "express-pouchdb": "^4.1.0",
         "@types/pouchdb": "^6.3.3",
-        "ws": "^6.1.4"
+        "ws": "^6.1.4",
+        "feather-icons": "^4.19.0"
     }
 }
