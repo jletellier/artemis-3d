@@ -14,7 +14,7 @@ class Project {
     _assetsManager: AssetsManager = null;
     _socket: WebSocket;
 
-    onMarkerChangedObservable = new Observable<void>();
+    onSceneChangedObservable = new Observable<void>();
     onHasXRChangedObservable = new Observable<void>();
     db: PouchDB.Database;
     remoteDB: PouchDB.Database;
@@ -133,6 +133,23 @@ class Project {
         return [];
     }
 
+    getNodeNames(markerName: string) {
+        if (!this._markerContainer) {
+            return [];
+        }
+
+        const marker = this._markerContainer.getChildTransformNodes(true, (node) => {
+            return (node.name === markerName);
+        });
+
+        if (!marker.length) {
+            return [];
+        }
+
+        const nodes = marker[0].getChildTransformNodes(true);
+        return nodes.map(value => value.name);
+    }
+
     addGlTFNode(file: File, markerID: string) {
         this._saveGlTFNodeAsync(file, markerID);
     }
@@ -156,6 +173,7 @@ class Project {
         await this._saveSceneAsync();
 
         this._scene.getEngine().hideLoadingUI();
+        this.onSceneChangedObservable.notifyObservers();
     }
 
     async _saveMarkerAsync(file: File) {
@@ -193,7 +211,7 @@ class Project {
         await this._saveSceneAsync();
 
         this._scene.getEngine().hideLoadingUI();
-        this.onMarkerChangedObservable.notifyObservers();
+        this.onSceneChangedObservable.notifyObservers();
     }
 
     _clearScene() {
@@ -261,7 +279,7 @@ class Project {
         }
 
         this._scene.getEngine().hideLoadingUI();
-        this.onMarkerChangedObservable.notifyObservers();
+        this.onSceneChangedObservable.notifyObservers();
     }
 
     async _saveSceneAsync() {

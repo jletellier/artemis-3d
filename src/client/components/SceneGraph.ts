@@ -16,6 +16,26 @@ export default class SceneGraph extends LitElement {
         input {
             display: none;
         }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            padding: 0;
+            color: #C3C3C3;
+            cursor: default;
+        }
+
+        div {
+            margin: 1px 0;
+            padding: 5px 8px;
+        }
+        div:hover {
+            background-color: #494949;
+        }
+        
     `;
 
     render() {
@@ -43,7 +63,7 @@ export default class SceneGraph extends LitElement {
     }
 
     firstUpdated() {
-        project.onMarkerChangedObservable.add(() => {
+        project.onSceneChangedObservable.add(() => {
             this.requestUpdate();
         });
     }

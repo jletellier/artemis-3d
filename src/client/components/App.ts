@@ -17,6 +17,8 @@ export default class App extends LitElement {
     hasProject: boolean = false;
 
     static styles = css`
+        @import url('https://fonts.googleapis.com/css?family=Noto+Sans');
+
         :host {
             display: grid;
             grid-template:
@@ -27,6 +29,8 @@ export default class App extends LitElement {
             row-gap: 5px;
             height: 100%;
             background-color: #1F1F1F;
+            font-family: 'Noto Sans', sans-serif;
+            font-size: 13px;
         }
         .renderer {
             grid-area: renderer;
