@@ -6,7 +6,8 @@ import './FrameTopBar';
 import './FrameContent';
 import './Button';
 import './BabylonRenderer';
-import './Sidebar';
+import './SceneGraph';
+import './NodeProperties';
 import Icon from './Icon';
 
 @customElement('smaat-app')
@@ -79,17 +80,9 @@ export default class App extends LitElement {
                 </smaat-frame-content>
             </smaat-frame>
 
-            ${!project.hasXR ? html`
-                <smaat-frame class="scenegraph">
-                    <smaat-frame-top-bar></smaat-frame-top-bar>
-                    <smaat-frame-content>
-                        ${this.hasProject ? html`<smaat-sidebar></smaat-sidebar>` : html``}
-                    </smaat-frame-content>
-                </smaat-frame>
-                <smaat-frame class="properties">
-                    <smaat-frame-top-bar></smaat-frame-top-bar>
-                    <smaat-frame-content></smaat-frame-content>
-                </smaat-frame>
+            ${!project.hasXR && this.hasProject ? html`
+                <smaat-scene-graph class="scenegraph"></smaat-scene-graph>
+                <smaat-node-properties class="properties"></smaat-node-properties>
             ` : html``}
         `;
     }
