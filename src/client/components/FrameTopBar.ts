@@ -8,6 +8,7 @@ export default class FrameTopBar extends LitElement {
             display: block;
             padding: 3px 5px;
             min-height: 24px;
+            line-height: 24px;
             height: 24px;
             background-color: #383838;
             border-radius: 4px 4px 0 0;

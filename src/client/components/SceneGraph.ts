@@ -49,7 +49,7 @@ export default class SceneGraph extends LitElement {
                 <smaat-frame-top-bar>
                     <input type="file" id="marker-file" multiple accept="image/*"
                         @change="${this.handleMarkerFiles}">
-                    <smaat-button icon="${Icon.Type.Plus}" label="Add marker"
+                    <smaat-button icon="${Icon.Type.Plus}" label="Add Image Marker"
                         @click="${this.handleAddMarker}">
                     </smaat-button>
                 </smaat-frame-top-bar>

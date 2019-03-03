@@ -16,18 +16,19 @@ export default class MarkerNodes extends LitElement {
             display: none;
         }
         ul {
-            list-style-type: circle;
+            list-style-type: none;
             list-style-position: inside;
+            padding-inline-start: 42px;
             padding: 0;
             margin: 0;
         }
         li {
             margin: 2px 0;
-            padding: 0 8px 0 13px;
+            padding: 0 8px 0 29px;
         }
         li.item {
-            padding-top: 5px;
-            padding-bottom: 5px;
+            list-style-type: circle;
+            padding: 5px 8px 5px 13px;
         }
         li.item:hover {
             background-color: #494949;
@@ -43,7 +44,7 @@ export default class MarkerNodes extends LitElement {
                 <li>
                     <input type="file" id="node-file" accept="*"
                         @change="${this.handleNodeFile}">
-                    <smaat-button icon="${Icon.Type.Plus}" label="Add node"
+                    <smaat-button icon="${Icon.Type.Plus}" label="Add 3D Object"
                         @click="${this.handleAddNode}">
                     </smaat-button>
                 </li>

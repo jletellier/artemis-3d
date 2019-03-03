@@ -156,6 +156,21 @@ class Project {
         return this._selectedMarker;
     }
 
+    getSelectedMeshAttributes(): MeshAttributes {
+        const mesh = this._scene.getMeshByName(this._selectedMarker);
+        if (!mesh) {
+            return null;
+        }
+
+        return {
+            name: mesh.name,
+            realWidth: mesh.scaling.x,
+            posX: mesh.position.x,
+            posY: mesh.position.y,
+            posZ: mesh.position.z,
+        };
+    }
+
     getNodeNames(markerName: string) {
         if (!this._markerContainer) {
             return [];
@@ -353,6 +368,14 @@ class Project {
         });
     }
 
+}
+
+export interface MeshAttributes {
+    name: string;
+    realWidth: number;
+    posX: number;
+    posY: number;
+    posZ: number;
 }
 
 export default new Project();
