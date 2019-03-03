@@ -35,10 +35,15 @@ export default class SceneGraph extends LitElement {
         div:hover {
             background-color: #494949;
         }
+        div.selected {
+            background-color: #314E78;
+        }
         
     `;
 
     render() {
+        const selectedMarker = project.getSelectedMarker();
+
         return html`
             <smaat-frame>
                 <smaat-frame-top-bar>
@@ -52,8 +57,14 @@ export default class SceneGraph extends LitElement {
                     <ul>
                         ${project.getMarkerNames().map(value =>
                             html`<li>
-                                <div>${value}</div>
-                                <smaat-marker-nodes markerid="${value}"></smaat-marker-nodes>
+                                <div markerid="${value}"
+                                    class="${(selectedMarker === value) ? 'selected' : ''}"
+                                    @click="${this.handleSelectMarker}">${value}</div>
+                                ${(selectedMarker === value)
+                                    ? html`<smaat-marker-nodes
+                                        markerid="${value}"></smaat-marker-nodes>`
+                                    : html``
+                                }
                             </li>`,
                         )}
                     </ul>
@@ -88,6 +99,11 @@ export default class SceneGraph extends LitElement {
 
             project.addMarker(file);
         }
+    }
+
+    handleSelectMarker(event: Event) {
+        const target = <HTMLDivElement>event.currentTarget;
+        project.setSelectedMarker(target.getAttribute('markerid'));
     }
 
 }

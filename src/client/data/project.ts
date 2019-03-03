@@ -1,6 +1,5 @@
 import { Scene, Mesh, StandardMaterial, Texture, TransformNode, SceneSerializer, SceneLoader,
-    AssetsManager, Observable, AbstractMesh, TextFileAssetTask, Vector3,
-    Quaternion } from '@babylonjs/core';
+    AssetsManager, Observable, AbstractMesh, Quaternion } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF/2.0';
 import 'pouchdb';
 
@@ -10,6 +9,7 @@ class Project {
     _scene: Scene;
     _hasXR: boolean = false;
     _markerContainer: TransformNode;
+    _selectedMarker: string;
     _uploadPath: string;
     _assetsManager: AssetsManager = null;
     _socket: WebSocket;
@@ -133,6 +133,29 @@ class Project {
         return [];
     }
 
+    setSelectedMarker(markerName: string) {
+        if (markerName === this._selectedMarker) {
+            return;
+        }
+
+        const markers = this._markerContainer.getChildTransformNodes(true, (node) => {
+            node.setEnabled(false);
+            return (node.name === markerName);
+        });
+
+        if (!markers.length) {
+            return;
+        }
+
+        markers[0].setEnabled(true);
+        this._selectedMarker = markerName;
+        this.onSceneChangedObservable.notifyObservers();
+    }
+
+    getSelectedMarker() {
+        return this._selectedMarker;
+    }
+
     getNodeNames(markerName: string) {
         if (!this._markerContainer) {
             return [];
@@ -184,7 +207,7 @@ class Project {
 
         const plane = Mesh.CreatePlane(file.name, 1.0, this._scene);
         plane.setParent(this._markerContainer);
-        const material = new StandardMaterial('MarkerMaterial', this._scene);
+        const material = new StandardMaterial(`${file.name}Material`, this._scene);
         const texture = new Texture(objectUrl, this._scene);
         texture.name = file.name;
         material.diffuseTexture = texture;
@@ -211,7 +234,7 @@ class Project {
         await this._saveSceneAsync();
 
         this._scene.getEngine().hideLoadingUI();
-        this.onSceneChangedObservable.notifyObservers();
+        this.setSelectedMarker(plane.name);
     }
 
     _clearScene() {
@@ -222,6 +245,7 @@ class Project {
 
     async _loadSceneAsync() {
         this._scene.getEngine().displayLoadingUI();
+        let firstMarker: AbstractMesh;
 
         const doc = await this.db.get('scene').catch((err) => {
             if (err.name === 'not_found') {
@@ -239,14 +263,17 @@ class Project {
 
             const promises = assetContainer.meshes.map((mesh) => {
                 if (mesh.parent === this._markerContainer) {
+                    if (!firstMarker) {
+                        firstMarker = mesh;
+                    }
                     const material = <StandardMaterial>mesh.material;
                     const texture = <Texture>material.diffuseTexture;
 
                     return new Promise((resolve) => {
-                        texture.onLoadObservable.add(resolve);
                         this._loadFileAsync(texture.name).then((file) => {
                             const objectUrl = window.URL.createObjectURL(file);
                             texture.updateURL(objectUrl);
+                            resolve();
                         });
                     });
                 }
@@ -279,6 +306,11 @@ class Project {
         }
 
         this._scene.getEngine().hideLoadingUI();
+
+        if (firstMarker) {
+            this.setSelectedMarker(firstMarker.name);
+            return;
+        }
         this.onSceneChangedObservable.notifyObservers();
     }
 
