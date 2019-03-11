@@ -20,6 +20,12 @@ export default class App extends LitElement {
         @import url('https://fonts.googleapis.com/css?family=Noto+Sans');
 
         :host {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .container {
             display: grid;
             grid-template:
                 "renderer scenegraph" 1fr
@@ -66,28 +72,32 @@ export default class App extends LitElement {
 
     render() {
         return html`
-            <smaat-frame class="renderer">
-                ${!project.hasXR ? html`
-                    <smaat-frame-top-bar>
-                        <smaat-button icon="${Icon.Type.NewFile}" label="New"
-                            @click="${this.handleNewProject}">
-                        </smaat-button>
-                        ${this.hasProject ? html`
-                            <smaat-button icon="${Icon.Type.Share}" label="Share"
-                                @click="${this.handleShareProject}">
+            ${project.hasXR ? html`
+                <smaat-babylon-renderer></smaat-babylon-renderer>
+            ` : html`
+                <div class="container">
+                    <smaat-frame class="renderer">
+                        <smaat-frame-top-bar>
+                            <smaat-button icon="${Icon.Type.NewFile}" label="New"
+                                @click="${this.handleNewProject}">
                             </smaat-button>
-                        ` : html``}
-                    </smaat-frame-top-bar>
-                ` : html``}
-                <smaat-frame-content>
-                    <smaat-babylon-renderer></smaat-babylon-renderer>
-                </smaat-frame-content>
-            </smaat-frame>
+                            ${this.hasProject ? html`
+                                <smaat-button icon="${Icon.Type.Share}" label="Share"
+                                    @click="${this.handleShareProject}">
+                                </smaat-button>
+                            ` : html``}
+                        </smaat-frame-top-bar>
+                        <smaat-frame-content>
+                            <smaat-babylon-renderer></smaat-babylon-renderer>
+                        </smaat-frame-content>
+                    </smaat-frame>
 
-            ${!project.hasXR && this.hasProject ? html`
-                <smaat-scene-graph class="scenegraph"></smaat-scene-graph>
-                <smaat-node-properties class="properties"></smaat-node-properties>
-            ` : html``}
+                    ${this.hasProject ? html`
+                        <smaat-scene-graph class="scenegraph"></smaat-scene-graph>
+                        <smaat-node-properties class="properties"></smaat-node-properties>
+                    ` : html``}
+                </div>
+            `}
         `;
     }
 

@@ -11,6 +11,7 @@ export default class BabylonRenderer extends LitElement {
             width: 100%;
             height: 100%;
             outline: none;
+            background-color: none;
         }
     `;
 
