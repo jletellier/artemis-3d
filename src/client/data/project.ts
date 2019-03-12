@@ -1,5 +1,5 @@
 import { Scene, Mesh, StandardMaterial, Texture, TransformNode, SceneSerializer, SceneLoader,
-    AssetsManager, Observable, AbstractMesh, Quaternion } from '@babylonjs/core';
+    AssetsManager, Observable, AbstractMesh, Angle } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF/2.0';
 import 'pouchdb';
 import ImageMarkerScript from '../ImageMarkerScript';
@@ -15,6 +15,7 @@ class Project {
     _uploadPath: string;
     _assetsManager: AssetsManager = null;
     _socket: WebSocket;
+    _throttledSaveScene: Function;
 
     onSceneChangedObservable = new Observable<void>();
     onHasXRChangedObservable = new Observable<void>();
@@ -22,6 +23,8 @@ class Project {
     remoteDB: PouchDB.Database;
 
     constructor() {
+        this._throttledSaveScene = throttle(this._saveSceneAsync.bind(this), 1000);
+
         let socketUrl = `${(location.protocol === 'https:') ? 'wss:' : 'ws:'}//`;
         socketUrl += location.hostname;
         socketUrl += (location.port) ? `:${location.port}` : '';
@@ -187,9 +190,9 @@ class Project {
                 scaleX: nodeMesh.scaling.x,
                 scaleY: nodeMesh.scaling.y,
                 scaleZ: nodeMesh.scaling.z,
-                rotationX: nodeMesh.rotation.x,
-                rotationY: nodeMesh.rotation.y,
-                rotationZ: nodeMesh.rotation.z,
+                rotationX: Angle.FromRadians(nodeMesh.rotation.x).degrees(),
+                rotationY: Angle.FromRadians(nodeMesh.rotation.y).degrees(),
+                rotationZ: Angle.FromRadians(nodeMesh.rotation.z).degrees(),
             };
         }
         
@@ -219,7 +222,12 @@ class Project {
 
         if (mesh) {
             if (type === 'realWidth') {
-                mesh.scaling.x = value;
+                const material = <StandardMaterial>mesh.material;
+                const texture = <Texture>material.diffuseTexture;
+                const size = texture.getSize();
+                const ppm = size.width / value; // Pixel per meter
+                mesh.scaling.set(size.width / ppm, size.height / ppm, size.width / ppm);
+                mesh.refreshBoundingInfo();
             } else if (type === 'posX') {
                 mesh.position.x = value;
             } else if (type === 'posY') {
@@ -233,12 +241,14 @@ class Project {
             } else if (type === 'scaleZ') {
                 mesh.scaling.z = value;
             } else if (type === 'rotationX') {
-                mesh.rotation.x = value;
+                mesh.rotation.x = Angle.FromDegrees(value).radians();
             } else if (type === 'rotationY') {
-                mesh.rotation.y = value;
+                mesh.rotation.y = Angle.FromDegrees(value).radians();
             } else if (type === 'rotationZ') {
-                mesh.rotation.z = value;
+                mesh.rotation.z = Angle.FromDegrees(value).radians();
             }
+
+            this._throttledSaveScene();
         }
     }
 
@@ -275,8 +285,8 @@ class Project {
         const markerMesh = this._scene.getMeshByName(markerID);
         const rootMesh = container.createRootMesh();
         rootMesh.name = file.name;
-        rootMesh.setParent(markerMesh);
-        rootMesh.scaling.set(0.1, 0.1, 0.1);
+        // rootMesh.setParent(markerMesh);
+        rootMesh.parent = markerMesh;
         container.addAllToScene();
 
         await this._saveSceneAsync();
@@ -293,6 +303,7 @@ class Project {
 
         const plane = Mesh.CreatePlane(file.name, 1.0, this._scene);
         plane.setParent(this._markerContainer);
+        plane.rotation.x = Angle.FromDegrees(90).radians();
         const material = new StandardMaterial(`${file.name}Material`, this._scene);
         const texture = new Texture(objectUrl, this._scene);
         texture.name = file.name;
@@ -309,11 +320,7 @@ class Project {
             });
         }
 
-        // TODO: Determine PPI
-        // const ppi = 212.5;
-        const ppi = 192;
-
-        const ppm = ppi / 0.0254; // Pixel per meter
+        const ppm = 192 / 0.0254; // Default pixel per meter
         plane.scaling.set(tmpImage.width / ppm, tmpImage.height / ppm, tmpImage.width / ppm);
         plane.refreshBoundingInfo();
 
@@ -384,9 +391,9 @@ class Project {
                             );
                         }).then((container) => {
                             const glTFMesh = container.meshes.find(o => o.name === '__root__');
-                            glTFMesh.setParent(mesh);
-                            glTFMesh.scaling.set(1, 1, 1);
-                            glTFMesh.rotationQuaternion = new Quaternion();
+                            glTFMesh.parent = mesh;
+                            // glTFMesh.scaling.set(1, 1, 1);
+                            // glTFMesh.rotationQuaternion = new Quaternion();
                             container.addAllToScene();
                             resolve();
                         });
@@ -466,6 +473,38 @@ export interface MeshAttributes {
     rotationX: number;
     rotationY: number;
     rotationZ: number;
+}
+
+// Based on:
+// https://gist.github.com/beaucharman/e46b8e4d03ef30480d7f4db5a78498ca#gistcomment-2230205
+function throttle(callback: Function, delay: number) {
+    let isThrottled = false;
+    let args: any;
+    let context: any;
+  
+    function wrapper() {
+        if (isThrottled) {
+            args = arguments;
+            context = this;
+            return;
+        }
+  
+        isThrottled = true;
+        callback.apply(this, arguments);
+      
+        setTimeout(
+            () => {
+                isThrottled = false;
+                if (args) {
+                    wrapper.apply(context, args);
+                    args = context = null;
+                }
+            },
+            delay,
+        );
+    }
+  
+    return wrapper;
 }
 
 export default new Project();

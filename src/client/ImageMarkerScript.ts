@@ -42,6 +42,9 @@ export default class ImageMarkerScript extends ScriptBehavior {
             //     this.handleRemoveWorldAnchor.bind(this),
             // );
 
+            this.rootTransform = new TransformNode(`${this.target.name}Root`, this.scene);
+            this.markerMesh.parent = this.rootTransform;
+
             const material = <StandardMaterial>this.markerMesh.material;
             const texture = <Texture>material.diffuseTexture;
             
