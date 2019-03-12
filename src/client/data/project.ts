@@ -11,6 +11,7 @@ class Project {
     _hasXR: boolean = false;
     _markerContainer: TransformNode;
     _selectedMarker: string;
+    _selectedNode: string;
     _uploadPath: string;
     _assetsManager: AssetsManager = null;
     _socket: WebSocket;
@@ -135,7 +136,7 @@ class Project {
     }
 
     setSelectedMarker(markerName: string) {
-        if (markerName === this._selectedMarker) {
+        if (markerName === this._selectedMarker && !this._selectedNode) {
             return;
         }
 
@@ -150,26 +151,50 @@ class Project {
 
         markers[0].setEnabled(true);
         this._selectedMarker = markerName;
+        this._selectedNode = null;
         this.onSceneChangedObservable.notifyObservers();
+    }
+
+    setSelectedNode(nodeName: string) {
+        if (nodeName !== this._selectedNode) {
+            this._selectedNode = nodeName;
+            this.onSceneChangedObservable.notifyObservers();
+        }
     }
 
     getSelectedMarker() {
         return this._selectedMarker;
     }
 
-    getSelectedMeshAttributes(): MeshAttributes {
-        const mesh = this._scene.getMeshByName(this._selectedMarker);
-        if (!mesh) {
-            return null;
-        }
+    getSelectedNode() {
+        return this._selectedNode;
+    }
 
-        return {
-            name: mesh.name,
-            realWidth: mesh.scaling.x,
-            posX: mesh.position.x,
-            posY: mesh.position.y,
-            posZ: mesh.position.z,
-        };
+    getSelectedMeshAttributes(): MeshAttributes {
+        const markerMesh = this._scene.getMeshByName(this._selectedMarker);
+        const nodeMesh = this._scene.getMeshByName(this._selectedNode);
+        
+        if (nodeMesh) {
+            return {
+                type: 'node',
+                name: nodeMesh.name,
+                realWidth: nodeMesh.scaling.x,
+                posX: nodeMesh.position.x,
+                posY: nodeMesh.position.y,
+                posZ: nodeMesh.position.z,
+            };
+        }
+        
+        if (markerMesh) {
+            return {
+                type: 'marker',
+                name: markerMesh.name,
+                realWidth: markerMesh.scaling.x,
+                posX: markerMesh.position.x,
+                posY: markerMesh.position.y,
+                posZ: markerMesh.position.z,
+            };
+        }
     }
 
     getNodeNames(markerName: string) {
@@ -389,6 +414,7 @@ export interface MeshAttributes {
     posX: number;
     posY: number;
     posZ: number;
+    type: string;
 }
 
 export default new Project();

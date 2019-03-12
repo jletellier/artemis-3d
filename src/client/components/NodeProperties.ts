@@ -57,7 +57,7 @@ export default class NodeProperties extends LitElement {
             <smaat-frame>
                 <smaat-frame-top-bar>Properties</smaat-frame-top-bar>
                 <smaat-frame-content>
-                    ${(attributes && attributes.realWidth !== null) ? html`
+                    ${(attributes && attributes.type === 'marker') ? html`
                         <div class="title">Image Marker</div>
                         <div class="item">
                             <div class="label">
@@ -67,7 +67,7 @@ export default class NodeProperties extends LitElement {
                                 value="${attributes.realWidth}">
                         </div>
                     ` : html``}
-                    ${(attributes && attributes.posX !== null) ? html`
+                    ${(attributes && attributes.type === 'node') ? html`
                         <div class="title">Location</div>
                         <div class="item">
                             <div class="label">

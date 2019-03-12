@@ -33,13 +33,19 @@ export default class MarkerNodes extends LitElement {
         li.item:hover {
             background-color: #494949;
         }
+        li.item.selected {
+            background-color: #314E78;
+        }
     `;
 
     render() {
+        const selectedNode = project.getSelectedNode();
+
         return html`
             <ul>
                 ${project.getNodeNames(this.markerID).map(value =>
-                    html`<li class="item">${value}</li>`,
+                    html`<li class="item ${(selectedNode === value) ? 'selected' : ''}"
+                        @click="${this.handleSelectNode}">${value}</li>`,
                 )}
                 <li>
                     <input type="file" id="node-file" accept="*"
@@ -50,6 +56,17 @@ export default class MarkerNodes extends LitElement {
                 </li>
             </ul>
         `;
+    }
+
+    firstUpdated() {
+        project.onSceneChangedObservable.add(() => {
+            this.requestUpdate();
+        });
+    }
+
+    handleSelectNode(event: Event) {
+        const target = <HTMLLIElement>event.currentTarget;
+        project.setSelectedNode(target.textContent);
     }
 
     updated() {

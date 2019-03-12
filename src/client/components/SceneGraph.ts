@@ -43,6 +43,7 @@ export default class SceneGraph extends LitElement {
 
     render() {
         const selectedMarker = project.getSelectedMarker();
+        const selectedNode = project.getSelectedNode();
 
         return html`
             <smaat-frame>
@@ -58,7 +59,8 @@ export default class SceneGraph extends LitElement {
                         ${project.getMarkerNames().map(value =>
                             html`<li>
                                 <div markerid="${value}"
-                                    class="${(selectedMarker === value) ? 'selected' : ''}"
+                                    class="${(!selectedNode && selectedMarker === value) ?
+                                        'selected' : ''}"
                                     @click="${this.handleSelectMarker}">${value}</div>
                                 ${(selectedMarker === value)
                                     ? html`<smaat-marker-nodes
