@@ -174,6 +174,8 @@ class Project {
         const markerMesh = this._scene.getMeshByName(this._selectedMarker);
         const nodeMesh = this._scene.getMeshByName(this._selectedNode);
         
+        // NOTE: The following terribly ugly and will soon be replaced with a generic system
+
         if (nodeMesh) {
             return {
                 type: 'node',
@@ -182,6 +184,12 @@ class Project {
                 posX: nodeMesh.position.x,
                 posY: nodeMesh.position.y,
                 posZ: nodeMesh.position.z,
+                scaleX: nodeMesh.scaling.x,
+                scaleY: nodeMesh.scaling.y,
+                scaleZ: nodeMesh.scaling.z,
+                rotationX: nodeMesh.rotation.x,
+                rotationY: nodeMesh.rotation.y,
+                rotationZ: nodeMesh.rotation.z,
             };
         }
         
@@ -193,7 +201,44 @@ class Project {
                 posX: markerMesh.position.x,
                 posY: markerMesh.position.y,
                 posZ: markerMesh.position.z,
+                scaleX: markerMesh.scaling.x,
+                scaleY: markerMesh.scaling.y,
+                scaleZ: markerMesh.scaling.z,
+                rotationX: markerMesh.rotation.x,
+                rotationY: markerMesh.rotation.y,
+                rotationZ: markerMesh.rotation.z,
             };
+        }
+    }
+
+    setSelectedMeshAttribute(type: string, value: number) {
+        const meshName = this._selectedNode || this._selectedMarker;
+        const mesh = this._scene.getMeshByName(meshName);
+        
+        // NOTE: The following terribly ugly and will soon be replaced with a generic system
+
+        if (mesh) {
+            if (type === 'realWidth') {
+                mesh.scaling.x = value;
+            } else if (type === 'posX') {
+                mesh.position.x = value;
+            } else if (type === 'posY') {
+                mesh.position.y = value;
+            } else if (type === 'posZ') {
+                mesh.position.z = value;
+            } else if (type === 'scaleX') {
+                mesh.scaling.x = value;
+            } else if (type === 'scaleY') {
+                mesh.scaling.y = value;
+            } else if (type === 'scaleZ') {
+                mesh.scaling.z = value;
+            } else if (type === 'rotationX') {
+                mesh.rotation.x = value;
+            } else if (type === 'rotationY') {
+                mesh.rotation.y = value;
+            } else if (type === 'rotationZ') {
+                mesh.rotation.z = value;
+            }
         }
     }
 
@@ -409,12 +454,18 @@ class Project {
 }
 
 export interface MeshAttributes {
+    type: string;
     name: string;
     realWidth: number;
     posX: number;
     posY: number;
     posZ: number;
-    type: string;
+    scaleX: number;
+    scaleY: number;
+    scaleZ: number;
+    rotationX: number;
+    rotationY: number;
+    rotationZ: number;
 }
 
 export default new Project();

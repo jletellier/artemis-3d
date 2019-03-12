@@ -53,6 +53,8 @@ export default class NodeProperties extends LitElement {
     render() {
         const attributes = project.getSelectedMeshAttributes();
 
+        // NOTE: The following terribly ugly and will soon be replaced with a generic system
+
         return html`
             <smaat-frame>
                 <smaat-frame-top-bar>Properties</smaat-frame-top-bar>
@@ -63,8 +65,8 @@ export default class NodeProperties extends LitElement {
                             <div class="label">
                                 Real Width
                             </div>
-                            <input type="number" min="0" step="0.001"
-                                value="${attributes.realWidth}">
+                            <input type="number" min="0" step="0.001" data-type="realWidth"
+                                value="${attributes.realWidth}" @change="${this.handleChange}">
                         </div>
                     ` : html``}
                     ${(attributes && attributes.type === 'node') ? html`
@@ -73,22 +75,66 @@ export default class NodeProperties extends LitElement {
                             <div class="label">
                                 X
                             </div>
-                            <input type="number" min="0" step="0.001"
-                                value="${attributes.posX}">
+                            <input type="number" min="0" step="0.001" data-type="posX"
+                                value="${attributes.posX}" @change="${this.handleChange}">
                         </div>
                         <div class="item">
                             <div class="label">
                                 Y
                             </div>
-                            <input type="number" min="0" step="0.001"
-                                value="${attributes.posY}">
+                            <input type="number" min="0" step="0.001" data-type="posY"
+                                value="${attributes.posY}" @change="${this.handleChange}">
                         </div>
                         <div class="item">
                             <div class="label">
                                 Z
                             </div>
-                            <input type="number" min="0" step="0.001"
-                                value="${attributes.posZ}">
+                            <input type="number" min="0" step="0.001" data-type="posZ"
+                                value="${attributes.posZ}" @change="${this.handleChange}">
+                        </div>
+                        <div class="title">Scale</div>
+                        <div class="item">
+                            <div class="label">
+                                X
+                            </div>
+                            <input type="number" min="0" step="0.001" data-type="scaleX"
+                                value="${attributes.scaleX}" @change="${this.handleChange}">
+                        </div>
+                        <div class="item">
+                            <div class="label">
+                                Y
+                            </div>
+                            <input type="number" min="0" step="0.001" data-type="scaleY"
+                                value="${attributes.scaleY}" @change="${this.handleChange}">
+                        </div>
+                        <div class="item">
+                            <div class="label">
+                                Z
+                            </div>
+                            <input type="number" min="0" step="0.001" data-type="scaleZ"
+                                value="${attributes.scaleZ}" @change="${this.handleChange}">
+                        </div>
+                        <div class="title">Rotation</div>
+                        <div class="item">
+                            <div class="label">
+                                X
+                            </div>
+                            <input type="number" min="0" step="0.001" data-type="rotationX"
+                                value="${attributes.rotationX}" @change="${this.handleChange}">
+                        </div>
+                        <div class="item">
+                            <div class="label">
+                                Y
+                            </div>
+                            <input type="number" min="0" step="0.001" data-type="rotationY"
+                                value="${attributes.rotationY}" @change="${this.handleChange}">
+                        </div>
+                        <div class="item">
+                            <div class="label">
+                                Z
+                            </div>
+                            <input type="number" min="0" step="0.001" data-type="rotationZ"
+                                value="${attributes.rotationZ}" @change="${this.handleChange}">
                         </div>
                     ` : html``}
                 </smaat-frame-content>
@@ -100,6 +146,14 @@ export default class NodeProperties extends LitElement {
         project.onSceneChangedObservable.add(() => {
             this.requestUpdate();
         });
+    }
+
+    handleChange(event: Event) {
+        const target = <HTMLInputElement>event.currentTarget;
+        const type = target.getAttribute('data-type');
+        const value = target.valueAsNumber;
+
+        project.setSelectedMeshAttribute(type, value);
     }
 
 }
