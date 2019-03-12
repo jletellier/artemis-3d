@@ -59,12 +59,8 @@ export default class ImageMarkerScript extends ScriptBehavior {
                     // TODO: Find better solution to figure out real-world size of marker plane
                     const realWorldWidth = this.markerMesh.scaling.x;
 
-                    window.setTimeout(() => {
-                        project.remoteLog(`creating image: ${this.target.name}`);
-                    }, 2000);
-
                     this.xrSession.createImageAnchor(
-                        this.target.name, imgData.data.buffer,
+                        this.target.name, imgData.data,
                         imgData.width, imgData.height, realWorldWidth,
                     ).then(this.boundActivateImageDetection);
                 };
@@ -99,10 +95,6 @@ export default class ImageMarkerScript extends ScriptBehavior {
     }
     
     private activateImageDetection(): void {
-        window.setTimeout(() => {
-            project.remoteLog(`activate image: ${this.target.name}`);
-        }, 2000);
-
         this.xrSession.activateDetectionImage(this.target.name)
             .then(this.boundHandleImageDetection);
     }
@@ -130,7 +122,8 @@ export default class ImageMarkerScript extends ScriptBehavior {
         this.updateRootTransform(transformMatrix);
         this.setContentEnabled(true);
 
-        this.boundActivateImageDetection();
+        // Activate this to have experimental marker tracking
+        // this.boundActivateImageDetection();
     }
 
     private updateRootTransform(transformMatrix: Matrix): void {
