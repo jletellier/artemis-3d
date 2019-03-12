@@ -1,4 +1,4 @@
-import { Behavior, Node } from 'babylonjs';
+import { Behavior, Node } from '@babylonjs/core';
 
 export default class ScriptBehavior implements Behavior<Node> {
  

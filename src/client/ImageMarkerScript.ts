@@ -1,6 +1,7 @@
 import { Mesh, StandardMaterial, Texture, Scene, Vector3, Quaternion, Matrix,
-    TransformNode, AbstractMesh } from 'babylonjs';
+    TransformNode, AbstractMesh } from '@babylonjs/core';
 import ScriptBehavior from './ScriptBehavior';
+import project from './data/project';
 
 export default class ImageMarkerScript extends ScriptBehavior {
 
@@ -12,6 +13,8 @@ export default class ImageMarkerScript extends ScriptBehavior {
     private anchorOffset: XRAnchorOffset;
 
     private boundRegisterImageDetection: () => void;
+    private boundActivateImageDetection: () => void;
+    private boundHandleImageDetection: () => void;
 
     onAwake(): void {
         this.scene = this.target.getScene();
@@ -24,6 +27,8 @@ export default class ImageMarkerScript extends ScriptBehavior {
         this.markerMesh.visibility = 0;
 
         this.boundRegisterImageDetection = this.registerImageDetection.bind(this);
+        this.boundActivateImageDetection = this.activateImageDetection.bind(this);
+        this.boundHandleImageDetection = this.handleImageDetection.bind(this);
         this.scene.registerBeforeRender(this.boundRegisterImageDetection);
     }
 
@@ -39,16 +44,43 @@ export default class ImageMarkerScript extends ScriptBehavior {
 
             const material = <StandardMaterial>this.markerMesh.material;
             const texture = <Texture>material.diffuseTexture;
-            const size = texture.getSize();
-            const buffer = texture.readPixels().buffer;
-            const imgData = new Uint8ClampedArray(buffer);
+            
+            // Temporary-fix for WebGL 1.0
+            project._loadFileAsync(texture.name).then((file: Blob) => {
+                const img = document.createElement('img');
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    const imgData = ctx.getImageData(0, 0, img.width, img.height);
+
+                    // TODO: Find better solution to figure out real-world size of marker plane
+                    const realWorldWidth = this.markerMesh.scaling.x;
+
+                    window.setTimeout(() => {
+                        project.remoteLog(`creating image: ${this.target.name}`);
+                    }, 2000);
+
+                    this.xrSession.createImageAnchor(
+                        this.target.name, imgData.data.buffer,
+                        imgData.width, imgData.height, realWorldWidth,
+                    ).then(this.boundActivateImageDetection);
+                };
+                img.src = window.URL.createObjectURL(file);
+            });
+
+            // const size = texture.getSize();
+            // const buffer = texture.readPixels().buffer;
+            // const imgData = new Uint8ClampedArray(buffer);
 
             // TODO: Find better solution to figure out real-world size of marker plane
-            const realWorldWidth = this.markerMesh.scaling.x;
+            // const realWorldWidth = this.markerMesh.scaling.x;
 
-            this.xrSession.createImageAnchor(
-                this.target.name, imgData, size.width, size.height, realWorldWidth,
-            ).then(this.activateImageDetection.bind(this));
+            // this.xrSession.createImageAnchor(
+            //     this.target.name, imgData, size.width, size.height, realWorldWidth,
+            // ).then(this.activateImageDetection.bind(this));
         } else {
             this.setContentEnabled(true);
             this.markerMesh.visibility = 1;
@@ -67,8 +99,12 @@ export default class ImageMarkerScript extends ScriptBehavior {
     }
     
     private activateImageDetection(): void {
+        window.setTimeout(() => {
+            project.remoteLog(`activate image: ${this.target.name}`);
+        }, 2000);
+
         this.xrSession.activateDetectionImage(this.target.name)
-            .then(this.handleImageDetection.bind(this));
+            .then(this.boundHandleImageDetection);
     }
 
     // private handleRemoveWorldAnchor(event: CustomEvent): void {
@@ -82,7 +118,7 @@ export default class ImageMarkerScript extends ScriptBehavior {
     // }
 
     private handleImageDetection(imageAnchorTransform: Float32Array): void {
-        document.getElementById('debug-log').textContent = 'handle image: ' + this.target.name;
+        project.remoteLog(`handle image: ${this.target.name}`);
 
         const transformMatrix = new Matrix();
         Matrix.FromFloat32ArrayToRefScaled(imageAnchorTransform, 0, 1, transformMatrix);
@@ -94,7 +130,7 @@ export default class ImageMarkerScript extends ScriptBehavior {
         this.updateRootTransform(transformMatrix);
         this.setContentEnabled(true);
 
-        this.activateImageDetection();
+        this.boundActivateImageDetection();
     }
 
     private updateRootTransform(transformMatrix: Matrix): void {

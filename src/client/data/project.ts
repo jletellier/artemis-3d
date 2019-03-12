@@ -2,6 +2,7 @@ import { Scene, Mesh, StandardMaterial, Texture, TransformNode, SceneSerializer,
     AssetsManager, Observable, AbstractMesh, Quaternion } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF/2.0';
 import 'pouchdb';
+import ImageMarkerScript from '../ImageMarkerScript';
 
 class Project {
 
@@ -288,6 +289,13 @@ class Project {
                         this._loadFileAsync(texture.name).then((file) => {
                             const objectUrl = window.URL.createObjectURL(file);
                             texture.updateURL(objectUrl);
+
+                            if (this._hasXR) {
+                                const behavior = new ImageMarkerScript();
+                                behavior.enabled = true;
+                                mesh.addBehavior(behavior);
+                            }
+
                             resolve();
                         });
                     });
@@ -322,10 +330,15 @@ class Project {
 
         this._scene.getEngine().hideLoadingUI();
 
+        if (this._hasXR) {
+            return;
+        }
+
         if (firstMarker) {
             this.setSelectedMarker(firstMarker.name);
             return;
         }
+
         this.onSceneChangedObservable.notifyObservers();
     }
 

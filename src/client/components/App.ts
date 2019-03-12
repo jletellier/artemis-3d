@@ -5,7 +5,7 @@ import './Frame';
 import './FrameTopBar';
 import './FrameContent';
 import './Button';
-import './BabylonRenderer';
+import BabylonRenderer from './BabylonRenderer';
 import './SceneGraph';
 import './NodeProperties';
 import Icon from './Icon';
@@ -15,6 +15,8 @@ export default class App extends LitElement {
 
     @property()
     hasProject: boolean = false;
+
+    _rendererElement: BabylonRenderer;
 
     static styles = css`
         @import url('https://fonts.googleapis.com/css?family=Noto+Sans');
@@ -71,9 +73,13 @@ export default class App extends LitElement {
     }
 
     render() {
+        if (!this._rendererElement) {
+            this._rendererElement = new BabylonRenderer();
+        }
+
         return html`
             ${project.hasXR ? html`
-                <smaat-babylon-renderer></smaat-babylon-renderer>
+                ${this._rendererElement}
             ` : html`
                 <div class="container">
                     <smaat-frame class="renderer">
@@ -88,7 +94,7 @@ export default class App extends LitElement {
                             ` : html``}
                         </smaat-frame-top-bar>
                         <smaat-frame-content>
-                            <smaat-babylon-renderer></smaat-babylon-renderer>
+                            ${this._rendererElement}
                         </smaat-frame-content>
                     </smaat-frame>
 
