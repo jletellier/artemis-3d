@@ -37,10 +37,10 @@ export default class ImageMarkerScript extends ScriptBehavior {
 
         this.xrSession = this.scene.xrSession;
         if (this.xrSession) {
-            // this.xrSession.addEventListener(
-            //     'remove-world-anchor',
-            //     this.handleRemoveWorldAnchor.bind(this),
-            // );
+            this.xrSession.addEventListener(
+                'remove-world-anchor',
+                this.handleRemoveWorldAnchor.bind(this),
+            );
 
             this.rootTransform = new TransformNode(`${this.target.name}Root`, this.scene);
             this.markerMesh.parent = this.rootTransform;
@@ -58,8 +58,6 @@ export default class ImageMarkerScript extends ScriptBehavior {
                     canvas.height = img.height;
                     ctx.drawImage(img, 0, 0);
                     const imgData = ctx.getImageData(0, 0, img.width, img.height);
-
-                    // TODO: Find better solution to figure out real-world size of marker plane
                     const realWorldWidth = this.markerMesh.scaling.x;
 
                     this.xrSession.createImageAnchor(
@@ -86,15 +84,23 @@ export default class ImageMarkerScript extends ScriptBehavior {
         }
     }
 
-    private setContentEnabled(value: boolean, updateBehaviors: boolean = false): void {
+    public setContentEnabled(value: boolean, updateBehaviors: boolean = false): void {
         this.contentChildren.forEach((child) => {
             child.setEnabled(value);
-            if (updateBehaviors) {
-                // TODO: This should be done automatically
-                // const behavior = <ScriptBehavior>child.getBehaviorByName('SingleMarkerContent');
-                // behavior.enabled = value;
-            }
         });
+
+        if (updateBehaviors && value) {
+            this.scene.meshes.forEach((node) => {
+                if (node === this.target) {
+                    return;
+                }
+
+                const behavior = <ImageMarkerScript>node.getBehaviorByName('ImageMarkerScript');
+                if (behavior) {
+                    behavior.setContentEnabled(false);
+                }
+            });
+        }
     }
     
     private activateImageDetection(): void {
@@ -102,15 +108,15 @@ export default class ImageMarkerScript extends ScriptBehavior {
             .then(this.boundHandleImageDetection);
     }
 
-    // private handleRemoveWorldAnchor(event: CustomEvent): void {
-    //     let anchor = event.detail;
+    private handleRemoveWorldAnchor(event: CustomEvent): void {
+        const anchor = event.detail;
 
-    //     this.debugLog(`Removed anchor ${anchor.uid}`);
+        project.remoteLog(`Removed anchor ${anchor.uid}`);
 
-    //     if (anchor instanceof XRImageAnchor) {
-    //         this.anchorOffset = null;
-    //     }
-    // }
+        if (anchor instanceof XRImageAnchor) {
+            this.anchorOffset = null;
+        }
+    }
 
     private handleImageDetection(imageAnchorTransform: Float32Array): void {
         project.remoteLog(`handle image: ${this.target.name}`);
@@ -123,10 +129,10 @@ export default class ImageMarkerScript extends ScriptBehavior {
         }
 
         this.updateRootTransform(transformMatrix);
-        this.setContentEnabled(true);
+        this.setContentEnabled(true, true);
 
         // Activate this to have experimental marker tracking
-        // this.boundActivateImageDetection();
+        this.boundActivateImageDetection();
     }
 
     private updateRootTransform(transformMatrix: Matrix): void {

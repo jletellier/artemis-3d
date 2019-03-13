@@ -1,5 +1,5 @@
 import { Scene, Mesh, StandardMaterial, Texture, TransformNode, SceneSerializer, SceneLoader,
-    AssetsManager, Observable, AbstractMesh, Angle } from '@babylonjs/core';
+    AssetsManager, Observable, AbstractMesh, Angle, Node } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF/2.0';
 import 'pouchdb';
 import ImageMarkerScript from '../ImageMarkerScript';
@@ -284,6 +284,7 @@ class Project {
         );
         const markerMesh = this._scene.getMeshByName(markerID);
         const rootMesh = container.createRootMesh();
+        rootMesh.id = file.name;
         rootMesh.name = file.name;
         // rootMesh.setParent(markerMesh);
         rootMesh.parent = markerMesh;
@@ -366,13 +367,6 @@ class Project {
                         this._loadFileAsync(texture.name).then((file) => {
                             const objectUrl = window.URL.createObjectURL(file);
                             texture.updateURL(objectUrl);
-
-                            if (this._hasXR) {
-                                const behavior = new ImageMarkerScript();
-                                behavior.enabled = true;
-                                mesh.addBehavior(behavior);
-                            }
-
                             resolve();
                         });
                     });
@@ -408,6 +402,12 @@ class Project {
         this._scene.getEngine().hideLoadingUI();
 
         if (this._hasXR) {
+            this._markerContainer.getChildMeshes(true).forEach((child) => {
+                const behavior = new ImageMarkerScript();
+                behavior.enabled = true;
+                child.addBehavior(behavior);
+            });
+
             return;
         }
 
