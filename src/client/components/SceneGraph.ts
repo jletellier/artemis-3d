@@ -38,7 +38,6 @@ export default class SceneGraph extends LitElement {
         div.selected {
             background-color: #314E78;
         }
-        
     `;
 
     render() {
