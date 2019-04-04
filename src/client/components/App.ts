@@ -19,8 +19,6 @@ export default class App extends LitElement {
     _rendererElement: BabylonRenderer;
 
     static styles = css`
-        @import url('https://fonts.googleapis.com/css?family=Noto+Sans');
-
         :host {
             position: absolute;
             width: 100%;

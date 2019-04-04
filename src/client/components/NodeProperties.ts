@@ -8,8 +8,6 @@ import project from '../data/project';
 export default class NodeProperties extends LitElement {
 
     static styles = css`
-        @import url('https://fonts.googleapis.com/css?family=Noto+Sans');
-
         :host {
             color: #DADADA;
         }

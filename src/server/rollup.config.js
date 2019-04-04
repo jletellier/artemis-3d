@@ -13,11 +13,23 @@ const clientBuild = {
     // preserveModules: true,
     output: {
         dir: path.resolve(rootPath, './public/dist/'),
-        format: 'es',
+        format: 'esm',
         sourcemap: true,
         paths: {
             'pouchdb': './pouchdb.min.js',
         },
+    },
+    manualChunks: {
+        'babylon.bundle': [
+            'node_modules/@babylonjs/core/index.js',
+            'node_modules/@babylonjs/loaders/index.js',
+        ],
+        'litelement.bundle': [
+            'node_modules/lit-element/lit-element.js',
+        ],
+        'page.bundle': [
+            'node_modules/page/page.js',
+        ],
     },
     external: [
         'pouchdb',

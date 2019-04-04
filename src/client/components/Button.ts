@@ -11,8 +11,6 @@ export default class Button extends LitElement {
     icon: Icon.Type;
 
     static styles = css`
-        @import url('https://fonts.googleapis.com/css?family=Noto+Sans');
-
         button {
             display: inline-flex;
             grid-template-areas: "icon text";
