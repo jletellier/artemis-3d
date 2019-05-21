@@ -12,15 +12,18 @@ export default class BabylonRenderer extends LitElement {
             height: 100%;
             outline: none;
             background-color: none;
+            touch-action: none;
+            overflow: hidden;
         }
     `;
 
     render() {
-        return html`<canvas></canvas>`;
+        return html`<canvas touch-action="none"></canvas>`;
     }
 
     firstUpdated() {
         const canvas = this.shadowRoot.querySelector('canvas');
+    
         const mozillaXR = new MozillaXRBase(canvas);
         
         if (mozillaXR.xrSupported) {
@@ -29,6 +32,12 @@ export default class BabylonRenderer extends LitElement {
         project.scene = mozillaXR.scene;
         
         mozillaXR.startRendering();
+
+        setTimeout(() => {
+            console.log(canvas.clientWidth, canvas.offsetHeight);
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }, 1000);
     }
 
 }
