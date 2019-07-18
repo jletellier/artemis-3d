@@ -1,15 +1,14 @@
 {
     "compilerOptions": {
         "moduleResolution": "node",
-        "outDir": "./dist/",
         "sourceMap": true,
         "noImplicitAny": true,
         "experimentalDecorators": true,
-        "module": "esnext",
+        "module": "es2015",
         "lib": ["es2015", "es2016", "es2017", "dom"],
         "target": "es2018"
     },
     "include": [
-        "./src/client/**/*"
+        "./viewer/src/**/*"
     ]
 }

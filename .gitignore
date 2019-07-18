@@ -1,9 +1,15 @@
-/node_modules/
+**/node_modules
+node_modules
+
+/.vscode/
 /dev-cert/
+.DS_Store
+
+/viewer/.cache/
+/viewer/dist/
+
 /public/upload/
 /public/dist/
-/data/
 
+/data/
 /.rpt2_cache/
-/.vscode/
-.DS_Store
