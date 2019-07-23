@@ -4,13 +4,13 @@
 
 ARtemis is a collection of open-source tools to quickly prototype and test mobile augmented reality (AR) scenes. 
 
-**ARtemis Viewer** uses [Babylon.js](https://github.com/BabylonJS/Babylon.js) the [WebXR API](https://github.com/immersive-web/webxr) on mobile browsers to render ARtemis scenes. 
+**ARtemis Viewer** uses [Babylon.js](https://github.com/BabylonJS/Babylon.js) and the [WebXR API](https://github.com/immersive-web/webxr) on mobile browsers to render ARtemis scenes. 
 
 **ARtemis Editor** is a web-based authoring tool to create ARtemis scenes. It aims to be usable by non-programmers, such as artists and domain experts from cultural fields. 
 
 **ARtemis Server** can be used to host ARtemis scenes and provides an API for the ARtemis Viewer and other applications.
 
-## Main Goal
+## Main Goals
 
 - Creating, editing and sharing *ARtemis scenes*
 - Defining marker images to be used as targets for further augmentations
