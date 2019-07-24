@@ -9,20 +9,30 @@ bl_info = {
 }
 
 import bpy
+from bpy.app.handlers import save_post
+from bpy.app.handlers import persistent
+
 from . import make_logic
 
 
+@persistent
+def artemis_export_logic(scene):
+    make_logic.build()
+
+
 class ExportArtemis(bpy.types.Operator):
-    bl_idname = 'export_artemis.json'
-    bl_label = 'Export Logic Nodes'
+    bl_idname = 'artemis_export_logic.json'
+    bl_label = 'Export Logic'
 
     def execute(self, context):
-        make_logic.build()
+        artemis_export_logic()
         return {'FINISHED'}
 
 
 def register():
     bpy.utils.register_class(ExportArtemis)
+
+    save_post.append(artemis_export_logic)
 
 
 def unregister():
