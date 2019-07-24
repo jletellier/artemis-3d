@@ -59,7 +59,7 @@ def gather_nodes(nodetree):
 def gather_node_io(nodeList, io_nodes):
     sockets = []
     for idx, node in enumerate(io_nodes):
-        socket = {'name': node.identifier}
+        socket = {'name': node.identifier, 'type': node.type}
 
         if (hasattr(node, 'default_value')):
             socket['default_value'] = node.default_value
