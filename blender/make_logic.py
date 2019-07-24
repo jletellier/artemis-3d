@@ -73,8 +73,8 @@ def gather_links(nodetree):
     links = []
     nodeList = list(nodetree.nodes)
     for idx, link in enumerate(nodetree.links):
-        links.append({'from_node': nodeList.index(link.from_node), 
-            'to_node': nodeList.index(link.to_node), 
+        links.append({'from_id': nodeList.index(link.from_node), 
+            'to_id': nodeList.index(link.to_node), 
             'from_socket': link.from_socket.identifier, 
             'to_socket': link.to_socket.identifier})
     

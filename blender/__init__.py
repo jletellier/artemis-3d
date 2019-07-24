@@ -16,7 +16,7 @@ from . import make_logic
 
 
 @persistent
-def artemis_export_logic(scene):
+def artemis_export_logic():
     make_logic.build()
 
 
