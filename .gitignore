@@ -8,6 +8,8 @@ node_modules
 /viewer/.cache/
 /viewer/dist/
 
+/blender/__pycache__/
+
 /public/upload/
 /public/dist/
 
