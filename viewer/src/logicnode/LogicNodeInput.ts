@@ -11,7 +11,11 @@ export default class LogicNodeInput {
     }
 
     public get(): any {
-        return this.node.get(from);
+        return this.node.get(this.from);
+    }
+
+    public set(value: any) {
+        this.node.set(value);
     }
 
 }

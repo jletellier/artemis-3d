@@ -1,5 +1,5 @@
 import { AssetsManager, Camera, Engine as BabylonEngine, Scene, SceneLoader,
-    Vector3 } from '@babylonjs/core';
+    Vector3, Node } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF/2.0';
 import { GLTFFileLoader } from '@babylonjs/loaders/glTF/glTFFileLoader';
 import * as GLTF2 from 'babylonjs-gltf2interface';
@@ -11,6 +11,7 @@ export default class Engine {
     private _engine: BabylonEngine;
     private _scene: Scene;
     private _logicFiles: Set<string> = new Set();
+    private _logicAttachments: Map<string, number> = new Map();
     private _logicMap: Map<string, LogicTree> = new Map();
 
     public init(canvas: HTMLCanvasElement) {
@@ -46,12 +47,13 @@ export default class Engine {
         gltfPlugin.onParsedObservable.add((gltfBabylon) => {
             const gltfRoot = gltfBabylon.json as GLTF2.IGLTF;
 
-            gltfRoot.nodes.forEach((node) => {
+            gltfRoot.nodes.forEach((node, i) => {
                 if (node.extras && node.extras['arm_traitlist']
                         && node.extras['arm_traitlist'].length) {
                     // FIXME: Add type definition for arm_traitlist and trait
                     node.extras['arm_traitlist'].forEach((trait: any) => {
                         this._logicFiles.add(trait.name);
+                        this._logicAttachments.set(trait.name, i);
                     });
                 }
             });
@@ -75,7 +77,15 @@ export default class Engine {
         });
 
         assetsManager.onTasksDoneObservable.add(() => {
-            console.log(this._logicMap);
+            this._logicAttachments.forEach((nodeId, logicFile) => {
+                newScene.meshes.find((mesh) => {
+                    if (mesh.metadata && mesh.metadata.gltf
+                            && mesh.metadata.gltf.pointers.indexOf(`/nodes/${nodeId}`) !== 1) {
+                        const behavior = this._logicMap.get(logicFile);
+                        mesh.addBehavior(behavior);
+                    }
+                });
+            });
 
             this._scene.dispose();
             this._scene = newScene;

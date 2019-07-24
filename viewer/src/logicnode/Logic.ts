@@ -3,47 +3,51 @@ import LogicNode from './LogicNode';
 
 import OnInitNode from './OnInitNode';
 import PrintNode from './PrintNode';
+import FloatNode from './FloatNode';
+import StringNode from './StringNode';
 
 const NODE_CLASSES: any = {
     OnInitNode,
     PrintNode,
+    FloatNode,
+    StringNode,
 };
 
 export default class Logic {
 
-    static nodes: TNode[];
-    static links: TNodeLink[];
+    private static _nodes: TNode[];
+    private static _links: TNodeLink[];
 
-    static parsedNodes: string[];
-    static parsedLabels: Map<string, string>;
-    static nodeMap: Map<string, LogicNode>;
+    private static _parsedNodes: string[];
+    private static _parsedLabels: Map<string, string>;
+    private static _nodeMap: Map<string, LogicNode>;
 
-    static tree: LogicTree;
+    private static _tree: LogicTree;
 
     public static parse(canvas: TNodeCanvas) {
         console.log(canvas.name);
         this._convertFromJson(canvas);
 
-        this.parsedNodes = [];
-        this.parsedLabels = new Map<string, string>();
-        this.nodeMap = new Map<string, LogicNode>();
+        this._parsedNodes = [];
+        this._parsedLabels = new Map<string, string>();
+        this._nodeMap = new Map<string, LogicNode>();
 
         const rootNodes = this._getRootNodes();
 
-        this.tree = new LogicTree();
+        this._tree = new LogicTree();
 
         for (const node of rootNodes) {
             this._buildNode(node);
         }
 
-        return this.tree;
+        return this._tree;
     }
 
     private static _convertFromJson(canvas: TNodeCanvas) {
-        this.nodes = canvas.nodes;
-        this.links = canvas.links;
+        this._nodes = canvas.nodes;
+        this._links = canvas.links;
 
-        this.nodes.forEach((node, i) => {
+        this._nodes.forEach((node, i) => {
             node.id = i;
             node.inputs.forEach((socket) => {
                 socket.node_id = node.id;
@@ -55,7 +59,7 @@ export default class Logic {
     }
 
     private static _getRootNodes(): TNode[] {
-        return this.nodes.filter((node) => {
+        return this._nodes.filter((node) => {
             let linked = false;
 
             for (const out of node.outputs) {
@@ -71,21 +75,21 @@ export default class Logic {
     }
 
     private static _getOutputLinks(out: TNodeSocket): TNodeLink[] {
-        return this.links.filter((link) => {
+        return this._links.filter((link) => {
             if (link.from_id !== out.node_id) {
                 return false;
             }
-            const node = this.nodes[out.node_id];
+            const node = this._nodes[out.node_id];
             return (this._getSocket(node.outputs, link.from_socket) === out);
         });
     }
 
     private static _getInputLink(input: TNodeSocket): TNodeLink {
-        return this.links.find((link) => {
+        return this._links.find((link) => {
             if (link.to_id !== input.node_id) {
                 return false;
             }
-            const node = this.nodes[input.node_id];
+            const node = this._nodes[input.node_id];
             return (this._getSocket(node.inputs, link.to_socket) === input);
         });
     }
@@ -102,17 +106,17 @@ export default class Logic {
 
     private static _buildNode(node: TNode): string {
         const uniqueNodeName = this._uniqueNodeName(node);
-        if (this.parsedNodes.indexOf(uniqueNodeName) !== -1) {
+        if (this._parsedNodes.indexOf(uniqueNodeName) !== -1) {
             return uniqueNodeName;
         }
-        this.parsedNodes.push(uniqueNodeName);
+        this._parsedNodes.push(uniqueNodeName);
 
         const instance = this._createClassInstance(node.type);
         if (!instance) {
             return;
         }
 
-        this.nodeMap.set(uniqueNodeName, instance);
+        this._nodeMap.set(uniqueNodeName, instance);
 
         // TODO: Properties/Buttons
 
@@ -123,9 +127,9 @@ export default class Logic {
         node.inputs.forEach((input) => {
             const link = this._getInputLink(input);
             if (link) {
-                const fromNode = this.nodes[link.from_id];
+                const fromNode = this._nodes[link.from_id];
                 const fromSocket = this._getSocket(fromNode.outputs, link.from_socket);
-                inputNode = this.nodeMap.get(this._buildNode(fromNode));
+                inputNode = this._nodeMap.get(this._buildNode(fromNode));
                 for (let i = 0; i < fromNode.outputs.length; i++) {
                     if (fromNode.outputs[i] === fromSocket) {
                         inputFrom = i;
@@ -147,9 +151,9 @@ export default class Logic {
 
             if (links.length > 0) {
                 for (const link of links) {
-                    const toNode = this.nodes[link.to_id];
+                    const toNode = this._nodes[link.to_id];
                     const outName = this._buildNode(toNode);
-                    outNodes.push(this.nodeMap.get(outName));
+                    outNodes.push(this._nodeMap.get(outName));
                 }
             } else {
                 outNodes.push(this._buildDefaultNode(output));
@@ -164,7 +168,40 @@ export default class Logic {
     }
 
     private static _buildDefaultNode(input: TNodeSocket): LogicNode {
-        console.log(input.type);
+        // if (input.type === 'OBJECT') {
+        //     v = createClassInstance('ObjectNode', [tree, inp.default_value]);
+        // }
+        // else if (inp.type == 'ANIMACTION') {
+        //     v = createClassInstance('StringNode', [tree, inp.default_value]);
+        // }
+        // else if (inp.type == 'VECTOR') {
+        //     if (inp.default_value == null) inp.default_value = [0, 0, 0]; // TODO
+        //     v = createClassInstance('VectorNode', [tree, inp.default_value]);
+        // }
+        // else if (inp.type == 'RGBA') {
+        //     if (inp.default_value == null) inp.default_value = [0, 0, 0]; // TODO
+        //     v = createClassInstance('ColorNode', [tree, inp.default_value]);
+        // }
+        // else if (inp.type == 'RGB') {
+        //     if (inp.default_value == null) inp.default_value = [0, 0, 0]; // TODO
+        //     v = createClassInstance('ColorNode', [tree, inp.default_value]);
+        // }
+        if (input.type === 'VALUE') {
+            return this._createClassInstance('FloatNode').set(input.default_value);
+        }
+        // else if (inp.type == 'INT') {
+        //     v = createClassInstance('IntegerNode', [tree, inp.default_value]);
+        // }
+        // else if (inp.type == 'BOOLEAN') {
+        //     v = createClassInstance('BooleanNode', [tree, inp.default_value]);
+        // }
+        if (input.type === 'STRING') {
+            return this._createClassInstance('StringNode').set(input.default_value);
+        }
+        // else { // ACTION, ARRAY
+        //     v = createClassInstance('NullNode', [tree]);
+        // }
+
         return null;
     }
 
@@ -174,7 +211,7 @@ export default class Logic {
             return null;
         }
 
-        return new NODE_CLASSES[className](this.tree);
+        return new NODE_CLASSES[className](this._tree);
     }
 
 }
