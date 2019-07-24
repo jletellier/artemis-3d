@@ -1,5 +1,5 @@
 import { css, customElement, html, LitElement, property } from 'lit-element';
-import engine from './engine';
+import Engine from './Engine';
 
 @customElement('artemis-viewer')
 export default class Viewer extends LitElement {
@@ -26,6 +26,7 @@ export default class Viewer extends LitElement {
     firstUpdated() {
         const canvas = this.shadowRoot.querySelector('canvas');
 
+        const engine = new Engine();
         engine.init(canvas);
 
         if (this.file.length > 0) {

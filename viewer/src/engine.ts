@@ -3,12 +3,15 @@ import { AssetsManager, Camera, Engine as BabylonEngine, Scene, SceneLoader,
 import '@babylonjs/loaders/glTF/2.0';
 import { GLTFFileLoader } from '@babylonjs/loaders/glTF/glTFFileLoader';
 import * as GLTF2 from 'babylonjs-gltf2interface';
+import Logic from './logicnode/Logic';
+import LogicTree from './logicnode/LogicTree';
 
-class Engine {
+export default class Engine {
 
     private _engine: BabylonEngine;
     private _scene: Scene;
-    private _traits: string[];
+    private _logicFiles: Set<string> = new Set();
+    private _logicMap: Map<string, LogicTree> = new Map();
 
     public init(canvas: HTMLCanvasElement) {
         this._engine = new BabylonEngine(canvas, true);
@@ -36,39 +39,43 @@ class Engine {
                 newScene.activeCamera = newScene.cameras[0];
             }
 
-            this._loadTraits(newScene);
+            this._loadLogic(newScene);
         });
 
         const gltfPlugin = plugin as GLTFFileLoader;
         gltfPlugin.onParsedObservable.add((gltfBabylon) => {
             const gltfRoot = gltfBabylon.json as GLTF2.IGLTF;
-            this._traits = [];
 
             gltfRoot.nodes.forEach((node) => {
                 if (node.extras && node.extras['arm_traitlist']
                         && node.extras['arm_traitlist'].length) {
                     // FIXME: Add type definition for arm_traitlist and trait
                     node.extras['arm_traitlist'].forEach((trait: any) => {
-                        this._traits.push(trait.name);
+                        this._logicFiles.add(trait.name);
                     });
                 }
             });
         });
     }
 
-    private _loadTraits(newScene: Scene) {
+    private _loadLogic(newScene: Scene) {
         const assetsManager = new AssetsManager(this._scene);
             
-        this._traits.forEach((trait) => {
-            const task = assetsManager.addTextFileTask(trait, `./${trait}.json`);
+        this._logicFiles.forEach((logicFile) => {
+            if (this._logicMap.has(logicFile)) {
+                return;
+            }
+
+            const task = assetsManager.addTextFileTask(logicFile, `./${logicFile}.json`);
             task.onSuccess = (assetTask) => {
-                const traitJson = JSON.parse(assetTask.text);
-                console.log(traitJson);
+                const logicJson = JSON.parse(assetTask.text);
+                const tree = Logic.parse(logicJson);
+                this._logicMap.set(logicFile, tree);
             };
         });
 
         assetsManager.onTasksDoneObservable.add(() => {
-            console.log('Done with loading!!!');
+            console.log(this._logicMap);
 
             this._scene.dispose();
             this._scene = newScene;
@@ -78,5 +85,3 @@ class Engine {
     }
 
 }
-
-export default new Engine();
