@@ -1,6 +1,7 @@
 import json
 import os
 import bpy
+import numpy as np
 
 def get_logic_trees():
     ar = []
@@ -60,9 +61,12 @@ def gather_node_io(nodeList, io_nodes):
     sockets = []
     for idx, node in enumerate(io_nodes):
         socket = {'name': node.identifier, 'type': node.type}
-
+    
         if (hasattr(node, 'default_value')):
-            socket['default_value'] = node.default_value
+            if hasattr(node.default_value, '__len__') and (not isinstance(node.default_value, str)):
+                socket['default_value'] = np.asarray(node.default_value).tolist()
+            else:
+                socket['default_value'] = node.default_value
 
         sockets.append(socket)
     

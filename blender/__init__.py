@@ -16,7 +16,8 @@ from . import make_logic
 
 
 @persistent
-def artemis_export_logic():
+def artemis_export_logic(scene):
+    print('saving scene')
     make_logic.build()
 
 
@@ -25,7 +26,7 @@ class ExportArtemis(bpy.types.Operator):
     bl_label = 'Export Logic'
 
     def execute(self, context):
-        artemis_export_logic()
+        artemis_export_logic(bpy.context.scene)
         return {'FINISHED'}
 
 
