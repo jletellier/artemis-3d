@@ -4,13 +4,17 @@ import LogicNode from './LogicNode';
 import OnInitNode from './OnInitNode';
 import PrintNode from './PrintNode';
 import FloatNode from './FloatNode';
+import VectorNode from './VectorNode';
 import StringNode from './StringNode';
+import SetLocationNode from './SetLocationNode';
 
 const NODE_CLASSES: any = {
     OnInitNode,
     PrintNode,
     FloatNode,
     StringNode,
+    VectorNode,
+    SetLocationNode,
 };
 
 export default class Logic {
@@ -178,6 +182,9 @@ export default class Logic {
         //     if (inp.default_value == null) inp.default_value = [0, 0, 0]; // TODO
         //     v = createClassInstance('VectorNode', [tree, inp.default_value]);
         // }
+        if (input.type === 'VECTOR') {
+            return this._createClassInstance('VectorNode').set(input.default_value);
+        }
         // else if (inp.type == 'RGBA') {
         //     if (inp.default_value == null) inp.default_value = [0, 0, 0]; // TODO
         //     v = createClassInstance('ColorNode', [tree, inp.default_value]);
