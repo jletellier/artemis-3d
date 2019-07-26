@@ -1,17 +1,10 @@
-**/node_modules
-node_modules
+node_modules/
+.DS_Store
 
 /.vscode/
 /dev-cert/
-.DS_Store
 
 /viewer/.cache/
 /viewer/dist/
 
 /blender/__pycache__/
-
-/public/upload/
-/public/dist/
-
-/data/
-/.rpt2_cache/

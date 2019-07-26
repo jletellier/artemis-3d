@@ -4,8 +4,7 @@
     "private": true,
     "description": "Web-based augmented reality viewer for glTF-based ARtemis scenes",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "parcel index.html"
+        "start": "parcel index.html -d dist"
     },
     "author": "Julien Letellier",
     "license": "MIT",
