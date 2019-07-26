@@ -15,7 +15,7 @@
         "typescript": "^3.5.3",
         "@babylonjs/core": "4.0.3",
         "@babylonjs/loaders": "4.0.3",
-        "lit-element": "^2.2.0",
+        "lit-element": "^2.2.1",
         "parcel-bundler": "^1.12.3"
     },
     "browserslist": [
