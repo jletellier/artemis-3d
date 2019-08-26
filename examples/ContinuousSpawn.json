@@ -1,0 +1,59 @@
+{
+    "name": "ContinuousSpawn",
+    "nodes": [
+        {
+            "name": "_OnInit",
+            "type": "OnInitNode",
+            "inputs": [],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "type": "VALUE"
+                }
+            ]
+        },
+        {
+            "name": "_SpawnObject",
+            "type": "SpawnObjectNode",
+            "inputs": [
+                {
+                    "name": "In",
+                    "type": "VALUE"
+                },
+                {
+                    "name": "Object",
+                    "type": "VALUE",
+                    "default_value": ""
+                },
+                {
+                    "name": "Transform",
+                    "type": "SHADER"
+                },
+                {
+                    "name": "Children",
+                    "type": "BOOLEAN",
+                    "default_value": true
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "type": "VALUE"
+                },
+                {
+                    "name": "Object",
+                    "type": "VALUE",
+                    "default_value": ""
+                }
+            ]
+        }
+    ],
+    "links": [
+        {
+            "from_id": 0,
+            "to_id": 1,
+            "from_socket": "Out",
+            "to_socket": "In"
+        }
+    ]
+}

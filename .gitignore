@@ -1,5 +1,5 @@
 node_modules/
-.DS_Store
+*.DS_Store
 
 /.vscode/
 /dev-cert/
@@ -8,3 +8,4 @@ node_modules/
 /viewer/dist/
 
 /blender/__pycache__/
+*.blend[0-9]
