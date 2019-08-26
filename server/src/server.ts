@@ -30,7 +30,7 @@ function reloadClient() {
 }
 
 app.use('/', express.static(path.resolve(rootPath, 'examples')));
-app.use('/dist/', express.static(path.resolve(rootPath, 'viewer/dist')));
+app.use('/', express.static(path.resolve(rootPath, 'viewer/dist')));
 app.use('*', (req, res) => {
     res.sendFile(path.resolve(rootPath, 'examples', 'index.html'));
 });
