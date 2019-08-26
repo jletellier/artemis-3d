@@ -9,6 +9,6 @@
         "target": "es2018"
     },
     "include": [
-        "./viewer/src/**/*"
+        "./src/**/*"
     ]
 }
