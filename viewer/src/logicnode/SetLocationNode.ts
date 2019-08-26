@@ -1,12 +1,7 @@
 import LogicNode from './LogicNode';
-import LogicTree from './LogicTree';
 import { TransformNode, Vector3 } from '@babylonjs/core';
 
 export default class SetLocationNode extends LogicNode {
-
-    constructor(tree: LogicTree) {
-        super(tree);
-    }
 
     run(from: number) {
         const object: any = this.inputs[1].get();

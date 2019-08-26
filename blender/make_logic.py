@@ -62,7 +62,11 @@ def gather_node_io(nodeList, io_nodes):
     for idx, node in enumerate(io_nodes):
         socket = {'name': node.identifier, 'type': node.type}
     
-        if (hasattr(node, 'default_value')):
+        values = node.values()
+        if (values.__len__() > 0):
+            socket['type'] = 'OBJECT'
+            socket['default_value'] = values[0].name
+        elif (hasattr(node, 'default_value')):
             if hasattr(node.default_value, '__len__') and (not isinstance(node.default_value, str)):
                 socket['default_value'] = np.asarray(node.default_value).tolist()
             else:

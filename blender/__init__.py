@@ -4,7 +4,7 @@ bl_info = {
     "location": "File > Import-Export",
     "description": "Authoring tools for AR",
     "author": "Julien Letellier",
-    "version": (0, 2, 0),
+    "version": (0, 3, 0),
     "blender": (2, 80, 0)
 }
 

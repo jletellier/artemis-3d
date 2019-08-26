@@ -3,18 +3,26 @@ import LogicNode from './LogicNode';
 
 import OnInitNode from './OnInitNode';
 import PrintNode from './PrintNode';
+import BooleanNode from './BooleanNode';
 import FloatNode from './FloatNode';
 import VectorNode from './VectorNode';
 import StringNode from './StringNode';
+import ObjectNode from './ObjectNode';
+import TransformNode from './TransformNode';
 import SetLocationNode from './SetLocationNode';
+import SpawnObjectNode from './SpawnObjectNode';
 
 const NODE_CLASSES: any = {
     OnInitNode,
     PrintNode,
+    BooleanNode,
     FloatNode,
     StringNode,
     VectorNode,
+    ObjectNode,
+    TransformNode,
     SetLocationNode,
+    SpawnObjectNode,
 };
 
 export default class Logic {
@@ -172,15 +180,11 @@ export default class Logic {
     }
 
     private static _buildDefaultNode(input: TNodeSocket): LogicNode {
-        // if (input.type === 'OBJECT') {
-        //     v = createClassInstance('ObjectNode', [tree, inp.default_value]);
-        // }
+        if (input.type === 'OBJECT') {
+            return this._createClassInstance('ObjectNode').set(input.default_value);
+        }
         // else if (inp.type == 'ANIMACTION') {
         //     v = createClassInstance('StringNode', [tree, inp.default_value]);
-        // }
-        // else if (inp.type == 'VECTOR') {
-        //     if (inp.default_value == null) inp.default_value = [0, 0, 0]; // TODO
-        //     v = createClassInstance('VectorNode', [tree, inp.default_value]);
         // }
         if (input.type === 'VECTOR') {
             return this._createClassInstance('VectorNode').set(input.default_value);
@@ -199,9 +203,9 @@ export default class Logic {
         // else if (inp.type == 'INT') {
         //     v = createClassInstance('IntegerNode', [tree, inp.default_value]);
         // }
-        // else if (inp.type == 'BOOLEAN') {
-        //     v = createClassInstance('BooleanNode', [tree, inp.default_value]);
-        // }
+        if (input.type === 'BOOLEAN') {
+            return this._createClassInstance('BooleanNode').set(input.default_value);
+        }
         if (input.type === 'STRING') {
             return this._createClassInstance('StringNode').set(input.default_value);
         }

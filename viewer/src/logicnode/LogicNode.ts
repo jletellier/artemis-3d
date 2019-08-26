@@ -40,6 +40,8 @@ export default class LogicNode {
         return this;
     }
 
-    public set(value: any) {}
+    public set(value: any): LogicNode {
+        return this;
+    }
 
 }

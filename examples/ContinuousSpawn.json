@@ -22,8 +22,8 @@
                 },
                 {
                     "name": "Object",
-                    "type": "VALUE",
-                    "default_value": ""
+                    "type": "OBJECT",
+                    "default_value": "ProtoCube"
                 },
                 {
                     "name": "Transform",
@@ -46,6 +46,63 @@
                     "default_value": ""
                 }
             ]
+        },
+        {
+            "name": "_Object",
+            "type": "ObjectNode",
+            "inputs": [
+                {
+                    "name": "Object",
+                    "type": "OBJECT",
+                    "default_value": "ProtoCube"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Object",
+                    "type": "VALUE",
+                    "default_value": ""
+                }
+            ]
+        },
+        {
+            "name": "_Transform",
+            "type": "TransformNode",
+            "inputs": [
+                {
+                    "name": "Location",
+                    "type": "VECTOR",
+                    "default_value": [
+                        1.0,
+                        0.0,
+                        0.0
+                    ]
+                },
+                {
+                    "name": "Rotation",
+                    "type": "VECTOR",
+                    "default_value": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                },
+                {
+                    "name": "Scale",
+                    "type": "VECTOR",
+                    "default_value": [
+                        0.5,
+                        0.5,
+                        0.5
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Transform",
+                    "type": "SHADER"
+                }
+            ]
         }
     ],
     "links": [
@@ -54,6 +111,18 @@
             "to_id": 1,
             "from_socket": "Out",
             "to_socket": "In"
+        },
+        {
+            "from_id": 2,
+            "to_id": 1,
+            "from_socket": "Object",
+            "to_socket": "Object"
+        },
+        {
+            "from_id": 3,
+            "to_id": 1,
+            "from_socket": "Transform",
+            "to_socket": "Transform"
         }
     ]
 }
