@@ -2,17 +2,6 @@
     "name": "ContinuousSpawn",
     "nodes": [
         {
-            "name": "_OnInit",
-            "type": "OnInitNode",
-            "inputs": [],
-            "outputs": [
-                {
-                    "name": "Out",
-                    "type": "VALUE"
-                }
-            ]
-        },
-        {
             "name": "_SpawnObject",
             "type": "SpawnObjectNode",
             "inputs": [
@@ -91,9 +80,9 @@
                     "name": "Scale",
                     "type": "VECTOR",
                     "default_value": [
-                        0.5,
-                        0.5,
-                        0.5
+                        0.10000000149011612,
+                        0.10000000149011612,
+                        0.10000000149011612
                     ]
                 }
             ],
@@ -103,26 +92,89 @@
                     "type": "SHADER"
                 }
             ]
+        },
+        {
+            "name": "_Random_Vector_",
+            "type": "RandomVectorNode",
+            "inputs": [
+                {
+                    "name": "Min",
+                    "type": "VECTOR",
+                    "default_value": [
+                        -1.0,
+                        -1.0,
+                        -1.0
+                    ]
+                },
+                {
+                    "name": "Max",
+                    "type": "VECTOR",
+                    "default_value": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Vector",
+                    "type": "VECTOR",
+                    "default_value": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "_SpawnTimer",
+            "type": "OnTimerNode",
+            "inputs": [
+                {
+                    "name": "Duration",
+                    "type": "VALUE",
+                    "default_value": 0.5
+                },
+                {
+                    "name": "Repeat",
+                    "type": "BOOLEAN",
+                    "default_value": true
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "type": "VALUE"
+                }
+            ]
         }
     ],
     "links": [
         {
-            "from_id": 0,
-            "to_id": 1,
-            "from_socket": "Out",
-            "to_socket": "In"
-        },
-        {
-            "from_id": 2,
-            "to_id": 1,
+            "from_id": 1,
+            "to_id": 0,
             "from_socket": "Object",
             "to_socket": "Object"
         },
         {
-            "from_id": 3,
-            "to_id": 1,
+            "from_id": 2,
+            "to_id": 0,
             "from_socket": "Transform",
             "to_socket": "Transform"
+        },
+        {
+            "from_id": 3,
+            "to_id": 2,
+            "from_socket": "Vector",
+            "to_socket": "Location"
+        },
+        {
+            "from_id": 4,
+            "to_id": 0,
+            "from_socket": "Out",
+            "to_socket": "In"
         }
     ]
 }

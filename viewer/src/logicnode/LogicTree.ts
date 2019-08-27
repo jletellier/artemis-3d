@@ -1,9 +1,13 @@
-import { Behavior, Node } from '@babylonjs/core';
+import { Behavior, Node, Scene, Observer } from '@babylonjs/core';
 
 export default class LogicTree implements Behavior<Node> {
 
     private _target: Node;
-    private _init: (() => void)[] = [];
+    private _scene: Scene;
+    private _initFns: (() => void)[] = [];
+    private _updateFns: (() => void)[] = [];
+    private _initObserver: Observer<Scene>;
+    private _updateObserver: Observer<Scene>;
 
     public get name(): string {
         return this.constructor.name;
@@ -18,21 +22,41 @@ export default class LogicTree implements Behavior<Node> {
     }
 
     public attach(target: Node) {
-        console.info(`${this.name} behavior attached...`);
-
+        const scene = target.getScene();
         this._target = target;
+        this._scene = scene;
 
-        for (const fn of this._init) {
-            fn();
-        }
+        this._initObserver = scene.onReadyObservable.add(this._onInit.bind(this));
+        this._updateObserver = scene.onBeforeAnimationsObservable.add(this._onUpdate.bind(this));
+
+        console.info(`${this.name} behavior attached...`);
     }
 
     public detach() {
+        this._scene.onReadyObservable.remove(this._initObserver);
+        this._scene.onBeforeAnimationsObservable.remove(this._updateObserver);
+
         console.info(`${this.name} behavior detached...`);
     }
 
     public notifyOnInit(fn: () => void) {
-        this._init.push(fn);
+        this._initFns.push(fn);
+    }
+
+    public notifyOnUpdate(fn: () => void) {
+        this._updateFns.push(fn);
+    }
+
+    private _onInit() {
+        for (const fn of this._initFns) {
+            fn();
+        }
+    }
+
+    private _onUpdate() {
+        for (const fn of this._updateFns) {
+            fn();
+        }
     }
 
 }
