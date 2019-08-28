@@ -3,6 +3,7 @@ import LogicNode from './LogicNode';
 
 import OnInitNode from './OnInitNode';
 import OnTimerNode from './OnTimerNode';
+import OnSurfaceNode from './OnSurfaceNode';
 import PrintNode from './PrintNode';
 import BooleanNode from './BooleanNode';
 import FloatNode from './FloatNode';
@@ -13,10 +14,12 @@ import TransformNode from './TransformNode';
 import SetLocationNode from './SetLocationNode';
 import SpawnObjectNode from './SpawnObjectNode';
 import RandomVectorNode from './RandomVectorNode';
+import GetTransformNode from './GetTransformNode';
 
 const NODE_CLASSES: any = {
     OnInitNode,
     OnTimerNode,
+    OnSurfaceNode,
     PrintNode,
     BooleanNode,
     FloatNode,
@@ -27,6 +30,7 @@ const NODE_CLASSES: any = {
     SetLocationNode,
     SpawnObjectNode,
     RandomVectorNode,
+    GetTransformNode,
 };
 
 export default class Logic {
@@ -135,6 +139,7 @@ export default class Logic {
         this._nodeMap.set(uniqueNodeName, instance);
 
         // TODO: Properties/Buttons
+        instance.properties = node.properties;
 
         // Create inputs
         let inputNode: LogicNode;
@@ -241,6 +246,7 @@ interface TNode {
     id: number;
     name: string;
     type: string;
+    properties: string[];
     inputs: TNodeSocket[];
     outputs: TNodeSocket[];
     buttons?: TNodeButton[];

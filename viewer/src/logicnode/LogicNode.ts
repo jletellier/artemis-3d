@@ -4,6 +4,7 @@ import LogicNodeInput from './LogicNodeInput';
 export default class LogicNode {
 
     public tree: LogicTree;
+    public properties: string[];
     public inputs: LogicNodeInput[] = [];
     public outputs: LogicNode[][] = [];
 

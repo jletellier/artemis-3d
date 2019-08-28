@@ -1,5 +1,6 @@
-import { AssetsManager, Camera, Engine as BabylonEngine, Scene, SceneLoader,
-    Vector3, Node } from '@babylonjs/core';
+import { AssetsManager, Camera, Engine as BabylonEngine, Scene, SceneLoader, WebXREnterExitUI,
+    Vector3, WebXRExperienceHelper, WebXRManagedOutputCanvas, WebXRState,
+    PointerEventTypes, PickingInfo, PointerInfo } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF/2.0';
 import { GLTFFileLoader } from '@babylonjs/loaders/glTF/glTFFileLoader';
 import * as GLTF2 from 'babylonjs-gltf2interface';
@@ -89,9 +90,52 @@ export default class Engine {
 
             this._scene.dispose();
             this._scene = newScene;
+
+            this._prepareARScene();
         });
 
         assetsManager.load();
+    }
+
+    private async _prepareARScene() {
+        const xrHelper = await WebXRExperienceHelper.CreateAsync(this._scene);
+
+        if (!await xrHelper.sessionManager.supportsSessionAsync('immersive-ar')) {
+            alert('immersive-ar xr session not supported');
+            return;
+        }
+
+        const renderingCanvas = this._engine.getRenderingCanvas();
+        const outputCanvas = new WebXRManagedOutputCanvas(xrHelper, renderingCanvas);
+
+        this._scene.onPointerUp = async (e) => {
+            if (xrHelper.state === WebXRState.NOT_IN_XR) {
+                await xrHelper.enterXRAsync('immersive-ar', 'local', outputCanvas);
+
+                xrHelper.sessionManager.session.addEventListener('select', (e: PointerEvent) => {
+                    const pickInfo = new PickingInfo();
+                    const data = new PointerInfo(PointerEventTypes.POINTERTAP, e, pickInfo);
+                    this._scene.onPointerObservable.notifyObservers(data);
+                });
+
+                xrHelper.sessionManager.session.addEventListener(
+                    'selectstart',
+                    (e: PointerEvent) => {
+                        const pickInfo = new PickingInfo();
+                        const data = new PointerInfo(PointerEventTypes.POINTERDOWN, e, pickInfo);
+                        this._scene.onPointerObservable.notifyObservers(data);
+                    },
+                );
+
+                xrHelper.sessionManager.session.addEventListener('selectend', (e: PointerEvent) => {
+                    const pickInfo = new PickingInfo();
+                    const data = new PointerInfo(PointerEventTypes.POINTERUP, e, pickInfo);
+                    this._scene.onPointerObservable.notifyObservers(data);
+                });
+            } else if (xrHelper.state === WebXRState.IN_XR) {
+                xrHelper.exitXRAsync();
+            }
+        };
     }
 
 }

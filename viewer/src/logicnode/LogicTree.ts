@@ -5,6 +5,7 @@ export default class LogicTree implements Behavior<Node> {
     private _target: Node;
     private _scene: Scene;
     private _initFns: (() => void)[] = [];
+    private _detachFns: (() => void)[] = [];
     private _updateFns: (() => void)[] = [];
     private _initObserver: Observer<Scene>;
     private _updateObserver: Observer<Scene>;
@@ -15,6 +16,10 @@ export default class LogicTree implements Behavior<Node> {
 
     public get target(): Node {
         return this._target;
+    }
+
+    public get scene(): Scene {
+        return this._scene;
     }
 
     public init() {
@@ -36,11 +41,19 @@ export default class LogicTree implements Behavior<Node> {
         this._scene.onReadyObservable.remove(this._initObserver);
         this._scene.onBeforeAnimationsObservable.remove(this._updateObserver);
 
+        for (const fn of this._detachFns) {
+            fn();
+        }
+
         console.info(`${this.name} behavior detached...`);
     }
 
     public notifyOnInit(fn: () => void) {
         this._initFns.push(fn);
+    }
+
+    public notifyOnDetach(fn: () => void) {
+        this._detachFns.push(fn);
     }
 
     public notifyOnUpdate(fn: () => void) {
