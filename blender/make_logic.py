@@ -51,10 +51,30 @@ def gather_nodes(nodetree):
         node_type = node.bl_idname[2:] # Discard 'LN'TimeNode prefix
         nodes.append({'name': node_name, 
             'type': node_type,
+            'properties': gather_properties(node),
             'inputs': gather_node_io(nodeList, node.inputs), 
             'outputs': gather_node_io(nodeList, node.outputs)})
     
     return nodes
+
+
+def gather_properties(node):
+    properties = []
+    for i in range(0, 5):
+        prop_name = 'property' + str(i) + '_get'
+        prop_found = hasattr(node, prop_name)
+        if not prop_found:
+            prop_name = 'property' + str(i)
+            prop_found = hasattr(node, prop_name)
+        if prop_found:
+            prop = getattr(node, prop_name)
+            if hasattr(prop, 'name'): # PointerProperty
+                prop = str(prop.name)
+            else:
+                prop = str(prop)
+            properties.append(prop)
+
+    return properties
 
 
 def gather_node_io(nodeList, io_nodes):
