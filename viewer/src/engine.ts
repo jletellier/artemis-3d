@@ -1,9 +1,7 @@
-import { AssetsManager, Camera, Engine as BabylonEngine, Scene, SceneLoader, WebXREnterExitUI,
+import { AssetsManager, Camera, Engine as BabylonEngine, Scene, SceneLoader,
     Vector3, WebXRExperienceHelper, WebXRManagedOutputCanvas, WebXRState,
-    PointerEventTypes, PickingInfo, PointerInfo } from '@babylonjs/core';
+    PointerEventTypes, PickingInfo, PointerInfo, Node } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF/2.0';
-import { GLTFFileLoader } from '@babylonjs/loaders/glTF/glTFFileLoader';
-import * as GLTF2 from 'babylonjs-gltf2interface';
 import Logic from './logicnode/Logic';
 import LogicTree from './logicnode/LogicTree';
 
@@ -12,7 +10,8 @@ export default class Engine {
     private _engine: BabylonEngine;
     private _scene: Scene;
     private _logicFiles: Set<string> = new Set();
-    private _logicAttachments: Map<string, number> = new Map();
+    private _logicAttachments: Map<Node, string> = new Map();
+    private _doNotSpawnNodes: number[] = [];
     private _logicMap: Map<string, LogicTree> = new Map();
 
     public init(canvas: HTMLCanvasElement) {
@@ -43,26 +42,31 @@ export default class Engine {
 
             this._loadLogic(newScene);
         });
-
-        const gltfPlugin = plugin as GLTFFileLoader;
-        gltfPlugin.onParsedObservable.add((gltfBabylon) => {
-            const gltfRoot = gltfBabylon.json as GLTF2.IGLTF;
-
-            gltfRoot.nodes.forEach((node, i) => {
-                if (node.extras && node.extras['arm_traitlist']
-                        && node.extras['arm_traitlist'].length) {
-                    // FIXME: Add type definition for arm_traitlist and trait
-                    node.extras['arm_traitlist'].forEach((trait: any) => {
-                        this._logicFiles.add(trait.name);
-                        this._logicAttachments.set(trait.name, i);
-                    });
-                }
-            });
-        });
     }
 
     private _loadLogic(newScene: Scene) {
         const assetsManager = new AssetsManager(this._scene);
+
+        const nodes: Node[] = [...newScene.transformNodes, ...newScene.meshes];
+        nodes.forEach((node) => {
+            if (node.metadata && node.metadata.gltf && node.metadata.gltf.extras) {
+                const extras = node.metadata.gltf.extras;
+                console.log('name:', node.name);
+                console.log(extras);
+                
+                if (extras['arm_traitlist'] && extras['arm_traitlist'].length) {
+                    // FIXME: Add type definition for arm_traitlist and trait
+                    extras['arm_traitlist'].forEach((trait: any) => {
+                        this._logicFiles.add(trait.name);
+                        this._logicAttachments.set(node, trait.name);
+                    });
+                }
+                
+                if (extras['arm_spawn'] === 0) {
+                    node.setEnabled(false);
+                }
+            }
+        });
             
         this._logicFiles.forEach((logicFile) => {
             if (this._logicMap.has(logicFile)) {
@@ -78,14 +82,9 @@ export default class Engine {
         });
 
         assetsManager.onTasksDoneObservable.add(() => {
-            this._logicAttachments.forEach((nodeId, logicFile) => {
-                newScene.meshes.find((mesh) => {
-                    if (mesh.metadata && mesh.metadata.gltf
-                            && mesh.metadata.gltf.pointers.indexOf(`/nodes/${nodeId}`) !== 1) {
-                        const behavior = this._logicMap.get(logicFile);
-                        mesh.addBehavior(behavior);
-                    }
-                });
+            this._logicAttachments.forEach((logicFile, node) => {
+                const behavior = this._logicMap.get(logicFile);
+                node.addBehavior(behavior);
             });
 
             this._scene.dispose();
@@ -101,7 +100,7 @@ export default class Engine {
         const xrHelper = await WebXRExperienceHelper.CreateAsync(this._scene);
 
         if (!await xrHelper.sessionManager.supportsSessionAsync('immersive-ar')) {
-            alert('immersive-ar xr session not supported');
+            console.error('immersive-ar xr session not supported');
             return;
         }
 
