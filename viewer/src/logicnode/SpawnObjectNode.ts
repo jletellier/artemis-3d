@@ -14,7 +14,13 @@ export default class SpawnObjectNode extends LogicNode {
         transform.decompose(
             newNode.scaling,
             newNode.rotationQuaternion,
-            newNode.position,
+            newNode.absolutePosition,
+        );
+
+        console.log(
+            newNode.scaling,
+            newNode.rotationQuaternion,
+            newNode.absolutePosition,
         );
 
         const scene = this.tree.target.getScene();

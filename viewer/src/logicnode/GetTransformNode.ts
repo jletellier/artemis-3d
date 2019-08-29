@@ -14,5 +14,3 @@ export default class GetTransformNode extends LogicNode {
     }
 
 }
-
-type Float3 = [number, number, number];

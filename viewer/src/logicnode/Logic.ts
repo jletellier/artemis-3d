@@ -15,6 +15,8 @@ import SetLocationNode from './SetLocationNode';
 import SpawnObjectNode from './SpawnObjectNode';
 import RandomVectorNode from './RandomVectorNode';
 import GetTransformNode from './GetTransformNode';
+import GetLocationNode from './GetLocationNode';
+import GetScaleNode from './GetScaleNode';
 
 const NODE_CLASSES: any = {
     OnInitNode,
@@ -31,6 +33,8 @@ const NODE_CLASSES: any = {
     SpawnObjectNode,
     RandomVectorNode,
     GetTransformNode,
+    GetLocationNode,
+    GetScaleNode,
 };
 
 export default class Logic {
