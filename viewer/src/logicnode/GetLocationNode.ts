@@ -1,5 +1,5 @@
 import LogicNode from './LogicNode';
-import { TransformNode } from '@babylonjs/core';
+import { TransformNode, WebXRCamera, Tags } from '@babylonjs/core';
 
 export default class GetLocationNode extends LogicNode {
 
@@ -8,6 +8,11 @@ export default class GetLocationNode extends LogicNode {
         
         if (!node) {
             return null;
+        }
+
+        if (Tags.MatchesQuery(node, 'mainCamera') &&
+            this.tree.scene.activeCamera instanceof WebXRCamera) {
+            return this.tree.scene.activeCamera.globalPosition.asArray();
         }
 
         return node.absolutePosition.asArray();

@@ -1,4 +1,4 @@
-import { AssetsManager, Camera, Engine as BabylonEngine, Scene, SceneLoader,
+import { AssetsManager, Camera, Engine as BabylonEngine, Scene, SceneLoader, Tags,
     Vector3, WebXRExperienceHelper, WebXRManagedOutputCanvas, WebXRState,
     PointerEventTypes, PickingInfo, PointerInfo, Node } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF/2.0';
@@ -35,9 +35,10 @@ export default class Engine {
     }
 
     private _loadGltfScene(file: string) {
-        const plugin = SceneLoader.Load('./', file, this._engine, (newScene) => {
+        SceneLoader.Load('./', file, this._engine, (newScene) => {
             if (newScene.cameras.length > 0) {
                 newScene.activeCamera = newScene.cameras[0];
+                Tags.AddTagsTo(newScene.activeCamera, 'mainCamera');
             }
 
             this._loadLogic(newScene);
@@ -131,6 +132,8 @@ export default class Engine {
                     const data = new PointerInfo(PointerEventTypes.POINTERUP, e, pickInfo);
                     this._scene.onPointerObservable.notifyObservers(data);
                 });
+
+                console.log(xrHelper.container);
             } else if (xrHelper.state === WebXRState.IN_XR) {
                 xrHelper.exitXRAsync();
             }
