@@ -12,9 +12,9 @@
     "dependencies": {
         "tslint": "^5.19.0",
         "tslint-config-airbnb": "^5.11.1",
-        "typescript": "^3.5.3",
-        "@babylonjs/core": "4.0.3",
-        "@babylonjs/loaders": "4.0.3",
+        "typescript": "^3.6.2",
+        "@babylonjs/core": "4.1.0-alpha.17",
+        "@babylonjs/loaders": "4.1.0-alpha.17",
         "lit-element": "^2.2.1",
         "parcel-bundler": "^1.12.3"
     },
