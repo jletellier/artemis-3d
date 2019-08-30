@@ -2,6 +2,7 @@ import LogicTree from './LogicTree';
 import LogicNode from './LogicNode';
 
 import OnInitNode from './OnInitNode';
+import OnUpdateNode from './OnUpdateNode';
 import OnTimerNode from './OnTimerNode';
 import OnSurfaceNode from './OnSurfaceNode';
 import PrintNode from './PrintNode';
@@ -11,6 +12,7 @@ import VectorNode from './VectorNode';
 import VectorMathNode from './VectorMathNode';
 import StringNode from './StringNode';
 import ObjectNode from './ObjectNode';
+import SelfNode from './SelfNode';
 import TransformNode from './TransformNode';
 import SetLocationNode from './SetLocationNode';
 import SpawnObjectNode from './SpawnObjectNode';
@@ -18,9 +20,11 @@ import RandomVectorNode from './RandomVectorNode';
 import GetTransformNode from './GetTransformNode';
 import GetLocationNode from './GetLocationNode';
 import GetScaleNode from './GetScaleNode';
+import RotateObjectNode from './RotateObjectNode';
 
 const NODE_CLASSES: any = {
     OnInitNode,
+    OnUpdateNode,
     OnTimerNode,
     OnSurfaceNode,
     PrintNode,
@@ -30,6 +34,7 @@ const NODE_CLASSES: any = {
     VectorNode,
     VectorMathNode,
     ObjectNode,
+    SelfNode,
     TransformNode,
     SetLocationNode,
     SpawnObjectNode,
@@ -37,9 +42,12 @@ const NODE_CLASSES: any = {
     GetTransformNode,
     GetLocationNode,
     GetScaleNode,
+    RotateObjectNode,
 };
 
 export default class Logic {
+
+    private static _canvasMap: Map<string, TNodeCanvas> = new Map();
 
     private static _nodes: TNode[];
     private static _links: TNodeLink[];
@@ -49,6 +57,20 @@ export default class Logic {
     private static _nodeMap: Map<string, LogicNode>;
 
     private static _tree: LogicTree;
+
+    public static addCanvas(canvas: TNodeCanvas) {
+        this._canvasMap.set(canvas.name, canvas);
+    }
+
+    public static getLogicTreeInstanceByName(name: string) {
+        const canvas = this._canvasMap.get(name);
+
+        if (!canvas) {
+            return null;
+        }
+
+        return this.parse(canvas);
+    }
 
     public static parse(canvas: TNodeCanvas) {
         console.log(canvas.name);
@@ -60,7 +82,7 @@ export default class Logic {
 
         const rootNodes = this._getRootNodes();
 
-        this._tree = new LogicTree();
+        this._tree = new LogicTree(canvas.name);
 
         for (const node of rootNodes) {
             this._buildNode(node);

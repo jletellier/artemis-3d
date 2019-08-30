@@ -2,42 +2,6 @@
     "name": "SpawnOnClick",
     "nodes": [
         {
-            "name": "_SpawnObject",
-            "type": "SpawnObjectNode",
-            "properties": [],
-            "inputs": [
-                {
-                    "name": "In",
-                    "type": "VALUE"
-                },
-                {
-                    "name": "Object",
-                    "type": "OBJECT",
-                    "default_value": "ProtoCube"
-                },
-                {
-                    "name": "Transform",
-                    "type": "SHADER"
-                },
-                {
-                    "name": "Children",
-                    "type": "BOOLEAN",
-                    "default_value": true
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "Out",
-                    "type": "VALUE"
-                },
-                {
-                    "name": "Object",
-                    "type": "VALUE",
-                    "default_value": ""
-                }
-            ]
-        },
-        {
             "name": "_Transform",
             "type": "TransformNode",
             "properties": [],
@@ -136,30 +100,66 @@
                     ]
                 }
             ]
+        },
+        {
+            "name": "_SpawnObject",
+            "type": "SpawnObjectNode",
+            "properties": [],
+            "inputs": [
+                {
+                    "name": "In",
+                    "type": "VALUE"
+                },
+                {
+                    "name": "Object",
+                    "type": "OBJECT",
+                    "default_value": "ProtoCube"
+                },
+                {
+                    "name": "Transform",
+                    "type": "SHADER"
+                },
+                {
+                    "name": "Children",
+                    "type": "BOOLEAN",
+                    "default_value": true
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "type": "VALUE"
+                },
+                {
+                    "name": "Object",
+                    "type": "VALUE",
+                    "default_value": ""
+                }
+            ]
         }
     ],
     "links": [
         {
-            "from_id": 3,
-            "to_id": 0,
+            "from_id": 2,
+            "to_id": 4,
             "from_socket": "Out",
             "to_socket": "In"
         },
         {
-            "from_id": 1,
-            "to_id": 0,
+            "from_id": 0,
+            "to_id": 4,
             "from_socket": "Transform",
             "to_socket": "Transform"
         },
         {
-            "from_id": 2,
-            "to_id": 1,
+            "from_id": 1,
+            "to_id": 0,
             "from_socket": "Scale",
             "to_socket": "Scale"
         },
         {
-            "from_id": 4,
-            "to_id": 1,
+            "from_id": 3,
+            "to_id": 0,
             "from_socket": "Location",
             "to_socket": "Location"
         }

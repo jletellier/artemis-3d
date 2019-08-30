@@ -1,7 +1,9 @@
+import Logic from './Logic';
 import { Behavior, Node, Scene, Observer } from '@babylonjs/core';
 
 export default class LogicTree implements Behavior<Node> {
 
+    private _canvasName: string;
     private _target: Node;
     private _scene: Scene;
     private _initFns: (() => void)[] = [];
@@ -14,12 +16,24 @@ export default class LogicTree implements Behavior<Node> {
         return this.constructor.name;
     }
 
+    public get canvasName(): string {
+        return this._canvasName;
+    }
+
     public get target(): Node {
         return this._target;
     }
 
     public get scene(): Scene {
         return this._scene;
+    }
+
+    constructor(canvasName: string) {
+        this._canvasName = canvasName;
+    }
+
+    public clone() {
+        return Logic.getLogicTreeInstanceByName(this._canvasName);
     }
 
     public init() {

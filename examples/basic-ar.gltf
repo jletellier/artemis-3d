@@ -73,7 +73,19 @@
     "nodes" : [
         {
             "extras" : {
-                "arm_spawn" : 0
+                "arm_spawn" : 0,
+                "arm_traitlist" : [
+                    {
+                        "is_object" : 1,
+                        "type_prop" : 4,
+                        "node_tree_prop" : {
+                            "name" : "RotateCube",
+                            "type" : "ArmLogicTree"
+                        },
+                        "name" : "RotateCube"
+                    }
+                ],
+                "arm_traitlist_index" : 0
             },
             "mesh" : 0,
             "name" : "ProtoCube",
@@ -137,7 +149,8 @@
                             "name" : "SpawnOnClick",
                             "type" : "ArmLogicTree"
                         },
-                        "name" : "SpawnOnClick"
+                        "name" : "SpawnOnClick",
+                        "enabled_prop" : 1
                     }
                 ],
                 "arm_traitlist_index" : 0

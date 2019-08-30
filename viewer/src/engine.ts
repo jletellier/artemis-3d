@@ -5,7 +5,6 @@ import '@babylonjs/loaders/glTF/2.0';
 import { GLTFLoaderCoordinateSystemMode,
     GLTFFileLoader } from '@babylonjs/loaders/glTF/glTFFileLoader';
 import Logic from './logicnode/Logic';
-import LogicTree from './logicnode/LogicTree';
 
 export default class Engine {
 
@@ -13,8 +12,6 @@ export default class Engine {
     private _scene: Scene;
     private _logicFiles: Set<string> = new Set();
     private _logicAttachments: Map<Node, string> = new Map();
-    private _doNotSpawnNodes: number[] = [];
-    private _logicMap: Map<string, LogicTree> = new Map();
 
     public init(canvas: HTMLCanvasElement) {
         this._engine = new BabylonEngine(canvas, true);
@@ -78,21 +75,16 @@ export default class Engine {
         });
             
         this._logicFiles.forEach((logicFile) => {
-            if (this._logicMap.has(logicFile)) {
-                return;
-            }
-
             const task = assetsManager.addTextFileTask(logicFile, `./${logicFile}.json`);
             task.onSuccess = (assetTask) => {
                 const logicJson = JSON.parse(assetTask.text);
-                const tree = Logic.parse(logicJson);
-                this._logicMap.set(logicFile, tree);
+                Logic.addCanvas(logicJson);
             };
         });
 
         assetsManager.onTasksDoneObservable.add(() => {
             this._logicAttachments.forEach((logicFile, node) => {
-                const behavior = this._logicMap.get(logicFile);
+                const behavior = Logic.getLogicTreeInstanceByName(logicFile);
                 node.addBehavior(behavior);
             });
 

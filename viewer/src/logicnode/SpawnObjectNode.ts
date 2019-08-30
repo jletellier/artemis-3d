@@ -1,4 +1,5 @@
 import LogicNode from './LogicNode';
+import LogicTree from './LogicTree';
 import { TransformNode, Matrix, Vector3 } from '@babylonjs/core';
 
 export default class SpawnObjectNode extends LogicNode {
@@ -9,6 +10,12 @@ export default class SpawnObjectNode extends LogicNode {
         const cloneChildren: boolean = this.inputs[3].get();
 
         const newNode = protoNode.clone(`${protoNode.name}_Instance`, null, !cloneChildren);
+        
+        protoNode.behaviors.forEach((behavior) => {
+            if (behavior instanceof LogicTree) {
+                newNode.addBehavior(behavior.clone());
+            }
+        });
 
         transform.decompose(
             newNode.scaling,
