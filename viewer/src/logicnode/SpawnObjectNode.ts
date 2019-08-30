@@ -9,18 +9,11 @@ export default class SpawnObjectNode extends LogicNode {
         const cloneChildren: boolean = this.inputs[3].get();
 
         const newNode = protoNode.clone(`${protoNode.name}_Instance`, null, !cloneChildren);
-        console.log('Spawning object:', protoNode.name);
 
         transform.decompose(
             newNode.scaling,
             newNode.rotationQuaternion,
-            newNode.absolutePosition,
-        );
-
-        console.log(
-            newNode.scaling,
-            newNode.rotationQuaternion,
-            newNode.absolutePosition,
+            newNode.position,
         );
 
         const scene = this.tree.target.getScene();

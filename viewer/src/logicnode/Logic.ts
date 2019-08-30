@@ -8,6 +8,7 @@ import PrintNode from './PrintNode';
 import BooleanNode from './BooleanNode';
 import FloatNode from './FloatNode';
 import VectorNode from './VectorNode';
+import VectorMathNode from './VectorMathNode';
 import StringNode from './StringNode';
 import ObjectNode from './ObjectNode';
 import TransformNode from './TransformNode';
@@ -27,6 +28,7 @@ const NODE_CLASSES: any = {
     FloatNode,
     StringNode,
     VectorNode,
+    VectorMathNode,
     ObjectNode,
     TransformNode,
     SetLocationNode,
@@ -186,8 +188,6 @@ export default class Logic {
 
             instance.addOutputs(outNodes);
         });
-
-        console.log(instance);
 
         return uniqueNodeName;
     }

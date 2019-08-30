@@ -38,20 +38,65 @@
             ]
         },
         {
-            "name": "_GetTransform",
-            "type": "GetTransformNode",
+            "name": "_Transform",
+            "type": "TransformNode",
             "properties": [],
             "inputs": [
                 {
-                    "name": "Object",
-                    "type": "OBJECT",
-                    "default_value": "Camera"
+                    "name": "Location",
+                    "type": "VECTOR",
+                    "default_value": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                },
+                {
+                    "name": "Rotation",
+                    "type": "VECTOR",
+                    "default_value": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                },
+                {
+                    "name": "Scale",
+                    "type": "VECTOR",
+                    "default_value": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
                 }
             ],
             "outputs": [
                 {
                     "name": "Transform",
                     "type": "SHADER"
+                }
+            ]
+        },
+        {
+            "name": "_GetScale",
+            "type": "GetScaleNode",
+            "properties": [],
+            "inputs": [
+                {
+                    "name": "Object",
+                    "type": "OBJECT",
+                    "default_value": "ProtoCube"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Scale",
+                    "type": "VECTOR",
+                    "default_value": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
                 }
             ]
         },
@@ -68,11 +113,34 @@
                     "type": "VALUE"
                 }
             ]
+        },
+        {
+            "name": "_GetLocation",
+            "type": "GetLocationNode",
+            "properties": [],
+            "inputs": [
+                {
+                    "name": "Object",
+                    "type": "OBJECT",
+                    "default_value": "Camera"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Location",
+                    "type": "VECTOR",
+                    "default_value": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            ]
         }
     ],
     "links": [
         {
-            "from_id": 2,
+            "from_id": 3,
             "to_id": 0,
             "from_socket": "Out",
             "to_socket": "In"
@@ -82,6 +150,18 @@
             "to_id": 0,
             "from_socket": "Transform",
             "to_socket": "Transform"
+        },
+        {
+            "from_id": 2,
+            "to_id": 1,
+            "from_socket": "Scale",
+            "to_socket": "Scale"
+        },
+        {
+            "from_id": 4,
+            "to_id": 1,
+            "from_socket": "Location",
+            "to_socket": "Location"
         }
     ]
 }

@@ -2,6 +2,8 @@ import { AssetsManager, Camera, Engine as BabylonEngine, Scene, SceneLoader, Tag
     Vector3, WebXRExperienceHelper, WebXRManagedOutputCanvas, WebXRState,
     PointerEventTypes, PickingInfo, PointerInfo, Node } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF/2.0';
+import { GLTFLoaderCoordinateSystemMode,
+    GLTFFileLoader } from '@babylonjs/loaders/glTF/glTFFileLoader';
 import Logic from './logicnode/Logic';
 import LogicTree from './logicnode/LogicTree';
 
@@ -17,6 +19,7 @@ export default class Engine {
     public init(canvas: HTMLCanvasElement) {
         this._engine = new BabylonEngine(canvas, true);
         this._scene = new Scene(this._engine);
+        this._scene.useRightHandedSystem = true;
 
         const camera = new Camera('MainCamera', new Vector3(0, 0.8, 100), this._scene, true);
 
@@ -35,14 +38,19 @@ export default class Engine {
     }
 
     private _loadGltfScene(file: string) {
-        SceneLoader.Load('./', file, this._engine, (newScene) => {
+        const loader = SceneLoader.Load('./', file, this._engine, (newScene) => {
             if (newScene.cameras.length > 0) {
                 newScene.activeCamera = newScene.cameras[0];
-                Tags.AddTagsTo(newScene.activeCamera, 'mainCamera');
+                const mainCamera = newScene.getNodeByName(newScene.activeCamera.name);
+                Tags.AddTagsTo(mainCamera, 'mainCamera');
             }
 
             this._loadLogic(newScene);
         });
+
+        if (loader instanceof GLTFFileLoader) {
+            loader.coordinateSystemMode = GLTFLoaderCoordinateSystemMode.FORCE_RIGHT_HANDED;
+        }
     }
 
     private _loadLogic(newScene: Scene) {
