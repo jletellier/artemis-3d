@@ -2,8 +2,6 @@ import { AssetsManager, Camera, Engine as BabylonEngine, Scene, SceneLoader, Tag
     Vector3, WebXRExperienceHelper, WebXRManagedOutputCanvas, WebXRState,
     PointerEventTypes, PickingInfo, PointerInfo, Node } from '@babylonjs/core';
 import '@babylonjs/loaders/glTF/2.0';
-import { GLTFLoaderCoordinateSystemMode,
-    GLTFFileLoader } from '@babylonjs/loaders/glTF/glTFFileLoader';
 import Logic from './logicnode/Logic';
 
 export default class Engine {
@@ -11,7 +9,7 @@ export default class Engine {
     private _engine: BabylonEngine;
     private _scene: Scene;
     private _logicFiles: Set<string> = new Set();
-    private _logicAttachments: Map<Node, string> = new Map();
+    private _logicAttachments: Map<Node, Set<string>> = new Map();
 
     public init(canvas: HTMLCanvasElement) {
         this._engine = new BabylonEngine(canvas, true);
@@ -35,7 +33,7 @@ export default class Engine {
     }
 
     private _loadGltfScene(file: string) {
-        const loader = SceneLoader.Load('./', file, this._engine, (newScene) => {
+        SceneLoader.Load('./', file, this._engine, (newScene) => {
             if (newScene.cameras.length > 0) {
                 newScene.activeCamera = newScene.cameras[0];
                 const mainCamera = newScene.getNodeByName(newScene.activeCamera.name);
@@ -44,10 +42,6 @@ export default class Engine {
 
             this._loadLogic(newScene);
         });
-
-        if (loader instanceof GLTFFileLoader) {
-            loader.coordinateSystemMode = GLTFLoaderCoordinateSystemMode.FORCE_RIGHT_HANDED;
-        }
     }
 
     private _loadLogic(newScene: Scene) {
@@ -64,7 +58,12 @@ export default class Engine {
                     // FIXME: Add type definition for arm_traitlist and trait
                     extras['arm_traitlist'].forEach((trait: any) => {
                         this._logicFiles.add(trait.name);
-                        this._logicAttachments.set(node, trait.name);
+                        let nodeLogicFiles = this._logicAttachments.get(node);
+                        if (!nodeLogicFiles) {
+                            nodeLogicFiles = new Set();
+                        }
+                        nodeLogicFiles.add(trait.name);
+                        this._logicAttachments.set(node, nodeLogicFiles);
                     });
                 }
                 
@@ -83,9 +82,11 @@ export default class Engine {
         });
 
         assetsManager.onTasksDoneObservable.add(() => {
-            this._logicAttachments.forEach((logicFile, node) => {
-                const behavior = Logic.getLogicTreeInstanceByName(logicFile);
-                node.addBehavior(behavior);
+            this._logicAttachments.forEach((nodeLogicFiles, node) => {
+                nodeLogicFiles.forEach((logicFile) => {
+                    const behavior = Logic.getLogicTreeInstanceByName(logicFile);
+                    node.addBehavior(behavior);
+                });
             });
 
             this._scene.dispose();
