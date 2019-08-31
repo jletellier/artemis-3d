@@ -1,0 +1,67 @@
+{
+    "name": "WorldShrinking",
+    "nodes": [
+        {
+            "name": "_OnTimer",
+            "type": "OnTimerNode",
+            "properties": [],
+            "inputs": [
+                {
+                    "name": "Duration",
+                    "type": "VALUE",
+                    "default_value": 1.0
+                },
+                {
+                    "name": "Repeat",
+                    "type": "BOOLEAN",
+                    "default_value": true
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "type": "VALUE"
+                }
+            ]
+        },
+        {
+            "name": "_ScaleObject",
+            "type": "ScaleObjectNode",
+            "properties": [],
+            "inputs": [
+                {
+                    "name": "In",
+                    "type": "VALUE"
+                },
+                {
+                    "name": "Object",
+                    "type": "OBJECT",
+                    "default_value": "default_value_get"
+                },
+                {
+                    "name": "Vector",
+                    "type": "VECTOR",
+                    "default_value": [
+                        -0.009999999776482582,
+                        -0.009999999776482582,
+                        -0.009999999776482582
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "type": "VALUE"
+                }
+            ]
+        }
+    ],
+    "links": [
+        {
+            "from_id": 0,
+            "to_id": 1,
+            "from_socket": "Out",
+            "to_socket": "In"
+        }
+    ]
+}

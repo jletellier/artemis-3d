@@ -113,6 +113,20 @@
             "children" : [
                 1
             ],
+            "extras" : {
+                "arm_traitlist" : [
+                    {
+                        "is_object" : 1,
+                        "type_prop" : 4,
+                        "node_tree_prop" : {
+                            "name" : "LockPositionToCamera",
+                            "type" : "ArmLogicTree"
+                        },
+                        "name" : "LockPositionToCamera"
+                    }
+                ],
+                "arm_traitlist_index" : 0
+            },
             "name" : "Light",
             "rotation" : [
                 0.16907575726509094,
