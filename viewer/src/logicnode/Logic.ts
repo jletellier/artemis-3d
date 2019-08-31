@@ -21,6 +21,8 @@ import GetTransformNode from './GetTransformNode';
 import GetLocationNode from './GetLocationNode';
 import GetScaleNode from './GetScaleNode';
 import RotateObjectNode from './RotateObjectNode';
+import ScaleObjectNode from './ScaleObjectNode';
+import DegToRadNode from './DegToRadNode';
 
 const NODE_CLASSES: any = {
     OnInitNode,
@@ -43,6 +45,8 @@ const NODE_CLASSES: any = {
     GetLocationNode,
     GetScaleNode,
     RotateObjectNode,
+    ScaleObjectNode,
+    DegToRadNode,
 };
 
 export default class Logic {
