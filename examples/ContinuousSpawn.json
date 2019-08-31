@@ -4,6 +4,7 @@
         {
             "name": "_SpawnObject",
             "type": "SpawnObjectNode",
+            "properties": [],
             "inputs": [
                 {
                     "name": "In",
@@ -39,6 +40,7 @@
         {
             "name": "_Object",
             "type": "ObjectNode",
+            "properties": [],
             "inputs": [
                 {
                     "name": "Object",
@@ -57,6 +59,7 @@
         {
             "name": "_Transform",
             "type": "TransformNode",
+            "properties": [],
             "inputs": [
                 {
                     "name": "Location",
@@ -82,7 +85,7 @@
                     "default_value": [
                         0.10000000149011612,
                         0.10000000149011612,
-                        0.10000000149011612
+                        0.20000000298023224
                     ]
                 }
             ],
@@ -96,6 +99,7 @@
         {
             "name": "_Random_Vector_",
             "type": "RandomVectorNode",
+            "properties": [],
             "inputs": [
                 {
                     "name": "Min",
@@ -103,7 +107,7 @@
                     "default_value": [
                         -1.0,
                         -1.0,
-                        -1.0
+                        0.0
                     ]
                 },
                 {
@@ -112,7 +116,7 @@
                     "default_value": [
                         1.0,
                         1.0,
-                        1.0
+                        0.0
                     ]
                 }
             ],
@@ -131,6 +135,7 @@
         {
             "name": "_SpawnTimer",
             "type": "OnTimerNode",
+            "properties": [],
             "inputs": [
                 {
                     "name": "Duration",

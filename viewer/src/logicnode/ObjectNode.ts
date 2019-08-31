@@ -14,7 +14,7 @@ export default class ObjectNode extends LogicNode {
         if (!this.value) {
             const target = this.tree.target;
             const scene = target.getScene();
-            this.value = (this.objectName.length ? scene.getNodeByName(this.objectName) : target);
+            this.value = (this.objectName ? scene.getNodeByName(this.objectName) : target);
         }
 
         return this.value;

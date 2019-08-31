@@ -12,10 +12,8 @@ export default class GetScaleNode extends LogicNode {
 
         if (node instanceof TransformNode) {
             const tmpVec = node.scaling.asArray();
-            // const tmpY = tmpVec[2];
-            // tmpVec[2] = tmpVec[1];
-            // tmpVec[1] = -tmpY;
-            return tmpVec;
+            // Convert coordinate system: glTF 2.0 -> Blender
+            return [tmpVec[0], tmpVec[2], tmpVec[1]];
         }
 
         return [1, 1, 1];

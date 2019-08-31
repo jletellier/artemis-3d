@@ -42,29 +42,6 @@
             ]
         },
         {
-            "name": "_GetScale",
-            "type": "GetScaleNode",
-            "properties": [],
-            "inputs": [
-                {
-                    "name": "Object",
-                    "type": "OBJECT",
-                    "default_value": "ProtoCube"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "Scale",
-                    "type": "VECTOR",
-                    "default_value": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
-                }
-            ]
-        },
-        {
             "name": "_OnSurface",
             "type": "OnSurfaceNode",
             "properties": [
@@ -136,29 +113,52 @@
                     "default_value": ""
                 }
             ]
+        },
+        {
+            "name": "_GetScale",
+            "type": "GetScaleNode",
+            "properties": [],
+            "inputs": [
+                {
+                    "name": "Object",
+                    "type": "OBJECT",
+                    "default_value": "ProtoCube"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Scale",
+                    "type": "VECTOR",
+                    "default_value": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            ]
         }
     ],
     "links": [
         {
-            "from_id": 2,
-            "to_id": 4,
+            "from_id": 1,
+            "to_id": 3,
             "from_socket": "Out",
             "to_socket": "In"
         },
         {
             "from_id": 0,
-            "to_id": 4,
+            "to_id": 3,
             "from_socket": "Transform",
             "to_socket": "Transform"
         },
         {
-            "from_id": 1,
+            "from_id": 4,
             "to_id": 0,
             "from_socket": "Scale",
             "to_socket": "Scale"
         },
         {
-            "from_id": 3,
+            "from_id": 2,
             "to_id": 0,
             "from_socket": "Location",
             "to_socket": "Location"

@@ -20,10 +20,8 @@ export default class SetLocationNode extends LogicNode {
         if (node instanceof Camera ||
             node instanceof ShadowLight ||
             node instanceof TransformNode) {
-            const tmpY = vec[1];
-            vec[1] = vec[2];
-            vec[2] = -tmpY;
-            node.position = Vector3.FromArray(vec);
+            // Convert coordinate system: Blender -> glTF 2.0
+            Vector3.FromFloatsToRef(vec[0], vec[2], -vec[1], node.position);
         }
 
         this.runOutput(0);

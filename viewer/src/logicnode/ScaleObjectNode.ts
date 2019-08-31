@@ -17,7 +17,7 @@ export default class ScaleObjectNode extends LogicNode {
         }
 
         if (node instanceof TransformNode) {
-            // This converts the coordinate system: Blender -> glTF 2.0
+            // Convert coordinate system: Blender -> glTF 2.0
             node.scaling.addInPlaceFromFloats(vec[0], vec[2], vec[1]);
         }
 

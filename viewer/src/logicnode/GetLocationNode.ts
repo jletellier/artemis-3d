@@ -12,17 +12,18 @@ export default class GetLocationNode extends LogicNode {
 
         if (Tags.MatchesQuery(node, 'mainCamera') &&
             this.tree.scene.activeCamera instanceof WebXRCamera) {
-            return this.tree.scene.activeCamera.globalPosition.asArray();
+            node = this.tree.scene.activeCamera;
+            const tmpVec = this.tree.scene.activeCamera.globalPosition.asArray();
+            // Convert coordinate system: engine -> Blender
+            return [tmpVec[0], tmpVec[2], tmpVec[1]];
         }
 
         if (node instanceof Camera ||
             node instanceof ShadowLight ||
             node instanceof TransformNode) {
             const tmpVec = node.position.asArray();
-            const tmpY = tmpVec[2];
-            tmpVec[2] = tmpVec[1];
-            tmpVec[1] = -tmpY;
-            return tmpVec;
+            // Convert coordinate system: glTF 2.0 -> Blender
+            return [tmpVec[0], -tmpVec[2], tmpVec[1]];
         }
 
         return [0, 0, 0];

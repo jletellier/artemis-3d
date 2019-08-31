@@ -2,37 +2,6 @@
     "name": "RotateCube",
     "nodes": [
         {
-            "name": "_RotateObject",
-            "type": "RotateObjectNode",
-            "properties": [],
-            "inputs": [
-                {
-                    "name": "In",
-                    "type": "VALUE"
-                },
-                {
-                    "name": "Object",
-                    "type": "OBJECT",
-                    "default_value": null
-                },
-                {
-                    "name": "Vector",
-                    "type": "VECTOR",
-                    "default_value": [
-                        0.019999999552965164,
-                        0.019999999552965164,
-                        0.019999999552965164
-                    ]
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "Out",
-                    "type": "VALUE"
-                }
-            ]
-        },
-        {
             "name": "_OnTimer",
             "type": "OnTimerNode",
             "properties": [],
@@ -56,31 +25,43 @@
             ]
         },
         {
-            "name": "_Self",
-            "type": "SelfNode",
+            "name": "_RotateObject",
+            "type": "RotateObjectNode",
             "properties": [],
-            "inputs": [],
-            "outputs": [
+            "inputs": [
+                {
+                    "name": "In",
+                    "type": "VALUE"
+                },
                 {
                     "name": "Object",
-                    "type": "VALUE",
-                    "default_value": ""
+                    "type": "OBJECT",
+                    "default_value": null
+                },
+                {
+                    "name": "Vector",
+                    "type": "VECTOR",
+                    "default_value": [
+                        0.0,
+                        0.0,
+                        0.019999999552965164
+                    ]
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "Out",
+                    "type": "VALUE"
                 }
             ]
         }
     ],
     "links": [
         {
-            "from_id": 1,
-            "to_id": 0,
+            "from_id": 0,
+            "to_id": 1,
             "from_socket": "Out",
             "to_socket": "In"
-        },
-        {
-            "from_id": 2,
-            "to_id": 0,
-            "from_socket": "Object",
-            "to_socket": "Object"
         }
     ]
 }
