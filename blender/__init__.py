@@ -14,6 +14,7 @@ from bpy.app.handlers import save_post
 from bpy.app.handlers import persistent
 
 from . import make_logic
+from . import upload
 
 
 @persistent
@@ -40,6 +41,7 @@ def artemis_export_scene(scene):
 def artemis_export_logic(scene):
     print('Saving ARtemis logic...')
     make_logic.build()
+    upload.upload_scene()
 
 
 class ExportArtemis(bpy.types.Operator):

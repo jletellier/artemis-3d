@@ -19,6 +19,8 @@ const credentials = {
 };
 
 const app = express();
+app.use(express.json());
+
 const httpsServer = https.createServer(credentials, app);
 const wss = new ws.Server({ server: httpsServer });
 
@@ -28,6 +30,30 @@ nodeWatch(path.resolve(rootPath, 'viewer/dist/index.js'), {}, reloadClient);
 function reloadClient() {
     console.log('File changed...');
 }
+
+app.use('/api/', (req, res, next) => {
+    let token = req.headers['x-access-token'] || req.headers['authorization'];
+
+    if (Array.isArray(token) && token.length > 0) {
+        token = token[0];
+    }
+
+    if (typeof token === 'string' && token.startsWith('Bearer ')) {
+        token = token.slice(7, token.length);
+    }
+
+    if (token === '1234') {
+        return next();
+    }
+
+    console.log('Client is not authorized');
+    return res.sendStatus(403);
+});
+
+app.post('/api/scene/upload', (req, res) => {
+    console.log(req.body);
+    res.sendStatus(200);
+});
 
 app.use('/', express.static(path.resolve(rootPath, 'examples')));
 app.use('/', express.static(path.resolve(rootPath, 'viewer/dist')));
