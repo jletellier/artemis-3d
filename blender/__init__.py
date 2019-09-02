@@ -33,6 +33,13 @@ def artemis_export():
 def artemis_upload():
     print('Uploading ARtemis scene...')
 
+    # Upload blender scene as glTF
+
+    # Upload node_groups as logic canvases
+    serialized_canvases = make_logic.serialize()
+    for canvas in serialized_canvases:
+        upload.upload_logic(canvas)
+
 
 class ExportArtemis(bpy.types.Operator):
     bl_idname = 'export_scene.artemis'

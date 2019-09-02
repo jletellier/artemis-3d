@@ -6,14 +6,15 @@ IS_DEV_MODE = True
 API_URL = 'https://localhost:8443/api'
 
 
-def upload_scene(json):
+def upload_scene():
     path = '/scene/upload'
     upload_json(json)
 
 
-def upload_logic(json):
+def upload_logic(logic_canvas):
     path = '/logic/upload'
-    upload_json(json)
+    json_encoded = json.dumps(logic_canvas, indent = 4)
+    upload_json(json_encoded, path)
 
 
 def upload_json(json, path):

@@ -4,6 +4,7 @@ import https from 'https';
 import express from 'express';
 import ws from 'ws';
 import nodeWatch from 'node-watch';
+import filenamify from 'filenamify';
 
 const rootPath = path.resolve(__dirname, '../../');
 const port = 8443;
@@ -52,6 +53,25 @@ app.use('/api/', (req, res, next) => {
 
 app.post('/api/scene/upload', (req, res) => {
     console.log(req.body);
+    res.sendStatus(200);
+});
+
+app.post('/api/logic/upload', (req, res) => {
+    const canvas = req.body;
+    const filename = filenamify(canvas.name);
+    console.log(filename);
+
+    if (typeof filename === 'string') {
+        const filepath = path.resolve(rootPath, 'uploads');
+        if (!fs.existsSync(filepath)) {
+            fs.mkdirSync(filepath);
+        }
+
+        fs.writeFile(path.resolve(filepath, `${filename}.json`), JSON.stringify(req.body), () => {
+
+        });
+    }
+    
     res.sendStatus(200);
 });
 
