@@ -2,8 +2,21 @@ import requests
 import json
 
 
-def upload_scene():
-    url = 'https://localhost:8443/api/scene/upload'
+IS_DEV_MODE = True
+API_URL = 'https://localhost:8443/api'
+
+
+def upload_scene(json):
+    path = '/scene/upload'
+    upload_json(json)
+
+
+def upload_logic(json):
+    path = '/logic/upload'
+    upload_json(json)
+
+
+def upload_json(json, path):
+    url = API_URL + path
     headers = { 'Content-type': 'application/json', 'Authorization': 'Bearer 1234' }
-    payload = { 'some': 'data' }
-    r = requests.post(url, data = json.dumps(payload), headers = headers, verify = False)
+    r = requests.post(url, data = json, headers = headers, verify = not IS_DEV_MODE)

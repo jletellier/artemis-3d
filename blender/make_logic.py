@@ -3,49 +3,41 @@ import os
 import bpy
 import numpy as np
 
-def get_logic_trees():
-    ar = []
+
+def get_logic_canvases():
+    canvases = []
     for node_group in bpy.data.node_groups:
         if node_group.bl_idname == 'ArmLogicTreeType':
             node_group.use_fake_user = True # Keep fake references for now
-            ar.append(node_group)
-    return ar
+            # TODO: Check if cached
+            # if not node_group.arm_cached or not os.path.isfile(file):
+            canvases.append(node_group)
+    return canvases
 
 
-# Generating node sources
-def build():
-    trees = get_logic_trees()
-    if len(trees) > 0:
-        # Export node scripts
-        for tree in trees:
-            build_node_tree(tree)
+def serialize():
+    serialized = []
+    canvases = get_logic_canvases()
+
+    for canvas in canvases:
+        serialized.append(serialize_logic_canvas(canvas))
+
+    return serialized
 
 
-def build_node_tree(node_group):
-    path = './'
-    group_name = safesrc(node_group.name[0].upper() + node_group.name[1:])
-    file = path + group_name + '.json'
+def serialize_logic_canvas(canvas):
+    canvas_name = safesrc(canvas.name[0].upper() + canvas.name[1:])
 
-    if node_group.arm_cached and os.path.isfile(file):
-        return
+    nodes = gather_nodes(canvas)
+    links = gather_links(canvas)
 
-    nodes = gather_nodes(node_group)
-    links = gather_links(node_group)
-
-    json_serializable = {'name': group_name, 'nodes': nodes, 'links': links}
-    trait_encoded = json.dumps(json_serializable, indent=4)
-
-    file = open(file, 'w', encoding='utf8', newline='\n')
-    file.write(trait_encoded)
-    file.write('\n')
-    file.close()
-
-    node_group.arm_cached = True
+    serialized = {'name': canvas_name, 'nodes': nodes, 'links': links}
+    return serialized
 
 
-def gather_nodes(nodetree):
+def gather_nodes(canvas):
     nodes = []
-    nodeList = list(nodetree.nodes)
+    nodeList = list(canvas.nodes)
     for node in nodeList:
         node_name = '_' + safesrc(node.name)
         node_type = node.bl_idname[2:] # Discard 'LN'TimeNode prefix
@@ -100,10 +92,10 @@ def gather_node_io(nodeList, io_nodes):
     return sockets
 
 
-def gather_links(nodetree):
+def gather_links(canvas):
     links = []
-    nodeList = list(nodetree.nodes)
-    for idx, link in enumerate(nodetree.links):
+    nodeList = list(canvas.nodes)
+    for idx, link in enumerate(canvas.links):
         links.append({'from_id': nodeList.index(link.from_node), 
             'to_id': nodeList.index(link.to_node), 
             'from_socket': link.from_socket.identifier, 
@@ -117,6 +109,7 @@ def safesrc(s):
     if s[0].isdigit():
         s = '_' + s
     return s
+
 
 def safestr(s):
     for c in r'[]/\;,><&*:%=+@!#^()|?^':
