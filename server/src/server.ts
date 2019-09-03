@@ -4,7 +4,7 @@ import https from 'https';
 import express from 'express';
 import ws from 'ws';
 import nodeWatch from 'node-watch';
-import filenamify from 'filenamify';
+import validFilename from 'valid-filename';
 
 const rootPath = path.resolve(__dirname, '../../');
 const port = 8443;
@@ -48,7 +48,7 @@ app.use('/api/', (req, res, next) => {
     }
 
     console.log('Client is not authorized');
-    return res.sendStatus(403);
+    res.sendStatus(403);
 });
 
 app.post('/api/scene/upload', (req, res) => {
@@ -58,21 +58,28 @@ app.post('/api/scene/upload', (req, res) => {
 
 app.post('/api/logic/upload', (req, res) => {
     const canvas = req.body;
-    const filename = filenamify(canvas.name);
-    console.log(filename);
+    console.log(canvas);
 
-    if (typeof filename === 'string') {
-        const filepath = path.resolve(rootPath, 'uploads');
-        if (!fs.existsSync(filepath)) {
-            fs.mkdirSync(filepath);
-        }
-
-        fs.writeFile(path.resolve(filepath, `${filename}.json`), JSON.stringify(req.body), () => {
-
-        });
+    if (!validFilename(canvas.name)) {
+        return res.sendStatus(500);
     }
-    
-    res.sendStatus(200);
+
+    const uploadPath = path.resolve(rootPath, 'uploads');
+    if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath);
+    }
+
+    const filePath = path.resolve(uploadPath, `${canvas.name}.json`);
+    const fileContent = JSON.stringify(req.body, null, 4);
+
+    fs.writeFile(filePath, fileContent, (e) => {
+        if (e) {
+            console.log(e);
+            return res.sendStatus(500);
+        }
+        
+        res.sendStatus(200);
+    });
 });
 
 app.use('/', express.static(path.resolve(rootPath, 'examples')));

@@ -13,7 +13,7 @@ def upload_scene():
 
 def upload_logic(logic_canvas):
     path = '/logic/upload'
-    json_encoded = json.dumps(logic_canvas, indent = 4)
+    json_encoded = json.dumps(logic_canvas, separators = (',', ':'))
     upload_json(json_encoded, path)
 
 
