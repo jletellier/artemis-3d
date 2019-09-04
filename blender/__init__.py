@@ -13,6 +13,7 @@ import bpy
 from bpy.app.handlers import save_post
 from bpy.app.handlers import persistent
 
+from . import make_gltf
 from . import make_logic
 from . import export
 from . import upload
@@ -34,6 +35,8 @@ def artemis_upload():
     print('Uploading ARtemis scene...')
 
     # Upload blender scene as glTF
+    gltf_scene = make_gltf.make()
+    upload.upload_scene(gltf_scene)
 
     # Upload node_groups as logic canvases
     serialized_canvases = make_logic.serialize()
