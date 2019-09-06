@@ -1,6 +1,8 @@
 import requests
 import json
 
+from . import make_gltf
+
 
 IS_DEV_MODE = True
 API_URL = 'https://localhost:8443/api'
@@ -8,16 +10,17 @@ API_URL = 'https://localhost:8443/api'
 
 def upload_scene(gltf_scene):
     path = '/scene/upload'
-    upload_dict(gltf_scene, path)
+    json_encoded = make_gltf.get_json(gltf_scene, indent=None, separators=(',', ':'))
+    upload_json(json_encoded, path)
 
 
 def upload_logic(logic_canvas):
     path = '/logic/upload'
-    upload_dict(logic_canvas, path)
+    json_encoded = json.dumps(logic_canvas, separators=(',', ':'))
+    upload_json(json_encoded, path)
 
 
-def upload_dict(serializable_dict, path):
+def upload_json(json_encoded, path):
     url = API_URL + path
     headers = { 'Content-type': 'application/json', 'Authorization': 'Bearer 1234' }
-    json_encoded = json.dumps(serializable_dict, separators = (',', ':'))
     r = requests.post(url, data = json_encoded, headers = headers, verify = not IS_DEV_MODE)
