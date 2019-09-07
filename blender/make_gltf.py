@@ -12,14 +12,14 @@ from io_scene_gltf2.blender.com import gltf2_blender_json
 
 
 def make():
-    file_path = bpy.context.blend_data.filepath
-    # Remove .blend extension:
-    file_path = os.path.splitext(file_path)[0]
+    directory_path = os.path.dirname(bpy.context.blend_data.filepath)
+    filename = bpy.path.basename(bpy.context.blend_data.filepath)
+    filename = os.path.splitext(filename)[0]
 
     export_settings = {
         'timestamp': datetime.datetime.now(),
-        'gltf_filepath': bpy.path.ensure_ext(file_path, '.gltf'),
-        'gltf_filedirectory': os.path.dirname(file_path) + '/',
+        'gltf_filepath': directory_path + '/' + bpy.path.ensure_ext(filename, '.gltf'),
+        'gltf_filedirectory': directory_path + '/',
         'gltf_format': 'GLTF_SEPARATE',
         'gltf_image_format': 'NAME',
         'gltf_copyright': '',
@@ -48,7 +48,7 @@ def make():
         'gltf_lights': True,
         'gltf_displacement': False,
         'gltf_binary': bytearray(),
-        'gltf_binaryfilename': bpy.path.ensure_ext(file_path, '.bin'),
+        'gltf_binaryfilename': bpy.path.ensure_ext(filename, '.bin'),
         'gltf_channelcache': dict(),
     }
 
@@ -76,8 +76,8 @@ def make():
     for animation in animations:
         exporter.add_animation(animation)
 
-    buffer = bytes()
-    buffer = exporter.finalize_buffer(export_settings['gltf_filedirectory'], is_glb=True)
+    exporter.finalize_buffer(
+        export_settings['gltf_filedirectory'], export_settings['gltf_binaryfilename'])
     exporter.finalize_images(export_settings['gltf_filedirectory'])
 
     gltf = __fix_json(exporter.glTF.to_dict())
@@ -88,7 +88,7 @@ def make():
     return gltf
 
 
-def get_json(gltf, indent, separators):
+def get_json(gltf, indent=None, separators=None):
     encoder = gltf2_blender_json.BlenderJSONEncoder
 
     sort_order = [

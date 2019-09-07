@@ -23,7 +23,8 @@ def artemis_export():
     print('Exporting ARtemis scene...')
 
     # Export blender scene as glTF
-    export.export_scene()
+    gltf = make_gltf.make()
+    export.export_gltf(gltf)
 
     # Export node_groups as logic canvases
     serialized_canvases = make_logic.serialize()
@@ -35,8 +36,8 @@ def artemis_upload():
     print('Uploading ARtemis scene...')
 
     # Upload blender scene as glTF
-    gltf_scene = make_gltf.make()
-    upload.upload_scene(gltf_scene)
+    gltf = make_gltf.make()
+    upload.upload_gltf(gltf)
 
     # Upload node_groups as logic canvases
     serialized_canvases = make_logic.serialize()

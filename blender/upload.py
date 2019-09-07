@@ -8,9 +8,9 @@ IS_DEV_MODE = True
 API_URL = 'https://localhost:8443/api'
 
 
-def upload_scene(gltf_scene):
-    path = '/scene/upload'
-    json_encoded = make_gltf.get_json(gltf_scene, indent=None, separators=(',', ':'))
+def upload_gltf(gltf):
+    path = '/gltf/upload'
+    json_encoded = make_gltf.get_json(gltf, indent=None, separators=(',', ':'))
     upload_json(json_encoded, path)
 
 
@@ -22,5 +22,5 @@ def upload_logic(logic_canvas):
 
 def upload_json(json_encoded, path):
     url = API_URL + path
-    headers = { 'Content-type': 'application/json', 'Authorization': 'Bearer 1234' }
-    r = requests.post(url, data = json_encoded, headers = headers, verify = not IS_DEV_MODE)
+    headers = {'Content-type': 'application/json', 'Authorization': 'Bearer 1234'}
+    r = requests.post(url, data=json_encoded, headers=headers, verify=not IS_DEV_MODE)
