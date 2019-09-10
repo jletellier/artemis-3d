@@ -9,7 +9,11 @@ IS_DEV_MODE = True
 API_URL = 'https://localhost:8443/api'
 
 
-def upload_gltf(gltf):
+def upload_gltf(gltf, buffer):
+    if 'buffers' in gltf:
+        gltf['buffers'][0]['uri'] = 'buffer0.bin'
+        __upload_buffer(buffer, '/buffer/upload')
+
     path = '/gltf/upload'
     json_encoded = make_gltf.get_json(gltf, indent=None, separators=(',', ':'))
     upload_json(json_encoded, path)
@@ -26,6 +30,13 @@ def upload_json(json_encoded, path):
     token = __get_project_token()
     headers = {'Content-type': 'application/json', 'Authorization': token}
     r = requests.post(url, data=json_encoded, headers=headers, verify=not IS_DEV_MODE)
+
+
+def __upload_buffer(buffer, path):
+    url = API_URL + path
+    token = __get_project_token()
+    headers = {'Content-type': 'application/octet-stream', 'Authorization': token}
+    r = requests.post(url, data=buffer, headers=headers, verify=not IS_DEV_MODE)
 
 
 def __get_project_token():

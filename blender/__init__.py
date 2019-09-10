@@ -13,6 +13,7 @@ import bpy
 from bpy.app.handlers import save_post
 from bpy.app.handlers import persistent
 
+from . import props
 from . import make_gltf
 from . import make_logic
 from . import export
@@ -23,8 +24,8 @@ def artemis_export():
     print('Exporting ARtemis scene...')
 
     # Export blender scene as glTF
-    gltf = make_gltf.make()
-    export.export_gltf(gltf)
+    gltf, buffer = make_gltf.make()
+    export.export_gltf(gltf, buffer)
 
     # Export node_groups as logic canvases
     serialized_canvases = make_logic.serialize()
@@ -36,8 +37,8 @@ def artemis_upload():
     print('Uploading ARtemis scene...')
 
     # Upload blender scene as glTF
-    gltf = make_gltf.make()
-    upload.upload_gltf(gltf)
+    gltf, buffer = make_gltf.make()
+    upload.upload_gltf(gltf, buffer)
 
     # Upload node_groups as logic canvases
     serialized_canvases = make_logic.serialize()
@@ -60,12 +61,14 @@ def save_post_handler(scene):
 
 
 def register():
+    props.register()
     bpy.utils.register_class(ExportArtemis)
 
     save_post.append(save_post_handler)
 
 
 def unregister():
+    props.unregister()
     bpy.utils.unregister_class(ExportArtemis)
 
     save_post.remove(save_post_handler)

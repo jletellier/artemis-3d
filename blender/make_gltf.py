@@ -76,8 +76,9 @@ def make():
     for animation in animations:
         exporter.add_animation(animation)
 
-    exporter.finalize_buffer(
-        export_settings['gltf_filedirectory'], export_settings['gltf_binaryfilename'])
+    # exporter.finalize_buffer(
+    #     export_settings['gltf_filedirectory'], export_settings['gltf_binaryfilename'])
+    buffer = exporter.finalize_buffer(export_settings['gltf_filedirectory'], is_glb=True)
     exporter.finalize_images(export_settings['gltf_filedirectory'])
 
     gltf = __fix_json(exporter.glTF.to_dict())
@@ -85,7 +86,7 @@ def make():
     if not export_settings['gltf_current_frame']:
         bpy.context.scene.frame_set(original_frame)
 
-    return gltf
+    return gltf, buffer
 
 
 def get_json(gltf, indent=None, separators=None):

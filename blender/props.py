@@ -3,7 +3,6 @@ import bpy
 
 def get_world():
     if not 'Artemis' in bpy.data.worlds:
-        __init_properties()
         __create_world()
     
     return bpy.data.worlds['Artemis']
@@ -19,3 +18,11 @@ def __init_properties():
         name="Name", description="Artemis 3D project name", default="")
     bpy.types.World.artemis_project_token = bpy.props.StringProperty(
         name="Token", description="Artemis 3D project token", default="")
+
+
+def register():
+    __init_properties()
+
+
+def unregister():
+    pass

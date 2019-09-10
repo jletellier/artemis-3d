@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import https from 'https';
 import express, { Response } from 'express';
+import bodyParser from 'body-parser';
 import ws from 'ws';
 import nodeWatch from 'node-watch';
 import validFilename from 'valid-filename';
@@ -24,6 +25,7 @@ const credentials = {
 
 const app = express();
 app.use(express.json());
+app.use(bodyParser.raw({ limit: '200mb' }));
 
 const httpsServer = https.createServer(credentials, app);
 const wss = new ws.Server({ server: httpsServer });
@@ -72,7 +74,7 @@ app.use('/api/', async (req, res, next) => {
     });
 });
 
-function saveProjectFile(res: Response, fileName: string, fileContent: string) {
+function saveProjectFile(res: Response, fileName: string, fileContent: string|Buffer) {
     if (!validFilename(fileName)) {
         return res.sendStatus(500);
     }
@@ -106,10 +108,18 @@ app.use('/api/project/verify', (req, res) => {
 app.post('/api/gltf/upload', (req, res) => {
     const gltf = req.body;
     
-    const fileName = 'project.json';
+    const fileName = 'project.gltf';
     const fileContent = JSON.stringify(gltf, null, 4);
 
     saveProjectFile(res, fileName, fileContent);
+});
+
+app.post('/api/buffer/upload', (req, res) => {
+    const buffer = req.body;
+
+    const fileName = 'buffer0.bin';
+
+    saveProjectFile(res, fileName, buffer);
 });
 
 app.post('/api/logic/upload', (req, res) => {
