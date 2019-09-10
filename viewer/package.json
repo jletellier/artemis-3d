@@ -10,11 +10,11 @@
     "author": "Julien Letellier",
     "license": "MIT",
     "dependencies": {
-        "tslint": "^5.19.0",
+        "tslint": "^5.20.0",
         "tslint-config-airbnb": "^5.11.1",
         "typescript": "^3.6.2",
-        "@babylonjs/core": "4.1.0-alpha.17",
-        "@babylonjs/loaders": "4.1.0-alpha.17",
+        "@babylonjs/core": "4.1.0-alpha.19",
+        "@babylonjs/loaders": "4.1.0-alpha.19",
         "lit-element": "^2.2.1",
         "parcel-bundler": "^1.12.3"
     },
