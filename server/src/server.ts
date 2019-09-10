@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import https from 'https';
-import express from 'express';
+import express, { Response } from 'express';
 import ws from 'ws';
 import nodeWatch from 'node-watch';
 import validFilename from 'valid-filename';
@@ -39,7 +39,10 @@ app.use('/api/project/generate', (req, res) => {
     const randomName = uniqueNamesGenerator({ separator: '-' });
     const payload = { name: randomName };
     const token = jsonwebtoken.sign(payload, JWT_SECRET);
-    res.send(token);
+    res.json({
+        token,
+        ...payload,
+    });
 });
 
 app.use('/api/', async (req, res, next) => {
@@ -69,21 +72,8 @@ app.use('/api/', async (req, res, next) => {
     });
 });
 
-app.use('/api/project/verify', (req, res) => {
-    res.send(res.locals.payload);
-});
-
-app.post('/api/gltf/upload', (req, res) => {
-    const gltf = req.body;
-    console.log(gltf);
-    res.sendStatus(200);
-});
-
-app.post('/api/logic/upload', (req, res) => {
-    const canvas = req.body;
-    console.log(canvas);
-
-    if (!validFilename(canvas.name)) {
+function saveProjectFile(res: Response, fileName: string, fileContent: string) {
+    if (!validFilename(fileName)) {
         return res.sendStatus(500);
     }
 
@@ -93,12 +83,11 @@ app.post('/api/logic/upload', (req, res) => {
     }
 
     const projectPath = path.resolve(uploadPath, res.locals.payload.name);
-    if (!fs.existsSync(uploadPath)) {
-        fs.mkdirSync(uploadPath);
+    if (!fs.existsSync(projectPath)) {
+        fs.mkdirSync(projectPath);
     }
 
-    const filePath = path.resolve(projectPath, `${canvas.name}.json`);
-    const fileContent = JSON.stringify(req.body, null, 4);
+    const filePath = path.resolve(projectPath, fileName);
 
     fs.writeFile(filePath, fileContent, (e) => {
         if (e) {
@@ -108,6 +97,28 @@ app.post('/api/logic/upload', (req, res) => {
         
         res.sendStatus(200);
     });
+}
+
+app.use('/api/project/verify', (req, res) => {
+    res.send(res.locals.payload);
+});
+
+app.post('/api/gltf/upload', (req, res) => {
+    const gltf = req.body;
+    
+    const fileName = 'project.json';
+    const fileContent = JSON.stringify(gltf, null, 4);
+
+    saveProjectFile(res, fileName, fileContent);
+});
+
+app.post('/api/logic/upload', (req, res) => {
+    const canvas = req.body;
+
+    const fileName = `${canvas.name}.json`;
+    const fileContent = JSON.stringify(canvas, null, 4);
+
+    saveProjectFile(res, fileName, fileContent);
 });
 
 app.use('/', express.static(path.resolve(rootPath, 'examples')));

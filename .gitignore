@@ -7,5 +7,7 @@ node_modules/
 /viewer/.cache/
 /viewer/dist/
 
+/uploads/
+
 /blender/__pycache__/
 *.blend[0-9]

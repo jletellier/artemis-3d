@@ -10,8 +10,6 @@ API_URL = 'https://localhost:8443/api'
 
 
 def upload_gltf(gltf):
-    __ensure_artemis_project()
-
     path = '/gltf/upload'
     json_encoded = make_gltf.get_json(gltf, indent=None, separators=(',', ':'))
     upload_json(json_encoded, path)
@@ -25,11 +23,17 @@ def upload_logic(logic_canvas):
 
 def upload_json(json_encoded, path):
     url = API_URL + path
-    headers = {'Content-type': 'application/json', 'Authorization': 'Bearer 1234'}
+    token = __get_project_token()
+    headers = {'Content-type': 'application/json', 'Authorization': token}
     r = requests.post(url, data=json_encoded, headers=headers, verify=not IS_DEV_MODE)
 
 
-def __ensure_artemis_project():
+def __get_project_token():
     world = props.get_world()
-    if not 'artemis_project_name' in world:
-        world.artemis_project_name = 'tiny-yellow-cat'
+    if not 'artemis_project_token' in world:
+        r = requests.get(API_URL + '/project/generate', verify=not IS_DEV_MODE)
+        json = r.json()
+        world.artemis_project_token = json['token']
+        world.artemis_project_name = json['name']
+
+    return world.artemis_project_token

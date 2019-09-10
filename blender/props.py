@@ -17,3 +17,5 @@ def __create_world():
 def __init_properties():
     bpy.types.World.artemis_project_name = bpy.props.StringProperty(
         name="Name", description="Artemis 3D project name", default="")
+    bpy.types.World.artemis_project_token = bpy.props.StringProperty(
+        name="Token", description="Artemis 3D project token", default="")
