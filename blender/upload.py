@@ -11,18 +11,21 @@ API_URL = 'https://localhost:8443/api'
 
 def upload_gltf(gltf, buffer):
     if 'buffers' in gltf:
-        gltf['buffers'][0]['uri'] = 'buffer0.bin'
-        __upload_buffer(buffer, '/buffer/upload')
+        buffer_uri = 'buffer0.bin'
+        gltf['buffers'][0]['uri'] = buffer_uri
+        __upload_buffer(buffer, '/buffer/upload/' + buffer_uri)
 
-    path = '/gltf/upload'
+    if 'images' in gltf:
+        for image in gltf['images']:
+            __upload_file(image['uri'], '/buffer/upload/' + image['uri'])
+    
     json_encoded = make_gltf.get_json(gltf, indent=None, separators=(',', ':'))
-    upload_json(json_encoded, path)
+    upload_json(json_encoded, '/gltf/upload')
 
 
 def upload_logic(logic_canvas):
-    path = '/logic/upload'
     json_encoded = json.dumps(logic_canvas, separators=(',', ':'))
-    upload_json(json_encoded, path)
+    upload_json(json_encoded, '/logic/upload')
 
 
 def upload_json(json_encoded, path):
@@ -37,6 +40,12 @@ def __upload_buffer(buffer, path):
     token = __get_project_token()
     headers = {'Content-type': 'application/octet-stream', 'Authorization': token}
     r = requests.post(url, data=buffer, headers=headers, verify=not IS_DEV_MODE)
+
+
+def __upload_file(filename, path):
+    file = open(filename, 'rb')
+    buffer = file.read()
+    __upload_buffer(buffer, path)
 
 
 def __get_project_token():

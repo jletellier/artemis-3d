@@ -114,10 +114,9 @@ app.post('/api/gltf/upload', (req, res) => {
     saveProjectFile(res, fileName, fileContent);
 });
 
-app.post('/api/buffer/upload', (req, res) => {
+app.post('/api/buffer/upload/:filename', (req, res) => {
     const buffer = req.body;
-
-    const fileName = 'buffer0.bin';
+    const fileName = req.params.filename;
 
     saveProjectFile(res, fileName, buffer);
 });
