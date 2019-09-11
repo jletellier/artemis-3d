@@ -15,16 +15,19 @@ const IS_DEV = (process.env.NODE_ENV || '').trim() === 'dev';
 const ROOT_PATH = path.resolve(__dirname, '../../');
 const PORT = IS_DEV ? 8443 : 80;
 
-const credentials = {
-    key: fs.readFileSync(
-        path.resolve(ROOT_PATH, 'dev-cert', 'jl-l-01.local+4-key.pem'),
-        'utf8',
-    ),
-    cert: fs.readFileSync(
-        path.resolve(ROOT_PATH, 'dev-cert', 'jl-l-01.local+4.pem'),
-        'utf8',
-    ),
-};
+let credentials = {};
+if (IS_DEV) {
+    credentials = {
+        key: fs.readFileSync(
+            path.resolve(ROOT_PATH, 'dev-cert', 'jl-l-01.local+4-key.pem'),
+            'utf8',
+        ),
+        cert: fs.readFileSync(
+            path.resolve(ROOT_PATH, 'dev-cert', 'jl-l-01.local+4.pem'),
+            'utf8',
+        ),
+    };
+}
 
 const app = express();
 app.use(express.json());
@@ -139,6 +142,7 @@ app.post('/api/logic/upload', (req, res) => {
 });
 
 app.use('/', express.static(path.resolve(ROOT_PATH, 'uploads')));
+app.use('/', express.static(path.resolve(ROOT_PATH, 'viewer', 'build')));
 app.use('/', express.static(path.resolve(ROOT_PATH, 'viewer', 'dist')));
 app.use('/:project/', (req, res) => {
     res.sendFile(path.resolve(ROOT_PATH, 'viewer', 'index.html'));
