@@ -5,8 +5,8 @@ from . import make_gltf
 from . import props
 
 
-IS_DEV_MODE = True
-API_URL = 'https://localhost:8443/api'
+IS_DEV_MODE = False
+API_URL = 'https://localhost:8443/api' if IS_DEV_MODE else 'https://ar3d.work/api'
 
 
 def upload_gltf(gltf, buffer):

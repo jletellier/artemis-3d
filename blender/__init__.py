@@ -1,5 +1,5 @@
 bl_info = {
-    "name": "ARtemis",
+    "name": "Artemis 3D",
     "category": "Import-Export",
     "location": "File > Import-Export",
     "description": "Authoring tools for AR",
