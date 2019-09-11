@@ -1,5 +1,6 @@
 import path from 'path';
 import fs from 'fs';
+import http from 'http';
 import https from 'https';
 import express, { Response } from 'express';
 import bodyParser from 'body-parser';
@@ -10,15 +11,17 @@ import { uniqueNamesGenerator } from 'unique-names-generator';
 import jsonwebtoken from 'jsonwebtoken';
 
 const JWT_SECRET = ')-s_d4[Fk$d7GaHD7N.]U**D';
-const rootPath = path.resolve(__dirname, '../../');
-const port = 8443;
+const IS_DEV = (process.env.NODE_ENV || '').trim() === 'dev';
+const ROOT_PATH = path.resolve(__dirname, '../../');
+const PORT = IS_DEV ? 8443 : 80;
+
 const credentials = {
     key: fs.readFileSync(
-        path.resolve(rootPath, 'dev-cert', 'jl-l-01.local+4-key.pem'),
+        path.resolve(ROOT_PATH, 'dev-cert', 'jl-l-01.local+4-key.pem'),
         'utf8',
     ),
     cert: fs.readFileSync(
-        path.resolve(rootPath, 'dev-cert', 'jl-l-01.local+4.pem'),
+        path.resolve(ROOT_PATH, 'dev-cert', 'jl-l-01.local+4.pem'),
         'utf8',
     ),
 };
@@ -27,14 +30,19 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.raw({ limit: '200mb' }));
 
-const httpsServer = https.createServer(credentials, app);
-const wss = new ws.Server({ server: httpsServer });
+const httpServer = (IS_DEV) ?
+    https.createServer(credentials, app) :
+    http.createServer(app);
 
-nodeWatch(path.resolve(rootPath, 'examples'), { recursive: true }, reloadClient);
-nodeWatch(path.resolve(rootPath, 'viewer/dist/index.js'), {}, reloadClient);
+if (IS_DEV) {
+    const wss = new ws.Server({ server: httpServer });
 
-function reloadClient() {
-    console.log('File changed...');
+    nodeWatch(path.resolve(ROOT_PATH, 'examples'), { recursive: true }, reloadClient);
+    nodeWatch(path.resolve(ROOT_PATH, 'viewer/dist/index.js'), {}, reloadClient);
+
+    function reloadClient() {
+        console.log('File changed...');
+    }
 }
 
 app.use('/api/project/generate', (req, res) => {
@@ -79,7 +87,7 @@ function saveProjectFile(res: Response, fileName: string, fileContent: string|Bu
         return res.sendStatus(500);
     }
 
-    const uploadPath = path.resolve(rootPath, 'uploads');
+    const uploadPath = path.resolve(ROOT_PATH, 'uploads');
     if (!fs.existsSync(uploadPath)) {
         fs.mkdirSync(uploadPath);
     }
@@ -130,12 +138,12 @@ app.post('/api/logic/upload', (req, res) => {
     saveProjectFile(res, fileName, fileContent);
 });
 
-app.use('/', express.static(path.resolve(rootPath, 'examples')));
-app.use('/', express.static(path.resolve(rootPath, 'viewer/dist')));
-app.use('*', (req, res) => {
-    res.sendFile(path.resolve(rootPath, 'examples', 'index.html'));
+app.use('/', express.static(path.resolve(ROOT_PATH, 'uploads')));
+app.use('/', express.static(path.resolve(ROOT_PATH, 'viewer', 'dist')));
+app.use('/:project/', (req, res) => {
+    res.sendFile(path.resolve(ROOT_PATH, 'viewer', 'index.html'));
 });
 
-httpsServer.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+httpServer.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
 });

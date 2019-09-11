@@ -1,15 +1,18 @@
 {
     "name": "artemis",
-    "version": "0.2.0",
+    "version": "0.4.0",
     "private": true,
     "description": "Collection of open-source tools to quickly prototype and test mobile AR scenes",
     "scripts": {
-        "install:server": "cd server && npm install",
         "install:viewer": "cd viewer && npm install",
+        "install:server": "cd server && npm install",
         "postinstall": "npm-run-all -s install:*",
+        "start:viewer": "cd viewer && npm run build",
         "start:server": "cd server && npm start",
-        "start:viewer": "cd viewer && npm run watch",
-        "start": "npm-run-all -p start:*"
+        "start": "npm-run-all -s start:*",
+        "dev:viewer": "cd viewer && npm run watch",
+        "dev:server": "cd server && npm run dev",
+        "dev": "npm-run-all -p dev:*"
     },
     "author": "Julien Letellier",
     "license": "MIT",

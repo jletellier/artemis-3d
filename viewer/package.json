@@ -1,8 +1,8 @@
 {
     "name": "artemis-viewer",
-    "version": "0.2.0",
+    "version": "0.4.0",
     "private": true,
-    "description": "Web-based augmented reality viewer for glTF-based ARtemis scenes",
+    "description": "Web-based augmented reality viewer for Artemis 3D projects",
     "scripts": {
         "build": "parcel build src/index.ts -d dist",
         "watch": "parcel watch src/index.ts -d dist --no-hmr"
@@ -12,7 +12,7 @@
     "dependencies": {
         "tslint": "^5.20.0",
         "tslint-config-airbnb": "^5.11.1",
-        "typescript": "^3.6.2",
+        "typescript": "^3.6.3",
         "@babylonjs/core": "4.1.0-alpha.19",
         "@babylonjs/loaders": "4.1.0-alpha.19",
         "lit-element": "^2.2.1",

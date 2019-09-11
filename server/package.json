@@ -1,11 +1,11 @@
 {
     "name": "artemis-server",
-    "version": "0.2.0",
+    "version": "0.4.0",
     "private": true,
-    "description": "Server for glTF-based ARtemis scenes",
+    "description": "Server for Artemis 3D projects",
     "scripts": {
-        "start": "ts-node-dev --respawn --transpileOnly ./src/server.ts",
-        "build": "tsc"
+        "dev": "NODE_ENV=dev ts-node-dev --respawn --transpileOnly ./src/server.ts",
+        "start": "ts-node ./src/server.ts"
     },
     "author": "Julien Letellier",
     "license": "MIT",
@@ -21,10 +21,11 @@
         "jsonwebtoken": "^8.5.1",
         "node-watch": "^0.6.3",
         "pouchdb": "^7.1.1",
+        "ts-node": "^8.3.0",
         "ts-node-dev": "^1.0.0-pre.42",
         "tslint": "^5.20.0",
         "tslint-config-airbnb": "^5.11.1",
-        "typescript": "^3.6.2",
+        "typescript": "^3.6.3",
         "unique-names-generator": "^3.0.0",
         "valid-filename": "^3.1.0",
         "ws": "^7.1.2"
