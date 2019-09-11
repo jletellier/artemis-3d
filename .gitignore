@@ -10,4 +10,9 @@ node_modules/
 /uploads/
 
 /blender/__pycache__/
-*.blend[0-9]
+
+/examples/*.jpg
+/examples/*.png
+/examples/*.gltf
+/examples/*.bin
+/examples/*.blend[0-9]
