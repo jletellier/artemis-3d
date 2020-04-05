@@ -1,6 +1,9 @@
-const path = require('path');
+import * as path from 'path';
 
-module.exports = {
+/* eslint-disable-next-line import/no-extraneous-dependencies */
+import * as webpack from 'webpack';
+
+const config: webpack.Configuration = {
   mode: 'development',
   entry: {
     app: './src/client/index.ts',
@@ -37,3 +40,5 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
 };
+
+export default config;
