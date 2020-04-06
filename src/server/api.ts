@@ -10,6 +10,13 @@ const httpServer = http.createServer(app);
 const wss = new ws.Server({ server: httpServer });
 
 const initialState = Automerge.from({
+  scene: 0,
+  scenes: [
+    {
+      name: 'Scene',
+      nodes: [0],
+    },
+  ],
   nodes: [
     {
       name: 'sphere1',

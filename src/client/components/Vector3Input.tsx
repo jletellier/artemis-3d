@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { FunctionComponent, ChangeEvent } from 'react';
 
-import { StateVector3IndexType, StateVector3Type } from '../stores/sceneStore';
+import { Vector3IndexState, Vector3State } from '../stores/stateTypes';
 
 interface IVector3InputProps {
-  value: StateVector3Type,
-  onChange: (field: StateVector3IndexType, newValue: number) => void,
+  value: Vector3State,
+  onChange: (field: Vector3IndexState, newValue: number) => void,
 }
 
 const Vector3Input: FunctionComponent<IVector3InputProps> = (props: IVector3InputProps) => {
   const { value, onChange } = props;
 
-  function handleChange(field: StateVector3IndexType, e: ChangeEvent<HTMLInputElement>) {
+  function handleChange(field: Vector3IndexState, e: ChangeEvent<HTMLInputElement>) {
     const newValue = +e.target.value;
     onChange(field, newValue);
   }

@@ -2,16 +2,16 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import '@blueprintjs/core/lib/css/blueprint.css';
 
-import { SceneStoreProvider } from './stores/sceneStore';
+import { ProjectStoreProvider } from './stores/projectStore';
 import BabylonRenderer from './components/BabylonRenderer';
 import PropertiesPanel from './components/PropertiesPanel';
 
 const App = () => (
   <>
-    <SceneStoreProvider>
+    <ProjectStoreProvider>
       <BabylonRenderer />
       <PropertiesPanel />
-    </SceneStoreProvider>
+    </ProjectStoreProvider>
   </>
 );
 

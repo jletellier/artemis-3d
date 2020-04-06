@@ -14,7 +14,7 @@ import '@babylonjs/core/Materials/standardMaterial';
 // import "@babylonjs/core/Debug/debugLayer";
 // import "@babylonjs/inspector";
 
-import { registerSceneDiffHandler, unregisterSceneDiffHandler } from '../stores/sceneStore';
+import { registerProjectDiffHandler, unregisterProjectDiffHandler } from '../stores/projectStore';
 
 function createEmptyScene(canvas: HTMLCanvasElement, engine: Engine) {
   const scene = new Scene(engine);
@@ -72,12 +72,12 @@ const BabylonRenderer: FunctionComponent = () => {
 
     window.addEventListener('resize', handleWindowResize);
     engine.runRenderLoop(renderLoop);
-    const sceneDiffHandler = registerSceneDiffHandler(handleDocChange);
+    const projectDiffHandler = registerProjectDiffHandler(handleDocChange);
 
     return () => {
       window.removeEventListener('resize', handleWindowResize);
       engine.stopRenderLoop(renderLoop);
-      unregisterSceneDiffHandler(sceneDiffHandler);
+      unregisterProjectDiffHandler(projectDiffHandler);
 
       // console.log('BabylonRenderer renderLoop unregistered');
     };
