@@ -1,6 +1,13 @@
 import * as React from 'react';
 import { FunctionComponent, useState } from 'react';
-import { Tree, Classes, ITreeNode } from '@blueprintjs/core';
+import {
+  Tree,
+  ITreeNode,
+  Tooltip,
+  Icon,
+  Classes,
+} from '@blueprintjs/core';
+import { IconNames } from '@blueprintjs/icons';
 
 import { useProjectState } from '../stores/projectStore';
 import { ProjectState, NodeState } from '../stores/stateTypes';
@@ -18,6 +25,11 @@ function convertProjectNode(
   return {
     id,
     label: node.name,
+    secondaryLabel: (
+      <Tooltip content="Toggle visibility">
+        <Icon icon={IconNames.EYE_OPEN} />
+      </Tooltip>
+    ),
     childNodes: node.children
       ? convertChildren(projectState, internalState, node.children)
       : undefined,
@@ -41,6 +53,11 @@ function convertProjectState(projectState: ProjectState, internalState: Internal
     return {
       id,
       label: 'Main Scene',
+      secondaryLabel: (
+        <Tooltip content="Toggle visibility">
+          <Icon icon={IconNames.EYE_OPEN} />
+        </Tooltip>
+      ),
       childNodes: scene.nodes
         ? convertChildren(projectState, internalState, scene.nodes)
         : undefined,
@@ -70,7 +87,7 @@ const ProjectGraphPanel: FunctionComponent = () => {
   return (
     <Tree
       contents={contents}
-      className={Classes.ELEVATION_0}
+      className={Classes.ELEVATION_1}
       onNodeCollapse={handleNodeCollapse}
       onNodeExpand={handleNodeExpand}
     />
