@@ -10,7 +10,8 @@ import {
 import { IconNames } from '@blueprintjs/icons';
 
 import { useProjectState } from '../stores/projectStore';
-import { ProjectState, NodeState } from '../stores/stateTypes';
+import { ProjectState } from '../../common/types/projectState';
+import { NodeState } from '../../common/types/nodeState';
 
 type InternalState = Map<string, Partial<ITreeNode>>;
 

@@ -59,9 +59,9 @@ const BabylonRenderer: FunctionComponent = () => {
             const babylonTransformNode = babylonNode as TransformNode;
             const fieldValue = +value.value;
             babylonTransformNode.position.set(
-              value.key === 'x' ? fieldValue : babylonTransformNode.position.x,
-              value.key === 'y' ? fieldValue : babylonTransformNode.position.y,
-              value.key === 'z' ? fieldValue : babylonTransformNode.position.z,
+              value.index === 0 ? fieldValue : babylonTransformNode.position.x,
+              value.index === 1 ? fieldValue : babylonTransformNode.position.y,
+              value.index === 2 ? fieldValue : babylonTransformNode.position.z,
             );
           }
         }

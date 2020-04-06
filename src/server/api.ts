@@ -3,28 +3,15 @@ import * as express from 'express';
 import * as ws from 'ws';
 import * as Automerge from 'automerge';
 
+import projectFixture from '../common/fixtures/projectFixture';
+
 const PORT = 5000;
 
 const app = express();
 const httpServer = http.createServer(app);
 const wss = new ws.Server({ server: httpServer });
 
-const initialState = Automerge.from({
-  scene: 0,
-  scenes: [
-    {
-      name: 'Scene',
-      nodes: [0],
-    },
-  ],
-  nodes: [
-    {
-      name: 'sphere1',
-      mesh: 0,
-      position: { x: 2.8, y: 0.4, z: -0.2 },
-    },
-  ],
-});
+const initialState = Automerge.from(projectFixture);
 
 const docSet = new Automerge.DocSet();
 docSet.setDoc('scene', initialState);

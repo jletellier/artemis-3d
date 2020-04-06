@@ -9,8 +9,8 @@ import {
 } from 'react';
 import * as Automerge from 'automerge';
 
-import { ProjectState } from './stateTypes';
-import projectFixture from '../fixtures/projectFixture';
+import { ProjectState } from '../../common/types/projectState';
+import projectFixture from '../../common/fixtures/projectFixture';
 
 const { location } = window;
 const wsUri = `${((location.protocol === 'https:') ? 'wss://' : 'ws://')}${location.host}/api`;

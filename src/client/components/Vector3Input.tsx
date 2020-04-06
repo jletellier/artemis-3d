@@ -1,24 +1,24 @@
 import * as React from 'react';
 import { FunctionComponent, ChangeEvent } from 'react';
 
-import { Vector3IndexState, Vector3State } from '../stores/stateTypes';
+import { Vector3State } from '../../common/types/vector3State';
 
 interface IVector3InputProps {
   value: Vector3State,
-  onChange: (field: Vector3IndexState, newValue: number) => void,
+  onChange: (field: number, newValue: number) => void,
 }
 
 const Vector3Input: FunctionComponent<IVector3InputProps> = (props: IVector3InputProps) => {
   const { value, onChange } = props;
 
-  function handleChange(field: Vector3IndexState, e: ChangeEvent<HTMLInputElement>) {
+  function handleChange(field: number, e: ChangeEvent<HTMLInputElement>) {
     const newValue = +e.target.value;
     onChange(field, newValue);
   }
 
-  const handleChangeVecX = (e: ChangeEvent<HTMLInputElement>) => handleChange('x', e);
-  const handleChangeVecY = (e: ChangeEvent<HTMLInputElement>) => handleChange('y', e);
-  const handleChangeVecZ = (e: ChangeEvent<HTMLInputElement>) => handleChange('z', e);
+  const handleChangeVecX = (e: ChangeEvent<HTMLInputElement>) => handleChange(0, e);
+  const handleChangeVecY = (e: ChangeEvent<HTMLInputElement>) => handleChange(1, e);
+  const handleChangeVecZ = (e: ChangeEvent<HTMLInputElement>) => handleChange(2, e);
 
   return (
     <div>
@@ -27,7 +27,7 @@ const Vector3Input: FunctionComponent<IVector3InputProps> = (props: IVector3Inpu
         className="bp3-input"
         type="number"
         step="0.1"
-        value={value.x}
+        value={value[0]}
         onChange={handleChangeVecX}
       />
       Y:
@@ -35,7 +35,7 @@ const Vector3Input: FunctionComponent<IVector3InputProps> = (props: IVector3Inpu
         className="bp3-input"
         type="number"
         step="0.1"
-        value={value.y}
+        value={value[1]}
         onChange={handleChangeVecY}
       />
       Z:
@@ -43,7 +43,7 @@ const Vector3Input: FunctionComponent<IVector3InputProps> = (props: IVector3Inpu
         className="bp3-input"
         type="number"
         step="0.1"
-        value={value.z}
+        value={value[2]}
         onChange={handleChangeVecZ}
       />
     </div>

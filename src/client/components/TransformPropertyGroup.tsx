@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FunctionComponent } from 'react';
 
 import { changeProjectState } from '../stores/projectStore';
-import { NodeState, Vector3IndexState } from '../stores/stateTypes';
+import { NodeState } from '../../common/types/nodeState';
 import Vector3Input from './Vector3Input';
 
 interface ITransformPropertyGroupProps {
@@ -15,7 +15,7 @@ const TransformPropertyGroup: FunctionComponent<ITransformPropertyGroupProps> = 
   const { selectedNode } = props;
   const { position } = selectedNode;
 
-  function handleChangePosition(field: Vector3IndexState, newValue: number) {
+  function handleChangePosition(field: number, newValue: number) {
     changeProjectState((doc) => { /* eslint-disable no-param-reassign */
       doc.nodes[0].position[field] = newValue;
     });

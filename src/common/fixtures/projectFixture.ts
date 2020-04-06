@@ -1,4 +1,4 @@
-import { ProjectState } from '../stores/stateTypes';
+import { ProjectState } from '../types/projectState';
 
 const fixture: ProjectState = {
   scene: 0,
@@ -12,7 +12,7 @@ const fixture: ProjectState = {
     {
       name: 'sphere1',
       mesh: 0,
-      position: { x: 2.8, y: 0.4, z: -0.2 },
+      position: [2.8, 0.4, -0.2],
     },
   ],
 };
