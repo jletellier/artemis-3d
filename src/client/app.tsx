@@ -5,11 +5,13 @@ import '@blueprintjs/core/lib/css/blueprint.css';
 import { ProjectStoreProvider } from './stores/projectStore';
 import BabylonRenderer from './components/BabylonRenderer';
 import PropertiesPanel from './components/PropertiesPanel';
+import ProjectGraphPanel from './components/ProjectGraphPanel';
 
 const App = () => (
   <>
     <ProjectStoreProvider>
       <BabylonRenderer />
+      <ProjectGraphPanel />
       <PropertiesPanel />
     </ProjectStoreProvider>
   </>
