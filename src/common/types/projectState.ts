@@ -1,8 +1,8 @@
-import { SceneState } from './sceneState';
-import { NodeState } from './nodeState';
+// TODO: Fix this in .eslintrc.json
+/* eslint-disable-next-line import/no-unresolved */
+import { IGLTF } from 'babylonjs-gltf2interface';
 
 export type ProjectState = {
-  scene: number,
-  scenes: Array<SceneState>,
-  nodes: Array<NodeState>,
+  gltf?: IGLTF;
+  gltfPath?: string;
 };

@@ -13,9 +13,16 @@ const PropertiesPanel: FunctionComponent = () => {
 
   if (userState.selectedNodes.length === 1) {
     const id = userState.selectedNodes[0];
-    if (id.startsWith('node_')) {
-      const nodeId = +id.substr(5);
-      return (<TransformPropertyGroup selectedNode={projectState.nodes[nodeId]} />);
+
+    if (id.startsWith('/nodes/')) {
+      const nodeId = +id.substr(7);
+
+      return (
+        <TransformPropertyGroup
+          selectedNodeId={nodeId}
+          selectedNode={projectState.gltf.nodes[nodeId]}
+        />
+      );
     }
   }
 

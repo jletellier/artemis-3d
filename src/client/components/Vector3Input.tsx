@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { FunctionComponent, ChangeEvent } from 'react';
 
-import { Vector3State } from '../../common/types/vector3State';
-
 interface IVector3InputProps {
-  value: Vector3State,
+  value: Array<number>,
   onChange: (field: number, newValue: number) => void,
 }
 

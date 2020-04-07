@@ -1,23 +1,26 @@
 import * as React from 'react';
 import { FunctionComponent } from 'react';
 
+/* eslint-disable-next-line import/no-unresolved */
+import { INode } from 'babylonjs-gltf2interface';
+
 import { changeProjectState } from '../stores/projectStore';
-import { NodeState } from '../../common/types/nodeState';
 import Vector3Input from './Vector3Input';
 
 interface ITransformPropertyGroupProps {
-  selectedNode: NodeState,
+  selectedNodeId: number,
+  selectedNode: INode,
 }
 
 const TransformPropertyGroup: FunctionComponent<ITransformPropertyGroupProps> = (
   props: ITransformPropertyGroupProps,
 ) => {
-  const { selectedNode } = props;
+  const { selectedNodeId, selectedNode } = props;
   const translation = selectedNode.translation ? selectedNode.translation : [0, 0, 0];
 
   function handleChangePosition(field: number, newValue: number) {
-    changeProjectState((doc) => { /* eslint-disable no-param-reassign */
-      const node = doc.nodes[0];
+    changeProjectState((state) => { /* eslint-disable no-param-reassign */
+      const node = state.gltf.nodes[selectedNodeId];
       if (!node.translation) {
         node.translation = translation;
       }

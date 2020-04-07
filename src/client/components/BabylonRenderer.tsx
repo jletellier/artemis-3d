@@ -6,28 +6,25 @@ import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
 import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
-import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
-import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
+import { SceneLoader } from '@babylonjs/core/Loading/sceneLoader';
+import '@babylonjs/core/Loading/Plugins/babylonFileLoader';
+import '@babylonjs/core/Loading/loadingScreen';
 import '@babylonjs/core/Meshes/meshBuilder';
 import '@babylonjs/core/Materials/standardMaterial';
+import '@babylonjs/loaders/glTF/2.0/glTFLoader';
+import '@babylonjs/loaders/glTF/2.0/Extensions/KHR_lights_punctual';
 // import "@babylonjs/core/Debug/debugLayer";
 // import "@babylonjs/inspector";
 
-import { registerProjectDiffHandler, unregisterProjectDiffHandler } from '../stores/projectStore';
+import { docSet } from '../stores/projectStore';
+import { ProjectState } from '../../common/types/projectState';
 
 function createEmptyScene(canvas: HTMLCanvasElement, engine: Engine) {
   const scene = new Scene(engine);
-  const camera = new FreeCamera('camera1', new Vector3(0, 5, -10), scene);
+  const camera = new FreeCamera('EditorCamera', new Vector3(0, 5, -10), scene);
   camera.setTarget(Vector3.Zero());
   camera.attachControl(canvas, false);
-  // TODO: Delete this line in the next version (it won't be needed)
-  // eslint-disable-next-line no-new
-  new HemisphericLight('light1', new Vector3(0, 1, 0), scene);
-  const sphere = Mesh.CreateSphere('sphere1', 16, 2, scene, false, Mesh.FRONTSIDE);
-  sphere.id = '0';
-  sphere.position.y = 1;
-  Mesh.CreateGround('ground1', 6, 6, 2, scene, false);
 
   // scene.debugLayer.show();
   return scene;
@@ -36,11 +33,11 @@ function createEmptyScene(canvas: HTMLCanvasElement, engine: Engine) {
 const BabylonRenderer: FunctionComponent = () => {
   const elCanvas = useRef(null);
 
-  // console.log('BabylonRenderer FunctionComponent called');
-
   useEffect(() => {
     const engine = new Engine(elCanvas.current, true);
     const currentScene = createEmptyScene(elCanvas.current, engine);
+
+    let lastDoc = docSet.getDoc('project') as ProjectState;
 
     function handleWindowResize() {
       engine.resize();
@@ -50,12 +47,27 @@ const BabylonRenderer: FunctionComponent = () => {
       currentScene.render();
     }
 
+    function handleDocInit(doc: ProjectState) {
+      SceneLoader.Append('./uploads/', `data:${JSON.stringify(doc.gltf)}`, currentScene, () => {
+        currentScene.getNodes().forEach((node) => { /* eslint-disable no-param-reassign */
+          if (node.metadata && node.metadata.gltf && node.metadata.gltf.pointers) {
+            const pointers = node.metadata.gltf.pointers as Array<string>;
+            const nodeId = pointers.find((value) => value.startsWith('/nodes/'));
+            node.id = nodeId;
+          }
+        });
+      });
+    }
+
     function handleDocChange(changes: Automerge.Diff[]) {
-      // console.log('DOC CHANGES!!!', changes);
       changes.forEach((value) => {
-        if (value.path && value.path.length === 3 && value.path[0] === 'nodes') {
-          const babylonNode = currentScene.getNodeByID((value.path[1]).toString());
-          if (value.path[2] === 'position') {
+        if (value.path
+          && value.path.length === 4
+          && value.path[0] === 'gltf'
+          && value.path[1] === 'nodes') {
+          const nodeId = `/nodes/${value.path[2]}`;
+          const babylonNode = currentScene.getNodeByID(nodeId);
+          if (value.path[3] === 'translation') {
             const babylonTransformNode = babylonNode as TransformNode;
             const fieldValue = +value.value;
             babylonTransformNode.position.set(
@@ -68,18 +80,27 @@ const BabylonRenderer: FunctionComponent = () => {
       });
     }
 
-    // console.log('BabylonRenderer renderLoop registered');
+    const docSetHandler: Automerge.DocSetHandler<unknown> = (docId, doc) => {
+      if (docId === 'project') {
+        if (!lastDoc) {
+          handleDocInit(doc);
+          lastDoc = doc;
+        } else {
+          const diff = Automerge.diff(lastDoc, doc);
+          handleDocChange(diff);
+          lastDoc = doc;
+        }
+      }
+    };
 
     window.addEventListener('resize', handleWindowResize);
     engine.runRenderLoop(renderLoop);
-    const projectDiffHandler = registerProjectDiffHandler(handleDocChange);
+    docSet.registerHandler(docSetHandler);
 
     return () => {
       window.removeEventListener('resize', handleWindowResize);
       engine.stopRenderLoop(renderLoop);
-      unregisterProjectDiffHandler(projectDiffHandler);
-
-      // console.log('BabylonRenderer renderLoop unregistered');
+      docSet.unregisterHandler(docSetHandler);
     };
   });
 

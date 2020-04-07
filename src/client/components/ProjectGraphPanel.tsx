@@ -9,9 +9,11 @@ import {
 } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 
+/* eslint-disable-next-line import/no-unresolved */
+import { INode } from 'babylonjs-gltf2interface';
+
 import { useProjectState } from '../stores/projectStore';
 import { ProjectState } from '../../common/types/projectState';
-import { NodeState } from '../../common/types/nodeState';
 import { useSetUserState, useUserState } from '../stores/userStore';
 import { UserState } from '../../common/types/userState';
 
@@ -20,9 +22,9 @@ let convertChildren: (
 ) => ITreeNode[];
 
 function convertNode(
-  projectState: ProjectState, userState: UserState, node: NodeState, nodeId: number,
+  projectState: ProjectState, userState: UserState, node: INode, nodeId: number,
 ) {
-  const id = `node_${nodeId}`;
+  const id = `/nodes/${nodeId}`;
   return {
     id,
     label: node.name,
@@ -42,14 +44,15 @@ function convertNode(
 /* eslint-disable-next-line prefer-const */
 convertChildren = (projectState, userState, children) => (
   children.map((childNodeId) => {
-    const childNode = projectState.nodes[childNodeId];
+    const { nodes } = projectState.gltf;
+    const childNode = nodes[childNodeId];
     return convertNode(projectState, userState, childNode, childNodeId);
   })
 );
 
 function convertStates(projectState: ProjectState, userState: UserState) {
-  return projectState.scenes.map((scene, sceneId) => {
-    const id = `scene_${sceneId}`;
+  return projectState.gltf.scenes.map((scene, sceneId) => {
+    const id = `/scenes/${sceneId}`;
     return {
       id,
       label: 'Main Scene',
@@ -71,6 +74,11 @@ const ProjectGraphPanel: FunctionComponent = () => {
   const projectState = useProjectState();
   const userState = useUserState();
   const setUserState = useSetUserState();
+
+  if (!projectState.gltf) {
+    return <div />;
+  }
+
   const contents = convertStates(projectState, userState);
 
   function handleNodeCollapse(nodeData: ITreeNode) {

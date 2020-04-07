@@ -44,6 +44,7 @@
     "@blueprintjs/core": "^3.24.0",
     "@blueprintjs/icons": "^3.14.0",
     "automerge": "^0.14.0",
+    "babylonjs-gltf2interface": "^4.1.0",
     "express": "^4.17.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

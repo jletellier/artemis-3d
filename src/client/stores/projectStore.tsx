@@ -16,10 +16,16 @@ const { location } = window;
 const wsUri = `${((location.protocol === 'https:') ? 'wss://' : 'ws://')}${location.host}/api`;
 const ws = new WebSocket(wsUri);
 
-const initialDoc: ProjectState = Automerge.from(projectFixture);
-
 const docSet = new Automerge.DocSet();
-docSet.setDoc('project', initialDoc);
+
+if (projectFixture.gltfPath) {
+  fetch(`./uploads/${projectFixture.gltfPath}`)
+    .then((response) => (response.json()))
+    .then((data) => {
+      projectFixture.gltf = data;
+      docSet.setDoc('project', Automerge.from(projectFixture));
+    });
+}
 
 const automerge = new Automerge.Connection(docSet, (msg) => {
   if (ws.readyState === ws.OPEN) {
@@ -39,25 +45,6 @@ function changeProjectState(callback: Automerge.ChangeFn<ProjectState>) {
   docSet.setDoc('project', newState);
 }
 
-function registerProjectDiffHandler(handler: ((changes: Automerge.Diff[]) => void)) {
-  let lastDoc = docSet.getDoc('project');
-
-  const internalHandler: Automerge.DocSetHandler<unknown> = (docId, doc) => {
-    if (docId === 'project') {
-      const diff = Automerge.diff(lastDoc, doc);
-      lastDoc = doc;
-      handler(diff);
-    }
-  };
-
-  docSet.registerHandler(internalHandler);
-  return internalHandler;
-}
-
-function unregisterProjectDiffHandler(handler: Automerge.DocSetHandler<unknown>) {
-  docSet.unregisterHandler(handler);
-}
-
 const ProjectStateContext = createContext<ProjectState | undefined>(undefined);
 
 interface IProjectStoreProviderProps {
@@ -66,8 +53,7 @@ interface IProjectStoreProviderProps {
 
 const ProjectStoreProvider: FunctionComponent = (props: IProjectStoreProviderProps) => {
   const { children } = props;
-  const initialState = docSet.getDoc('project') as ProjectState;
-  const [state, setState] = useState(initialState);
+  const [state, setState] = useState({});
 
   useEffect(() => {
     function handler(docId: string, doc: Automerge.FreezeObject<unknown>) {
@@ -106,6 +92,5 @@ export {
   ProjectStoreProvider,
   useProjectState,
   changeProjectState,
-  registerProjectDiffHandler,
-  unregisterProjectDiffHandler,
+  docSet,
 };
