@@ -7,13 +7,16 @@ import { ProjectStoreProvider } from './stores/projectStore';
 import BabylonRenderer from './components/BabylonRenderer';
 import PropertiesPanel from './components/PropertiesPanel';
 import ProjectGraphPanel from './components/ProjectGraphPanel';
+import { UserStoreProvider } from './stores/userStore';
 
 const App = () => (
   <>
     <ProjectStoreProvider>
-      <BabylonRenderer />
-      <ProjectGraphPanel />
-      <PropertiesPanel />
+      <UserStoreProvider>
+        <BabylonRenderer />
+        <ProjectGraphPanel />
+        <PropertiesPanel />
+      </UserStoreProvider>
     </ProjectStoreProvider>
   </>
 );

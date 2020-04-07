@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent } from 'react';
 import {
   Tree,
   ITreeNode,
@@ -12,15 +12,15 @@ import { IconNames } from '@blueprintjs/icons';
 import { useProjectState } from '../stores/projectStore';
 import { ProjectState } from '../../common/types/projectState';
 import { NodeState } from '../../common/types/nodeState';
-
-type InternalState = Map<string, Partial<ITreeNode>>;
+import { useSetUserState, useUserState } from '../stores/userStore';
+import { UserState } from '../../common/types/userState';
 
 let convertChildren: (
-  projectState: ProjectState, internalState: InternalState, children: number[]
+  projectState: ProjectState, userState: UserState, children: number[]
 ) => ITreeNode[];
 
-function convertProjectNode(
-  projectState: ProjectState, internalState: InternalState, node: NodeState, nodeId: number,
+function convertNode(
+  projectState: ProjectState, userState: UserState, node: NodeState, nodeId: number,
 ) {
   const id = `node_${nodeId}`;
   return {
@@ -32,23 +32,22 @@ function convertProjectNode(
       </Tooltip>
     ),
     childNodes: node.children
-      ? convertChildren(projectState, internalState, node.children)
+      ? convertChildren(projectState, userState, node.children)
       : undefined,
-    ...internalState.get(id),
+    isSelected: userState.selectedNodes.includes(id),
+    isExpanded: userState.expandedNodes.includes(id),
   };
 }
 
 /* eslint-disable-next-line prefer-const */
-convertChildren = (
-  projectState: ProjectState, internalState: InternalState, children: number[],
-) => (
+convertChildren = (projectState, userState, children) => (
   children.map((childNodeId) => {
     const childNode = projectState.nodes[childNodeId];
-    return convertProjectNode(projectState, internalState, childNode, childNodeId);
+    return convertNode(projectState, userState, childNode, childNodeId);
   })
 );
 
-function convertProjectState(projectState: ProjectState, internalState: InternalState) {
+function convertStates(projectState: ProjectState, userState: UserState) {
   return projectState.scenes.map((scene, sceneId) => {
     const id = `scene_${sceneId}`;
     return {
@@ -60,29 +59,34 @@ function convertProjectState(projectState: ProjectState, internalState: Internal
         </Tooltip>
       ),
       childNodes: scene.nodes
-        ? convertChildren(projectState, internalState, scene.nodes)
+        ? convertChildren(projectState, userState, scene.nodes)
         : undefined,
-      ...internalState.get(id),
+      isSelected: userState.selectedNodes.includes(id),
+      isExpanded: userState.expandedNodes.includes(id),
     };
   });
 }
 
 const ProjectGraphPanel: FunctionComponent = () => {
-  // TODO: Move internal state to user-specific project state
-  const [internalState, setInternalState] = useState<InternalState>(new Map());
   const projectState = useProjectState();
-  const contents = convertProjectState(projectState, internalState);
+  const userState = useUserState();
+  const setUserState = useSetUserState();
+  const contents = convertStates(projectState, userState);
 
   function handleNodeCollapse(nodeData: ITreeNode) {
-    setInternalState(
-      new Map(internalState.set(nodeData.id.toString(), { isExpanded: false })),
-    );
+    const id = nodeData.id.toString();
+    // TODO: Check if this is allowed or if expandedNodes needs to be copied first
+    userState.expandedNodes.splice(userState.expandedNodes.indexOf(id), 1);
+    setUserState({ ...userState, expandedNodes: userState.expandedNodes });
   }
 
   function handleNodeExpand(nodeData: ITreeNode) {
-    setInternalState(
-      new Map(internalState.set(nodeData.id.toString(), { isExpanded: true })),
-    );
+    const id = nodeData.id.toString();
+    setUserState({ ...userState, expandedNodes: [...userState.expandedNodes, id] });
+  }
+
+  function handleNodeClick(nodeData: ITreeNode) {
+    setUserState({ ...userState, selectedNodes: [nodeData.id.toString()] });
   }
 
   return (
@@ -91,6 +95,7 @@ const ProjectGraphPanel: FunctionComponent = () => {
       className={Classes.ELEVATION_1}
       onNodeCollapse={handleNodeCollapse}
       onNodeExpand={handleNodeExpand}
+      onNodeClick={handleNodeClick}
     />
   );
 };
