@@ -13,11 +13,15 @@ const TransformPropertyGroup: FunctionComponent<ITransformPropertyGroupProps> = 
   props: ITransformPropertyGroupProps,
 ) => {
   const { selectedNode } = props;
-  const { position } = selectedNode;
+  const position = selectedNode.position ? selectedNode.position : [0, 0, 0];
 
   function handleChangePosition(field: number, newValue: number) {
     changeProjectState((doc) => { /* eslint-disable no-param-reassign */
-      doc.nodes[0].position[field] = newValue;
+      const node = doc.nodes[0];
+      if (!node.position) {
+        node.position = position;
+      }
+      node.position[field] = newValue;
     });
   }
 
