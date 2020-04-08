@@ -22,7 +22,8 @@ import { ProjectState } from '../../common/types/projectState';
 
 function createEmptyScene(canvas: HTMLCanvasElement, engine: Engine) {
   const scene = new Scene(engine);
-  const camera = new FreeCamera('EditorCamera', new Vector3(0, 5, -10), scene);
+  scene.useRightHandedSystem = true;
+  const camera = new FreeCamera('EditorCamera', new Vector3(0, 5, 10), scene);
   camera.setTarget(Vector3.Zero());
   camera.attachControl(canvas, false);
 
