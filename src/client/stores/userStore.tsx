@@ -8,7 +8,7 @@ import {
   ReactNode,
 } from 'react';
 
-import { UserState } from '../../common/types/userState';
+import { UserState } from '../../common/types/UserState';
 
 const initialState: UserState = {
   selectedNodes: [],

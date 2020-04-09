@@ -9,8 +9,8 @@ import {
 } from 'react';
 import * as Automerge from 'automerge';
 
-import { ProjectState } from '../../common/types/projectState';
-import { fixture } from '../../common/fixtures/projectFixture';
+import { ProjectState } from '../../common/types/ProjectState';
+import { projectFixture } from '../../common/fixtures/projectFixture';
 
 const { location } = window;
 const wsUri = `${((location.protocol === 'https:') ? 'wss://' : 'ws://')}${location.host}/api`;
@@ -18,12 +18,12 @@ const ws = new WebSocket(wsUri);
 
 const docSet = new Automerge.DocSet();
 
-if (fixture.gltfPath) {
-  fetch(`./uploads/${fixture.gltfPath}`)
+if (projectFixture.gltfPath) {
+  fetch(`./uploads/${projectFixture.gltfPath}`)
     .then((response) => (response.json()))
     .then((data) => {
-      fixture.gltf = data;
-      docSet.setDoc('project', Automerge.from(fixture));
+      projectFixture.gltf = data;
+      docSet.setDoc('project', Automerge.from(projectFixture));
     });
 }
 

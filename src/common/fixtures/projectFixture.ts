@@ -1,7 +1,7 @@
-import { ProjectState } from '../types/projectState';
+import { ProjectState } from '../types/ProjectState';
 
-const fixture: ProjectState = {
+const projectFixture: ProjectState = {
   gltfPath: 'simple-scene.gltf',
 };
 
-export { fixture };
+export { projectFixture };
