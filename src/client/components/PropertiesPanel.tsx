@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FunctionComponent } from 'react';
 
 import { useProjectState } from '../stores/projectStore';
-import { TransformPropertyGroup } from './transformPropertyGroup';
+import { TransformPropertyGroup } from './TransformPropertyGroup';
 import { useUserState } from '../stores/userStore';
 
 const PropertiesPanel: FunctionComponent = () => {

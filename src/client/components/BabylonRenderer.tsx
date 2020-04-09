@@ -18,7 +18,7 @@ import '@babylonjs/loaders/glTF/2.0/Extensions/KHR_lights_punctual';
 // import "@babylonjs/inspector";
 
 import { docSet } from '../stores/projectStore';
-import { ProjectState } from '../../common/types/projectState';
+import { ProjectState } from '../../common/types/ProjectState';
 
 function createEmptyScene(canvas: HTMLCanvasElement, engine: Engine) {
   const scene = new Scene(engine);

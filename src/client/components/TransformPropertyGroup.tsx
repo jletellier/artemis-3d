@@ -5,7 +5,7 @@ import { FunctionComponent } from 'react';
 import { INode } from 'babylonjs-gltf2interface';
 
 import { changeProjectState } from '../stores/projectStore';
-import { Vector3Input } from './vector3Input';
+import { Vector3Input } from './Vector3Input';
 
 interface ITransformPropertyGroupProps {
   selectedNodeId: number,

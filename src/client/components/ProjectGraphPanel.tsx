@@ -13,9 +13,9 @@ import { IconNames } from '@blueprintjs/icons';
 import { INode } from 'babylonjs-gltf2interface';
 
 import { useProjectState } from '../stores/projectStore';
-import { ProjectState } from '../../common/types/projectState';
+import { ProjectState } from '../../common/types/ProjectState';
 import { useSetUserState, useUserState } from '../stores/userStore';
-import { UserState } from '../../common/types/userState';
+import { UserState } from '../../common/types/UserState';
 
 let convertChildren: (
   projectState: ProjectState, userState: UserState, children: number[]
