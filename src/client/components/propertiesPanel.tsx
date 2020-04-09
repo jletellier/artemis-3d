@@ -2,7 +2,7 @@ import * as React from 'react';
 import { FunctionComponent } from 'react';
 
 import { useProjectState } from '../stores/projectStore';
-import TransformPropertyGroup from './TransformPropertyGroup';
+import { TransformPropertyGroup } from './transformPropertyGroup';
 import { useUserState } from '../stores/userStore';
 
 const PropertiesPanel: FunctionComponent = () => {
@@ -29,4 +29,4 @@ const PropertiesPanel: FunctionComponent = () => {
   return <div />;
 };
 
-export default PropertiesPanel;
+export { PropertiesPanel };

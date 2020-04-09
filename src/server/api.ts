@@ -5,7 +5,7 @@ import * as express from 'express';
 import * as ws from 'ws';
 import * as Automerge from 'automerge';
 
-import projectFixture from '../common/fixtures/projectFixture';
+import { fixture } from '../common/fixtures/projectFixture';
 
 const PORT = 5000;
 const UPLOAD_PATH = path.resolve(__dirname, '..', '..', 'dist', 'uploads');
@@ -14,13 +14,13 @@ const app = express();
 const httpServer = http.createServer(app);
 const wss = new ws.Server({ server: httpServer });
 
-if (projectFixture.gltfPath) {
-  const gltfPath = path.resolve(UPLOAD_PATH, projectFixture.gltfPath);
+if (fixture.gltfPath) {
+  const gltfPath = path.resolve(UPLOAD_PATH, fixture.gltfPath);
   const gltfRaw = fs.readFileSync(gltfPath);
-  projectFixture.gltf = JSON.parse(gltfRaw.toString());
+  fixture.gltf = JSON.parse(gltfRaw.toString());
 }
 
-const initialState = Automerge.from(projectFixture);
+const initialState = Automerge.from(fixture);
 
 const docSet = new Automerge.DocSet();
 docSet.setDoc('scene', initialState);

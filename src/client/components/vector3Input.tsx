@@ -48,4 +48,4 @@ const Vector3Input: FunctionComponent<IVector3InputProps> = (props: IVector3Inpu
   );
 };
 
-export default Vector3Input;
+export { Vector3Input };

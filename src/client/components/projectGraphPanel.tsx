@@ -108,4 +108,4 @@ const ProjectGraphPanel: FunctionComponent = () => {
   );
 };
 
-export default ProjectGraphPanel;
+export { ProjectGraphPanel };

@@ -108,4 +108,4 @@ const BabylonRenderer: FunctionComponent = () => {
   return <canvas ref={elCanvas} />;
 };
 
-export default BabylonRenderer;
+export { BabylonRenderer };

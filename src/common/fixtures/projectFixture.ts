@@ -4,4 +4,4 @@ const fixture: ProjectState = {
   gltfPath: 'simple-scene.gltf',
 };
 
-export default fixture;
+export { fixture };

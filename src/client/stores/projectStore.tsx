@@ -10,7 +10,7 @@ import {
 import * as Automerge from 'automerge';
 
 import { ProjectState } from '../../common/types/projectState';
-import projectFixture from '../../common/fixtures/projectFixture';
+import { fixture } from '../../common/fixtures/projectFixture';
 
 const { location } = window;
 const wsUri = `${((location.protocol === 'https:') ? 'wss://' : 'ws://')}${location.host}/api`;
@@ -18,12 +18,12 @@ const ws = new WebSocket(wsUri);
 
 const docSet = new Automerge.DocSet();
 
-if (projectFixture.gltfPath) {
-  fetch(`./uploads/${projectFixture.gltfPath}`)
+if (fixture.gltfPath) {
+  fetch(`./uploads/${fixture.gltfPath}`)
     .then((response) => (response.json()))
     .then((data) => {
-      projectFixture.gltf = data;
-      docSet.setDoc('project', Automerge.from(projectFixture));
+      fixture.gltf = data;
+      docSet.setDoc('project', Automerge.from(fixture));
     });
 }
 
