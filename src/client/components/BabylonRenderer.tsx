@@ -39,6 +39,7 @@ const BabylonRenderer: FunctionComponent = () => {
     const currentScene = createEmptyScene(elCanvas.current, engine);
 
     let lastDoc = docSet.getDoc('project') as ProjectState;
+    let isGltfLoaded = false;
 
     function handleWindowResize() {
       engine.resize();
@@ -57,6 +58,7 @@ const BabylonRenderer: FunctionComponent = () => {
             node.id = nodeId;
           }
         });
+        isGltfLoaded = true;
       });
     }
 
@@ -86,7 +88,8 @@ const BabylonRenderer: FunctionComponent = () => {
         if (!lastDoc) {
           handleDocInit(doc);
           lastDoc = doc;
-        } else {
+        } else if (isGltfLoaded) {
+          // TODO: Push changes to a queue until gltf is loaded
           const diff = Automerge.diff(lastDoc, doc);
           handleDocChange(diff);
           lastDoc = doc;
