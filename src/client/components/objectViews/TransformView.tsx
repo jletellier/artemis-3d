@@ -40,5 +40,5 @@ export const transformView: ILensView<INode, ITransformFocus> = {
   name: 'Transform',
   lens: transformLens,
   component: TransformView,
-  isRelevant: (node: INode) => 'translation' in node || 'rotation' in node,
+  isRelevant: () => true,
 };
