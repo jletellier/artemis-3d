@@ -2,7 +2,7 @@
 /* eslint-disable prefer-destructuring */
 
 import type { INode } from 'babylonjs-gltf2interface';
-import type { ILens } from './Lens';
+import type { ILens } from './lenses';
 
 // transform view focuses on the usual transform-related properties
 export interface ITransformFocus {

@@ -4,7 +4,7 @@ import { FunctionComponent } from 'react';
 import { useProjectState, changeProjectState } from '../stores/projectStore';
 import { TransformPropertyGroup } from './TransformPropertyGroup';
 import { useUserState } from '../stores/userStore';
-import { transformView } from './object-views/TransformView';
+import { transformView } from './objectViews/TransformView';
 
 const PropertiesPanel: FunctionComponent = () => {
   // console.log('PropertiesPanel FunctionComponent called');
