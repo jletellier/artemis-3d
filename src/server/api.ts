@@ -1,7 +1,7 @@
 import * as http from 'http';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as express from 'express';
+import express from 'express';
 import * as ws from 'ws';
 import * as Automerge from 'automerge';
 
