@@ -6,6 +6,7 @@ export interface IVectorProps {
   vector: number[];
   onChange: (vector: number[]) => void;
   stepSize?: number;
+  disabled?: boolean;
 }
 
 export interface INamedVectorProps extends IVectorProps {
@@ -13,7 +14,7 @@ export interface INamedVectorProps extends IVectorProps {
 }
 
 export function NamedVector(props: INamedVectorProps) {
-  const { vector } = props; // TODO: make a copy?
+  const { vector, disabled } = props; // TODO: make a copy?
   const elements = vector.map((elem, i) => (
     <span key={props.names[i]}>
       {props.names[i]}
@@ -25,6 +26,7 @@ export function NamedVector(props: INamedVectorProps) {
         value={elem}
         // eslint-disable-next-line no-param-reassign
         onChange={(e) => { props.vector[i] = +e.target.value; props.onChange(props.vector); }}
+        disabled={disabled}
       />
     </span>
   ));
@@ -35,18 +37,18 @@ export function NamedVector(props: INamedVectorProps) {
 
 export function Vector2(props: IVectorProps) {
   // TODO: throw exception if length != 2
-  const { vector, onChange } = props;
-  return <NamedVector vector={vector} names={['X', 'Y']} onChange={onChange} />;
+  const { vector, onChange, disabled } = props;
+  return <NamedVector vector={vector} names={['X', 'Y']} onChange={onChange} disabled={disabled} />;
 }
 
 export function Vector3(props: IVectorProps) {
   // TODO: throw exception if length != 3
-  const { vector, onChange } = props;
-  return <NamedVector vector={vector} names={['X', 'Y', 'Z']} onChange={onChange} />;
+  const { vector, onChange, disabled } = props;
+  return <NamedVector vector={vector} names={['X', 'Y', 'Z']} onChange={onChange} disabled={disabled} />;
 }
 
 export function QuaternionVector(props: IVectorProps) {
   // TODO: throw exception if length != 4
-  const { vector, onChange } = props;
-  return <NamedVector vector={vector} names={['X', 'Y', 'Z', 'W']} onChange={onChange} />;
+  const { vector, onChange, disabled } = props;
+  return <NamedVector vector={vector} names={['X', 'Y', 'Z', 'W']} onChange={onChange} disabled={disabled} />;
 }

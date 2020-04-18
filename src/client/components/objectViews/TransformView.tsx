@@ -3,10 +3,12 @@
 import type { INode } from 'babylonjs-gltf2interface';
 import type { JSONSchema6 } from 'json-schema';
 import type { UiSchema } from 'react-jsonschema-form';
-import { transformLens, ITransformFocus } from '../../../common/lenses/transformLens';
+import {
+  transformLens, ITransformFocus, DEFAULT_TRANSLATION, DEFAULT_ROTATION, DEFAULT_SCALE,
+} from '../../../common/lenses/transformLens';
 import type { ILensView } from './LensView';
 import { defaultFields } from '../fields/defaultFields';
-import { createComponent } from './JSONSchemaFormView';
+import { createComponent, MissingPropertiesDirective } from './JSONSchemaFormView';
 
 // interesting alternative to react-jsonschema-forms, but quite new: https://github.com/gravel-form/blueprintjs-form
 
@@ -19,11 +21,19 @@ const schema: JSONSchema6 = {
       title: 'Translation',
       type: 'array',
       items: { type: 'number' },
+      default: DEFAULT_TRANSLATION,
     },
     rotation: {
       title: 'Rotation',
       type: 'array',
       items: { type: 'number' },
+      default: DEFAULT_ROTATION,
+    },
+    scale: {
+      title: 'Scale',
+      type: 'array',
+      items: { type: 'number' },
+      default: DEFAULT_SCALE,
     },
   },
 };
@@ -32,9 +42,17 @@ const schema: JSONSchema6 = {
 const uiSchema: UiSchema = {
   translation: { 'ui:field': 'Vector3' },
   rotation: { 'ui:field': 'Quaternion' },
+  scale: { 'ui:field': 'Vector3' },
 };
 
-const TransformView = createComponent<ITransformFocus>('TransformView', schema, uiSchema, defaultFields);
+const options = {
+  displayName: 'TransformView',
+  schema,
+  uiSchema,
+  fields: defaultFields,
+  missingPropertiesDirective: MissingPropertiesDirective.SHOW_AND_IGNORE,
+};
+const TransformView = createComponent<ITransformFocus>(options);
 
 export const transformView: ILensView<INode, ITransformFocus> = {
   name: 'Transform',

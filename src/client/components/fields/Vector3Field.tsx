@@ -1,17 +1,24 @@
 import * as React from 'react';
-import type { IChangeEvent, ErrorSchema } from 'react-jsonschema-form';
+import type { FieldProps } from 'react-jsonschema-form';
 import { Vector3 } from '../Vectors';
 
-
-// simple version of FieldProps
-export interface IVector3FieldProps {
-  formData: number[];
-  onChange: (e: IChangeEvent<number[]> | any, es?: ErrorSchema) => any;
-}
+export type IVector3FieldProps = Partial<FieldProps>;
 
 // TODO: show title
 export function Vector3Field(props: IVector3FieldProps) {
-  const { formData, onChange } = props;
+  const {
+    formData, onChange, uiSchema, disabled, schema, description,
+  } = props;
   const copy = [formData[0], formData[1], formData[2]];
-  return <Vector3 vector={copy} onChange={onChange} />;
+  if (uiSchema['ui:hidden']) {
+    return <div />;
+  }
+  return (
+    <div>
+      <label className="control-label">{schema.title}</label>
+      <Vector3 vector={copy} onChange={onChange} disabled={disabled} />
+      {description}
+    </div>
+
+  );
 }
