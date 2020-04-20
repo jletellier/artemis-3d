@@ -50,7 +50,7 @@ const options = {
   schema,
   uiSchema,
   fields: defaultFields,
-  missingPropertiesDirective: MissingPropertiesDirective.SHOW_AND_IGNORE,
+  missingPropertiesDirective: MissingPropertiesDirective.DISABLE_AND_IGNORE,
 };
 const TransformView = createComponent<ITransformFocus>(options);
 

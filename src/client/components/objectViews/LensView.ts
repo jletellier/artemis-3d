@@ -5,6 +5,7 @@ import type { ILens } from '../../../common/lenses/lenses';
 export interface ILensViewProps<TFocus> {
   focus: TFocus;
   onUpdate: (focus: TFocus) => void;
+  propFilter?: string;
 }
 
 export interface ILensView<TObject, TFocus> {

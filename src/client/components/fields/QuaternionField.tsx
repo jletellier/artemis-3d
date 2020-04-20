@@ -5,7 +5,7 @@ import { Vector3, QuaternionVector } from '../Vectors';
 
 // TODO: show title
 export function QuaternionField(props: FieldProps<number[]>) {
-  const { onChange, schema } = props;
+  const { onChange } = props;
   const [showEuler, setShowEuler] = useState(false);
 
   let view;
@@ -24,7 +24,6 @@ export function QuaternionField(props: FieldProps<number[]>) {
   }
   return (
     <div>
-      <label className="control-label">{schema.title}</label>
       {view}
       <button
         type="button"
