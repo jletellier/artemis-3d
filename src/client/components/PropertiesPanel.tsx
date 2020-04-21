@@ -12,7 +12,7 @@ const PropertiesPanel: FunctionComponent = () => {
   const projectState = useProjectState();
   const userState = useUserState();
 
-  const [propFilter, setPropFilter] = useState('');
+  const [fieldFilter, setFieldFilter] = useState('');
 
   if (userState.selectedNodes.length === 1) {
     const id = userState.selectedNodes[0];
@@ -44,7 +44,7 @@ const PropertiesPanel: FunctionComponent = () => {
                 key={`${nodeId}-${view.name}`}
                 focus={view.lens.get(node)}
                 onUpdate={onUpdate}
-                propFilter={propFilter}
+                fieldFilter={fieldFilter}
               />
             </div>
           );
@@ -53,9 +53,9 @@ const PropertiesPanel: FunctionComponent = () => {
       return (
         <div>
           <div>
-            Search Properties:
+            Search Fields:
             {' '}
-            <input type="text" value={propFilter} onChange={(e) => setPropFilter(e.target.value.toLowerCase())} />
+            <input type="text" value={fieldFilter} onChange={(e) => setFieldFilter(e.target.value.toLowerCase())} />
           </div>
           {subpanels}
         </div>
