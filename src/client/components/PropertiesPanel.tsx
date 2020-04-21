@@ -6,13 +6,19 @@ import { useUserState } from '../stores/userStore';
 import { transformView } from './objectViews/TransformView';
 import { ILensView } from './objectViews/LensView';
 
+interface ISearchFilter {
+  searchTerm: string;
+  searchViewMeta: boolean;
+  searchFields: boolean;
+}
+
 const PropertiesPanel: FunctionComponent = () => {
   // console.log('PropertiesPanel FunctionComponent called');
 
   const projectState = useProjectState();
   const userState = useUserState();
 
-  const [fieldFilter, setFieldFilter] = useState('');
+  const [searchFilter, setSearchFilter] = useState<ISearchFilter>({ searchTerm: '', searchViewMeta: true, searchFields: true });
 
   if (userState.selectedNodes.length === 1) {
     const id = userState.selectedNodes[0];
@@ -33,6 +39,11 @@ const PropertiesPanel: FunctionComponent = () => {
               view.lens.set(currNode, focus);
             });
           };
+
+          // TODO: how do we know that any field in the view is visible, so that this view needs
+          // to be visible as well?
+          const viewIsHidden = false; // view.name.toLowerCase().includes(searchFilter.searchTerm);
+
           return (
           // TODO: possible performance issue
           // if nodeId is not part of key, onUpdate may have old data (wrong nodeId) due to
@@ -44,7 +55,7 @@ const PropertiesPanel: FunctionComponent = () => {
                 key={`${nodeId}-${view.name}`}
                 focus={view.lens.get(node)}
                 onUpdate={onUpdate}
-                fieldFilter={fieldFilter}
+                fieldFilter={!viewIsHidden && searchFilter.searchFields ? searchFilter.searchTerm : ''}
               />
             </div>
           );
@@ -53,9 +64,17 @@ const PropertiesPanel: FunctionComponent = () => {
       return (
         <div>
           <div>
-            Search Fields:
+            Search:
             {' '}
-            <input type="text" value={fieldFilter} onChange={(e) => setFieldFilter(e.target.value.toLowerCase())} />
+            <input
+              type="text"
+              value={searchFilter.searchTerm}
+              onChange={(e) => setSearchFilter({
+                searchViewMeta: searchFilter.searchViewMeta,
+                searchFields: searchFilter.searchFields,
+                searchTerm: e.target.value.toLowerCase(),
+              })}
+            />
           </div>
           {subpanels}
         </div>
